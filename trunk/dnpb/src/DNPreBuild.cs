@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -50,35 +50,36 @@ namespace DNPreBuild
         [STAThread]
 		static void Main(string[] args) 
         {
-            try 
-            {
-                Kernel kernel = Kernel.Instance;
-                kernel.Initialize(LogTarget.File | LogTarget.Console, args);
-                bool exit = false;
+			 Kernel kernel = null;
+			try {
+				kernel = Kernel.Instance;
+				kernel.Initialize(LogTarget.File | LogTarget.Console, args);
+				bool exit = false;
 
-                if(kernel.CommandLine.WasPassed("usage"))
-                {
-                    exit = true;
-                    OutputUsage();
-                }
-                if(kernel.CommandLine.WasPassed("showtargets"))
-                {
-                    exit = true;
-                    OutputTargets(kernel);
-                }
+				if(kernel.CommandLine.WasPassed("usage")) {
+					exit = true;
+					OutputUsage();
+				}
+				if(kernel.CommandLine.WasPassed("showtargets")) {
+					exit = true;
+					OutputTargets(kernel);
+				}
 
-                if(exit)
-                    Environment.Exit(0);
-
-                kernel.Process();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Unhandled error: {0}", ex.Message);
+				if(!exit)
+					kernel.Process();
+			}
+			catch(Exception ex) {
+				Console.WriteLine("Unhandled error: {0}", ex.Message);
 #if DEBUG
                 Console.WriteLine("{0}", ex.StackTrace);
 #endif
-            }
+			}
+			finally{
+				if(kernel.PauseAfterFinish) {
+					Console.WriteLine("\nPress any key to continue...");
+					Console.Read();
+				}
+			}
 		}
 
         #endregion
@@ -89,15 +90,17 @@ namespace DNPreBuild
         {
             Console.WriteLine("Usage: dnpb /target <target> [options]");
             Console.WriteLine("Available command-line switches:");
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine("/target          Target for .NET Pre-Build");
             Console.WriteLine("/clean           Clean the build files for the given target");
             Console.WriteLine("/file            XML file to process");
             Console.WriteLine("/log             Log file to write to");
-            Console.WriteLine("/ppo             Pre-process the file, but perform no other processing");
-            Console.WriteLine("");
-            Console.WriteLine("See 'dnpb /showtargets for a list of available targets");
-            Console.WriteLine("");
+			Console.WriteLine("/ppo             Pre-process the file, but perform no other processing");
+			Console.WriteLine("/pause           Pauses the application after execution to view the output");
+            Console.WriteLine();
+			Console.WriteLine("See 'dnpb /showtargets for a list of available targets");
+			Console.WriteLine("See readme.txt or check out http://dnpb.sf.net for more information");
+            Console.WriteLine();
         }
 
         private static void OutputTargets(Kernel kern)

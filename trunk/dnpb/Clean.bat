@@ -1,0 +1,1 @@
+dnpb /clean all /pause
