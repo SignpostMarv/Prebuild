@@ -203,7 +203,7 @@ namespace DNPreBuild.Core
             
             string path = Path.GetFullPath(file);
             m_CurrentFile = path;
-            Environment.CurrentDirectory = Path.GetDirectoryName(path);
+            Helper.SetCurrentDir(Path.GetDirectoryName(path));
             
             XmlTextReader reader = new XmlTextReader(file);
             XmlValidatingReader valReader = new XmlValidatingReader(reader);

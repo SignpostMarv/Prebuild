@@ -233,7 +233,6 @@ namespace DNPreBuild.Core.Targets
             }
             
             m_Kernel.Log.Write("");
-
             string solutionFile = Path.GetFullPath(Helper.MakeFilePath(solution.Path, solution.Name, "sln"));
             StreamWriter ss = new StreamWriter(solutionFile);
             
@@ -263,7 +262,7 @@ namespace DNPreBuild.Core.Targets
                 for(int i = 0; i < solution.Configurations.Count; i++)
                 {
                     ConfigurationNode conf = (ConfigurationNode)solution.Configurations[i];
-                    ss.WriteLine("\t\tConfigName.{0} = {1}", i, conf.Name);
+                    ss.WriteLine("\t\t{0} = {0}", conf.Name);
                 }
                 ss.WriteLine("\tEndGlobalSection");
 
@@ -286,11 +285,11 @@ namespace DNPreBuild.Core.Targets
                 {
                     foreach(ConfigurationNode conf in solution.Configurations)
                     {
-                        ss.WriteLine("\t\t({{{0}}}).{1}.ActiveCfg = {1}|.NET",
+                        ss.WriteLine("\t\t{{{0}}}.{1}.ActiveCfg = {1}|.NET",
                             ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
                             conf.Name);
 
-                        ss.WriteLine("\t\t({{{0}}}).{1}.Build.0 = {1}|.NET",
+                        ss.WriteLine("\t\t{{{0}}}.{1}.Build.0 = {1}|.NET",
                             ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
                             conf.Name);
                     }
@@ -306,6 +305,7 @@ namespace DNPreBuild.Core.Targets
                 }
 
                 ss.WriteLine("EndGlobal");
+                ss.Flush();
             }
         }
 

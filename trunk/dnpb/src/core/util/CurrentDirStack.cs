@@ -58,7 +58,7 @@ namespace DNPreBuild.Core.Util
                 return;
 
             string cwd = (string)m_Stack.Pop();
-            Environment.CurrentDirectory = cwd;
+            Helper.SetCurrentDir(cwd);
         }
 
         #endregion
