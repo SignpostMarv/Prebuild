@@ -59,7 +59,7 @@ namespace DNPreBuild.Core.Targets
         private string PrependPath(string path)
         {
             string tmpPath = Helper.NormalizePath(path, '/');
-            Regex regex = new Regex("(\\w):/(\\w+)");
+            Regex regex = new Regex(@"(\w):/(\w+)");
             Match match = regex.Match(tmpPath);
             if(match.Success || tmpPath[0] == '.' || tmpPath[0] == '/')
                 tmpPath = Helper.NormalizePath(tmpPath);
