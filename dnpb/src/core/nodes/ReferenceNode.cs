@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -48,7 +48,7 @@ namespace DNPreBuild.Core.Nodes
 
         private string m_Name = "unknown";
         private string m_Path = null;
-        private bool m_LocalCopy = false;
+        private string m_LocalCopy = null;
         private string m_Version = null;
 
         #endregion
@@ -71,11 +71,19 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+		public bool LocalCopySpecified {
+			get {
+				return ( m_LocalCopy != null && m_LocalCopy != string.Empty);
+			}
+		}
+
         public bool LocalCopy
         {
             get
             {
-                return m_LocalCopy;
+                if( m_LocalCopy == null || m_LocalCopy == string.Empty)
+					return true;
+				return bool.Parse(m_LocalCopy);
             }
         }
 
@@ -95,8 +103,7 @@ namespace DNPreBuild.Core.Nodes
         {
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             m_Path = Helper.AttributeValue(node, "path", m_Path);
-            m_LocalCopy = (bool)Helper.TranslateValue(typeof(bool),
-                Helper.AttributeValue(node, "localCopy", "false"));
+            m_LocalCopy = Helper.AttributeValue(node, "localCopy", m_LocalCopy);
             m_Version = Helper.AttributeValue(node, "version", m_Version);
         }
 

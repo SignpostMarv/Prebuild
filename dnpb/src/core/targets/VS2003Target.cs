@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -147,7 +147,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t\t<Build>");
                 
                 ps.WriteLine("\t\t\t<Settings");
-                ps.WriteLine("\t\t\t\tApplicationIcon = \"\"");
+                ps.WriteLine("\t\t\t\tApplicationIcon = \"{0}\"",project.AppIcon);
                 ps.WriteLine("\t\t\t\tAssemblyKeyContainerName = \"\"");
                 ps.WriteLine("\t\t\t\tAssemblyName = \"{0}\"", project.AssemblyName);
                 ps.WriteLine("\t\t\t\tAssemblyOriginatorKeyFile = \"\"");
@@ -213,10 +213,11 @@ namespace DNPreBuild.Core.Targets
                         if(refr.Path != null)
                             ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
 
-                        if(refr.LocalCopy)
-                            ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"", refr.LocalCopy);
                     }
                     
+					if(refr.LocalCopySpecified)
+						ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"",refr.LocalCopy);
+
                     ps.WriteLine("\t\t\t\t/>");
                 }
                 ps.WriteLine("\t\t\t</References>");

@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -75,7 +75,8 @@ namespace DNPreBuild.Core.Targets
             if(solution.ProjectsTable.ContainsKey(refr.Name))
             {
                 ret += "Project\" refto=\"" + refr.Name;
-                ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+				if(refr.LocalCopySpecified)
+					ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
             }
             else
             {
@@ -172,7 +173,8 @@ namespace DNPreBuild.Core.Targets
                     ss.WriteLine("\t\t\t\tmainclass=\"{0}\"", project.StartupObject);
                     ss.WriteLine("\t\t\t\ttarget=\"{0}\"", project.Type);
                     ss.WriteLine("\t\t\t\tdefinesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
-                    ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", (((string)conf.Options["XmlDocFile"]).Length > 0));
+					ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", (((string)conf.Options["XmlDocFile"]).Length > 0));
+					ss.WriteLine("\t\t\t\twin32Icon=\"{0}\"", project.AppIcon);
                     ss.WriteLine("\t\t\t/>");
 
                     ss.WriteLine("\t\t\t<Output");
