@@ -55,6 +55,8 @@ namespace DNPreBuild.Core
 
         private static Kernel m_Instance = new Kernel();
 
+        private static string m_Schema = "dnpb-1.1.xsd";
+        private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
         private Version m_Version = null;
         private string m_Revision = "";
         private CommandLine m_CommandLine = null;
@@ -145,11 +147,11 @@ namespace DNPreBuild.Core
         private void LoadSchema()
         {
             Assembly assembly = this.GetType().Assembly;
-            Stream stream = assembly.GetManifestResourceStream("DNPreBuild.data.dnpb-1.0.xsd");
+            Stream stream = assembly.GetManifestResourceStream("DNPreBuild.data." + m_Schema);
             XmlReader schema = new XmlTextReader(stream);
             
             m_Schemas = new XmlSchemaCollection();
-            m_Schemas.Add("http://dnpb.sourceforge.net/schemas/dnpb-1.0.xsd", schema);
+            m_Schemas.Add(m_SchemaURI, schema);
         }
 
         private void CacheVersion() 
@@ -216,6 +218,17 @@ namespace DNPreBuild.Core
 
                 XmlDocument doc = new XmlDocument();
                 doc.Load(valReader);
+
+                if(doc.DocumentElement.NamespaceURI != m_SchemaURI)
+                    throw new XmlException(
+                        String.Format("Invalid schema namespace referenced {0}, expected {1}", 
+                            doc.DocumentElement.NamespaceURI,
+                            m_SchemaURI
+                    ));
+
+                string version = Helper.AttributeValue(doc.DocumentElement, "version", null);
+                if(version != "1.1")
+                    throw new XmlException(String.Format("Invalid schema version referenced {0}, requires 1.1", version));
             
                 foreach(XmlNode node in doc.DocumentElement.ChildNodes)
                 {

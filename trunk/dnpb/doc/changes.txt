@@ -3,6 +3,14 @@
 + = Addition
 ! = Bug Fix
 
+[ April 21, 2004 - 0.11.1 ]
+    ! Fixed a problem with resolving paths in various targets. Was not properly
+      setting the CWD.
+    * Schema updated to 1.1, moving the ReferencePath element from the Options
+      element to the Project element. This makes more logical sense, given that
+      reference paths are resolved relative to the project path. Any prebuild.xml
+      file referecning verison 1.0 will fail! Please update to the 1.1 schema.
+
 [ April 19, 2004 - 0.11.0 ]
 	* Added several attributes across the code to make FxCop happy
 	! Fixed bugs in reference paths being written in the VS targets.
