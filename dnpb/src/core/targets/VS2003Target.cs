@@ -151,7 +151,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t\t\t<Settings");
                 ps.WriteLine("\t\t\t\tApplicationIcon = \"\"");
                 ps.WriteLine("\t\t\t\tAssemblyKeyContainerName = \"\"");
-                ps.WriteLine("\t\t\t\tAssemblyName = \"{0}\"", project.Name);
+                ps.WriteLine("\t\t\t\tAssemblyName = \"{0}\"", project.AssemblyName);
                 ps.WriteLine("\t\t\t\tAssemblyOriginatorKeyFile = \"\"");
                 ps.WriteLine("\t\t\t\tDefaultClientScript = \"JScript\"");
                 ps.WriteLine("\t\t\t\tDefaultHTMLPageLayout = \"Grid\"");
