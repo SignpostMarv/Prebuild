@@ -50,6 +50,7 @@ namespace DNPreBuild.Core.Nodes
         #region Fields
 
         private StringCollection m_Files = null;
+        private Regex m_Regex = null;
 
         #endregion
 
@@ -76,28 +77,47 @@ namespace DNPreBuild.Core.Nodes
 
         #region Private Methods
 
-        public void RecurseDirs(string path, string pattern, bool recurse)
+        public void RecurseDirs(string path, string pattern, bool recurse, bool useRegex)
         {
             try
             {
-                string[] files = Directory.GetFiles(path, pattern);
-                if(files != null)
+                string[] files;
+
+                if(!useRegex)
                 {
-                    m_Files.AddRange(files);
-                    if(recurse)
-                    {
-                        string[] dirs = Directory.GetDirectories(path);
-                        if(dirs != null && dirs.Length > 0)
-                        {
-                            foreach(string str in dirs)
-                                RecurseDirs(Helper.NormalizePath(str), pattern, recurse);
-                        }
-                    }
+                    files = Directory.GetFiles(path, pattern);
+                    if(files != null)
+                        m_Files.AddRange(files);
+                    else
+                        return;
                 }
                 else
-                    return;
+                {
+                    Match match;
+                    files = Directory.GetFiles(path);
+                    foreach(string file in files)
+                    {
+                        match = m_Regex.Match(file);
+                        if(match.Success)
+                            m_Files.Add(file);
+                    }
+                }
+                
+                if(recurse)
+                {
+                    string[] dirs = Directory.GetDirectories(path);
+                    if(dirs != null && dirs.Length > 0)
+                    {
+                        foreach(string str in dirs)
+                            RecurseDirs(Helper.NormalizePath(str), pattern, recurse, useRegex);
+                    }
+                }
             }
             catch(DirectoryNotFoundException)
+            {
+                return;
+            }
+            catch(ArgumentException)
             {
                 return;
             }
@@ -112,6 +132,7 @@ namespace DNPreBuild.Core.Nodes
             string path = Helper.AttributeValue(node, "path", null);
             string pattern = Helper.AttributeValue(node, "pattern", null);
             bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
+            bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
 
             if(path == null)
                 throw new WarningException("Match must have a 'path' attribute");
@@ -123,9 +144,21 @@ namespace DNPreBuild.Core.Nodes
             if(!Directory.Exists(path))
                 throw new WarningException("Match path does not exist: {0}", path);
 
-            RecurseDirs(path, pattern, recurse);
+            try
+            {
+                if(useRegex)
+                    m_Regex = new Regex(pattern);
+            }
+            catch(ArgumentException ex)
+            {
+                throw new WarningException("Could not compile regex pattern: {0}", ex.Message);
+            }
+
+            RecurseDirs(path, pattern, recurse, useRegex);
             if(m_Files.Count < 1)
                 throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
+
+            m_Regex = null;
         }
 
         #endregion
