@@ -36,13 +36,13 @@ using System;
 
 namespace DNPreBuild.Core.Parse
 {
-    public enum IfState
-    {
-        None,
-        If,
-        ElseIf,
-        Else
-    }
+	public enum IfState
+	{
+		None,
+		If,
+		ElseIf,
+		Else
+	}
 
 	/// <summary>
 	/// Summary description for IfContext.
@@ -50,75 +50,75 @@ namespace DNPreBuild.Core.Parse
 	// Inspired by the equivalent WiX class (see www.sourceforge.net/projects/wix/)
 	public class IfContext
 	{
-        #region Properties
+		#region Properties
 
-        bool m_Active = false;
-        bool m_Keep = false;
-        bool m_EverKept = false;
-        IfState m_State = IfState.None;
+		bool m_Active = false;
+		bool m_Keep = false;
+		bool m_EverKept = false;
+		IfState m_State = IfState.None;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
 		public IfContext(bool active, bool keep, IfState state)
 		{
-            m_Active = active;
-            m_Keep = keep;
-            m_EverKept = keep;
-            m_State = state;
+			m_Active = active;
+			m_Keep = keep;
+			m_EverKept = keep;
+			m_State = state;
 		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public bool Active
-        {
-            get
-            {
-                return m_Active;
-            }
-            set
-            {
-                m_Active = value;
-            }
-        }
+		public bool Active
+		{
+			get
+			{
+				return m_Active;
+			}
+			set
+			{
+				m_Active = value;
+			}
+		}
 
-        public bool Keep
-        {
-            get
-            {
-                return m_Keep;
-            }
-            set
-            {
-                m_Keep = value;
-                if(m_Keep)
-                    m_EverKept = true;
-            }
-        }
+		public bool Keep
+		{
+			get
+			{
+				return m_Keep;
+			}
+			set
+			{
+				m_Keep = value;
+				if(m_Keep)
+					m_EverKept = true;
+			}
+		}
 
-        public bool EverKept
-        {
-            get
-            {
-                return m_EverKept;
-            }
-        }
+		public bool EverKept
+		{
+			get
+			{
+				return m_EverKept;
+			}
+		}
 
-        public IfState State
-        {
-            get
-            {
-                return m_State;
-            }
-            set
-            {
-                m_State = value;
-            }
-        }
+		public IfState State
+		{
+			get
+			{
+				return m_State;
+			}
+			set
+			{
+				m_State = value;
+			}
+		}
 
-        #endregion
+		#endregion
 	}
 }

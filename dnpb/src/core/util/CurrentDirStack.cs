@@ -39,37 +39,37 @@ namespace DNPreBuild.Core.Util
 {
 	public class CurrentDirStack
 	{
-        #region Fields
+		#region Fields
 
-        private Stack m_Stack = null;
+		private Stack m_Stack = null;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public CurrentDirStack()
+		public CurrentDirStack()
 		{
-            m_Stack = new Stack();
+			m_Stack = new Stack();
 		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public void Push()
-        {
-            m_Stack.Push(Environment.CurrentDirectory);
-        }
+		public void Push()
+		{
+			m_Stack.Push(Environment.CurrentDirectory);
+		}
 
-        public void Pop()
-        {
-            if(m_Stack.Count < 1)
-                return;
+		public void Pop()
+		{
+			if(m_Stack.Count < 1)
+				return;
             
-            string cwd = (string)m_Stack.Pop();
-            Helper.SetCurrentDir(cwd);
-        }
+			string cwd = (string)m_Stack.Pop();
+			Helper.SetCurrentDir(cwd);
+		}
 
-        #endregion
+		#endregion
 	}
 }

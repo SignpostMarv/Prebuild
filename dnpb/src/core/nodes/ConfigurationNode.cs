@@ -41,97 +41,97 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Configuration")]
+	[DataNode("Configuration")]
 	public class ConfigurationNode : DataNode, ICloneable
-    {
-        #region Fields
+	{
+		#region Fields
 
-        private string m_Name = "unknown";
-        private OptionsNode m_Options = null;
+		private string m_Name = "unknown";
+		private OptionsNode m_Options = null;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public ConfigurationNode()
-        {
-            m_Options = new OptionsNode();
-        }
+		public ConfigurationNode()
+		{
+			m_Options = new OptionsNode();
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public override IDataNode Parent
-        {
-            get
-            {
-                return base.Parent;
-            }
-            set
-            {
-                base.Parent = value;
-                if(base.Parent is SolutionNode)
-                {
-                    SolutionNode node = (SolutionNode)base.Parent;
-                    if(node != null && node.Options != null)
-                        node.Options.CopyTo(m_Options);
-                }
-            }
-        }
+		public override IDataNode Parent
+		{
+			get
+			{
+				return base.Parent;
+			}
+			set
+			{
+				base.Parent = value;
+				if(base.Parent is SolutionNode)
+				{
+					SolutionNode node = (SolutionNode)base.Parent;
+					if(node != null && node.Options != null)
+						node.Options.CopyTo(m_Options);
+				}
+			}
+		}
 
-        public string Name
-        {
-            get
-            {
-                return m_Name;
-            }
-        }
+		public string Name
+		{
+			get
+			{
+				return m_Name;
+			}
+		}
 
-        public OptionsNode Options
-        {
-            get
-            {
-                return m_Options;
-            }
-            set
-            {
-                m_Options = value;
-            }
-        }
+		public OptionsNode Options
+		{
+			get
+			{
+				return m_Options;
+			}
+			set
+			{
+				m_Options = value;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            m_Name = Helper.AttributeValue(node, "name", m_Name);
-            foreach(XmlNode child in node.ChildNodes)
-            {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                if(dataNode is OptionsNode)
-                    ((OptionsNode)dataNode).CopyTo(m_Options);
-            }
-        }
+		public override void Parse(XmlNode node)
+		{
+			m_Name = Helper.AttributeValue(node, "name", m_Name);
+			foreach(XmlNode child in node.ChildNodes)
+			{
+				IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+				if(dataNode is OptionsNode)
+					((OptionsNode)dataNode).CopyTo(m_Options);
+			}
+		}
 
-        public void CopyTo(ConfigurationNode conf)
-        {
-            m_Options.CopyTo(conf.m_Options);
-        }
+		public void CopyTo(ConfigurationNode conf)
+		{
+			m_Options.CopyTo(conf.m_Options);
+		}
 
-        #endregion
+		#endregion
 
-        #region ICloneable Members
+		#region ICloneable Members
 
-        public object Clone()
-        {
-            ConfigurationNode ret = new ConfigurationNode();
-            ret.m_Name = m_Name;
-            m_Options.CopyTo(ret.m_Options);
-            return ret;
-        }
+		public object Clone()
+		{
+			ConfigurationNode ret = new ConfigurationNode();
+			ret.m_Name = m_Name;
+			m_Options.CopyTo(ret.m_Options);
+			return ret;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

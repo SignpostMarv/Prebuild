@@ -43,38 +43,38 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("ReferencePath")]
-    public class ReferencePathNode : DataNode
-    {
-        #region Fields
+	[DataNode("ReferencePath")]
+	public class ReferencePathNode : DataNode
+	{
+		#region Fields
 
-        private string m_Path = null;
+		private string m_Path = null;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Path
-        {
-            get
-            {
-                return m_Path;
-            }
-        }
+		public string Path
+		{
+			get
+			{
+				return m_Path;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            m_Path = Helper.ParseValue(node.InnerText);
-            if(m_Path == null)
-                m_Path = "";
+		public override void Parse(XmlNode node)
+		{
+			m_Path = Helper.InterpolateForEnvironmentVariables(node.InnerText);
+			if(m_Path == null)
+				m_Path = "";
 
-            m_Path = m_Path.Trim();
-        }
+			m_Path = m_Path.Trim();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

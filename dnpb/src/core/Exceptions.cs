@@ -36,27 +36,27 @@ using System;
 
 namespace DNPreBuild.Core
 {
-    public class WarningException : Exception
-    {
-        #region Constructors
+	public class WarningException : Exception
+	{
+		#region Constructors
 
-        public WarningException(string fmt, params object[] args)
-            : base(String.Format(fmt, args))
-        {
-        }
+		public WarningException(string fmt, params object[] args)
+			: base(String.Format(fmt, args))
+		{
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 
-    public class FatalException : Exception
-    {
-        #region Constructors
+	public class FatalException : Exception
+	{
+		#region Constructors
 
-        public FatalException(string fmt, params object[] args)
-            : base(String.Format(fmt, args))
-        {
-        }
+		public FatalException(string fmt, params object[] args)
+			: base(String.Format(fmt, args))
+		{
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

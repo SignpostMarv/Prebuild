@@ -37,53 +37,55 @@ using System.IO;
 
 namespace DNPreBuild.Core.Util
 {
-    public enum LogType
-    {
-        None,
-        Info,
-        Warning,
-        Error
-    }
+	public enum LogType
+	{
+		None,
+		Info,
+		Warning,
+		Error
+	}
 
-    [Flags]
-    public enum LogTarget
-    {
-        Null = 1,
-        File = 2,
-        Console = 4
-    }
+	[Flags]
+	public enum LogTarget
+	{
+		Null = 1,
+		File = 2,
+		Console = 4
+	}
 
 	/// <summary>
 	/// Summary description for Log.
 	/// </summary>
 	public sealed class Log
 	{
-        #region Fields
+		#region Fields
 
-        private StreamWriter m_Writer = null;
-        private LogTarget m_Target = LogTarget.Null;
+		private StreamWriter m_Writer = null;
+		private LogTarget m_Target = LogTarget.Null;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public Log(LogTarget target, string fileName)
+		public Log(LogTarget target, string fileName)
 		{
-            m_Target = target;
+			m_Target = target;
             
-            if((m_Target & LogTarget.File) != 0)
-                m_Writer = new StreamWriter(fileName, false);
+			if((m_Target & LogTarget.File) != 0)
+				m_Writer = new StreamWriter(fileName, false);
 		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-		public void Write() {
+		public void Write() 
+		{
 			Write(string.Empty);
 		}
 
-		public void Write(string msg) {
+		public void Write(string msg) 
+		{
 			if((m_Target & LogTarget.Null) != 0)
 				return;
 
@@ -93,18 +95,19 @@ namespace DNPreBuild.Core.Util
 				m_Writer.WriteLine(msg);
 		}
 
-        public void Write(string fmt, params object[] args)
-        {
-            Write(string.Format(fmt,args));
-        }
+		public void Write(string fmt, params object[] args)
+		{
+			Write(string.Format(fmt,args));
+		}
 
-        public void Write(LogType type, string fmt, params object[] args)
-        {
-            if((m_Target & LogTarget.Null) != 0)
-                return;
+		public void Write(LogType type, string fmt, params object[] args)
+		{
+			if((m_Target & LogTarget.Null) != 0)
+				return;
 
 			string str = "";
-			switch(type) {
+			switch(type) 
+			{
 				case LogType.Info:
 					str = "[I] "; break;
 				case LogType.Warning:
@@ -113,28 +116,28 @@ namespace DNPreBuild.Core.Util
 					str = "[X] "; break;
 			}
 
-            Write(str + fmt,args);
-        }
+			Write(str + fmt,args);
+		}
 
-        public void WriteException(LogType type, Exception ex)
-        {
-            if(ex != null)
-            {
-                Write(type, ex.Message);
-#if DEBUG
-                m_Writer.WriteLine("Exception @{0} stack trace [[", ex.TargetSite.Name);
-                m_Writer.WriteLine(ex.StackTrace);
-                m_Writer.WriteLine("]]");
-#endif
-            }
-        }
+		public void WriteException(LogType type, Exception ex)
+		{
+			if(ex != null)
+			{
+				Write(type, ex.Message);
+				//#if DEBUG
+				m_Writer.WriteLine("Exception @{0} stack trace [[", ex.TargetSite.Name);
+				m_Writer.WriteLine(ex.StackTrace);
+				m_Writer.WriteLine("]]");
+				//#endif
+			}
+		}
 
-        public void Flush()
-        {
-            if(m_Writer != null)
-                m_Writer.Flush();
-        }
+		public void Flush()
+		{
+			if(m_Writer != null)
+				m_Writer.Flush();
+		}
 
-        #endregion
+		#endregion
 	}
 }
