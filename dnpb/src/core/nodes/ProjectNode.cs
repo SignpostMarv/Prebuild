@@ -147,7 +147,7 @@ namespace DNPreBuild.Core.Nodes
             }
 
             Kernel.Instance.CWDStack.Push();
-            Environment.CurrentDirectory = tmpPath;
+            Helper.SetCurrentDir(tmpPath);
 
             foreach(XmlNode child in node.ChildNodes)
             {

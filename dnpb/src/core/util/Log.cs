@@ -102,9 +102,9 @@ namespace DNPreBuild.Core.Util
             {
                 Write(type, ex.Message);
 #if DEBUG
-                m_Writer.WriteLine("Exception @{0} stack trace {{{", ex.TargetSite.Name);
+                m_Writer.WriteLine("Exception @{0} stack trace [[", ex.TargetSite.Name);
                 m_Writer.WriteLine(ex.StackTrace);
-                m_Writer.WriteLine("}}}");
+                m_Writer.WriteLine("]]");
 #endif
             }
         }

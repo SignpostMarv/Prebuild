@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <DNPreBuild>
 	<Solution name="dnpb">
-		<Files>
-			<File>prebuild.xml</File>
-			<File>doc\dnpb.xsd</File>
-		</Files>
-		
 		<Configuration name="Debug">
 			<Options>
 				<CompilerDefines>DEBUG;TRACE</CompilerDefines>
@@ -22,6 +17,10 @@
 			</Options>
 		</Configuration>
 		
+		<Files>
+			<File>prebuild.xml</File>
+		</Files>
+		
 		<Project
 			name="dnpb"
 			path="src\"
@@ -36,6 +35,7 @@
 					pattern="*.cs"
 					recurse="true"
 				/>
+				<File>src\data\dnpb-1.0.xsd</File>
 			</Files>
 		</Project>
 	</Solution>

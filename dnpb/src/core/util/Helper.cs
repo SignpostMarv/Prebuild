@@ -87,7 +87,7 @@ namespace DNPreBuild.Core.Util
         {
             string tmpPath = NormalizePath(path);
             if(tmpPath.Length < 1)
-                tmpPath = ".";
+                return path;
             
             return Path.GetFullPath(tmpPath);
         }
@@ -104,6 +104,9 @@ namespace DNPreBuild.Core.Util
         
         public static string EndPath(string path)
         {
+            if(path == null || path.Length < 1)
+                return "";
+
             if(!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 return (path + Path.DirectorySeparatorChar);
 
@@ -119,6 +122,14 @@ namespace DNPreBuild.Core.Util
                 ret = ret.Replace(c, '_');
 
             return ret;
+        }
+
+        public static void SetCurrentDir(string path)
+        {
+            if(path.Length < 1)
+                return;
+
+            Environment.CurrentDirectory = path;
         }
 
         public static object CheckType(Type t, Type attr, Type inter)
