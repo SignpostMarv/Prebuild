@@ -259,29 +259,35 @@ namespace DNPreBuild.Core.Targets
 
         private void CleanSolution(SolutionNode solution)
         {
-            m_Kernel.Log.Write("Cleaning combine and project files for: {0}", solution.Name);
+            m_Kernel.Log.Write("Cleaning SharpDevelop combine and project files for", solution.Name);
 
             string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "cmbx");
             Helper.DeleteIfExists(slnFile);
 
             foreach(ProjectNode project in solution.Projects)
                 CleanProject(project);
+            
+            m_Kernel.Log.Write("");
         }
 
         #endregion
 
         #region ITarget Members
 
-        public void Write()
+        public void Write(Kernel kern)
         {
-            foreach(SolutionNode solution in m_Kernel.Solutions)
+            m_Kernel = kern;
+            foreach(SolutionNode solution in kern.Solutions)
                 WriteCombine(solution);
+            m_Kernel = null;
         }
 
-        public virtual void Clean()
+        public virtual void Clean(Kernel kern)
         {
-            foreach(SolutionNode sol in m_Kernel.Solutions)
+            m_Kernel = kern;
+            foreach(SolutionNode sol in kern.Solutions)
                 CleanSolution(sol);
+            m_Kernel = null;
         }
 
         public string Name
@@ -289,18 +295,6 @@ namespace DNPreBuild.Core.Targets
             get
             {
                 return "sharpdev";
-            }
-        }
-
-        public Kernel Kernel
-        {
-            get
-            {
-                return m_Kernel;
-            }
-            set
-            {
-                m_Kernel = value;
             }
         }
 

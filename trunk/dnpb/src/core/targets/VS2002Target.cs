@@ -56,16 +56,24 @@ namespace DNPreBuild.Core.Targets
 
         #region Public Methods
 
-        public override void Write()
+        public override void Write(Kernel kern)
         {
             SetVS2002();
-            base.Write();
+            base.Write(kern);
         }
 
-        public override void Clean()
+        public override void Clean(Kernel kern)
         {
             SetVS2002();
-            base.Clean();
+            base.Clean(kern);
+        }
+
+        public override string Name
+        {
+            get
+            {
+                return "vs2002";
+            }
         }
 
         #endregion

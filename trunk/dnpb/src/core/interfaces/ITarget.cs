@@ -38,9 +38,8 @@ namespace DNPreBuild.Core.Interfaces
 {
     public interface ITarget 
     {
-        void Write();
-        void Clean();
+        void Write(Kernel kern);
+        void Clean(Kernel kern);
         string Name { get; }
-        Kernel Kernel { get; set; }
     }
 }

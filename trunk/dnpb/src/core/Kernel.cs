@@ -320,7 +320,12 @@ namespace DNPreBuild.Core
 
         public void Initialize(LogTarget target, string[] args)
         {
+            m_Targets = new Hashtable();
+            CacheTargets(this.GetType().Assembly);
+            m_Nodes = new Hashtable();
+            CacheNodeTypes(this.GetType().Assembly);
             CacheVersion();
+
             m_CommandLine = new CommandLine(args);
             
             string logFile = "DNPreBuild.log";
@@ -334,24 +339,8 @@ namespace DNPreBuild.Core
 
             m_Target = m_CommandLine["target"];
             m_Clean = m_CommandLine["clean"];
-            if(m_Target != null && m_Clean != null)
-            {
-                m_Log.Write(LogType.Error, "The options /target and /clean cannot be passed together");
-                return;
-            }
-            else if(m_Target == null && m_Clean == null)
-            {
-                m_Log.Write(LogType.Error, "Must pass either /target or /clean to");
-                return;
-            }
 
             LoadSchema();
-            
-            m_Targets = new Hashtable();
-            CacheTargets(this.GetType().Assembly);
-
-            m_Nodes = new Hashtable();
-            CacheNodeTypes(this.GetType().Assembly);
 
             m_Solutions = new ArrayList();
             m_Refs = new StringCollection();
@@ -359,44 +348,48 @@ namespace DNPreBuild.Core
 
         public void Process()
         {
+            if(m_Target != null && m_Clean != null)
+            {
+                m_Log.Write(LogType.Error, "The options /target and /clean cannot be passed together");
+                return;
+            }
+            else if(m_Target == null && m_Clean == null)
+            {
+                m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a .NET pre-build file");
+                return;
+            }
+
             string file = "./prebuild.xml";
             if(m_CommandLine.WasPassed("file"))
                 file = m_CommandLine["file"];
 
             ProcessFile(file);
 
-            
-            if(m_Targets.ContainsKey(m_Target))
+            string target = (m_Target != null ? m_Target.ToLower() : m_Clean.ToLower());
+            bool clean = (m_Target == null);
+            if(clean && target == "all")
             {
-                string target = (m_Target != null ? m_Target : m_Clean);
-                if(target.ToLower() == "all")
+                Console.Write("WARNING: This operation will clean ALL project files for all targets, are you sure? (y/n):");
+                string ret = Console.ReadLine();
+                ret = ret.Trim();
+                if(ret == null || (ret.ToLower() != "y" && ret.ToLower() != "yes"))
+                    return;
+            }
+
+            foreach(ITarget targ in m_Targets.Values)
+            {
+                // Because VS2003 and VS2002 use the same file extensions, we pass over
+                // VS2003 when 'all' is selected, because VS2002 files can be converted
+                // to VS2003 files by VS2003
+                if(target == "all" && targ.Name == "vs2003")
+                    continue;
+
+                if(targ.Name.ToLower() == target || target == "all")
                 {
-                    if(m_Clean != null)
-                    {
-                        Console.Write("WARNING: This will erase all build files for all targets, are you sure? (y/n): ");
-                        while(true)
-                        {
-                            char c = (char)Console.Read();
-                            if(Char.ToLower(c) == 'y')
-                                break;
-                            else if(Char.ToLower(c) == 'n')
-                                return;
-                            else
-                                Console.Write("Please choose Y or N: ");
-                        }
-                    }
-                    foreach(ITarget target in m_Targets.Values)
-                    {
-                    }
-                }
-                else
-                {
-                    ITarget target = (ITarget)m_Targets[m_Target];
-                    target.Kernel = this;
-                    if(m_CommandLine.WasPassed("clean"))
-                        target.Clean();
+                    if(clean)
+                        targ.Clean(this);
                     else
-                        target.Write();
+                        targ.Write(this);
                 }
             }
 
