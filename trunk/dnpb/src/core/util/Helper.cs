@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -36,6 +36,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -70,7 +71,31 @@ namespace DNPreBuild.Core.Util
 
         #endregion
 
+        #region Private Methods
+
+        [DllImport("ole32.dll")]
+        private static extern int CLSIDFromProgID(string progid, out Guid clsid);
+
+        #endregion
+        
         #region Public Methods
+
+        public static string GetCLSID(string progid)
+        {
+            Guid clsid;
+
+            if(!progid.EndsWith(".1"))
+                progid += ".1";
+
+            int ret = CLSIDFromProgID(progid, out clsid);
+            string retStr = null;
+            if(ret > 0)
+                retStr = clsid.ToString();
+            else
+                Marshal.ThrowExceptionForHR(ret);
+
+            return retStr;
+        }
 
         public static object TranslateValue(Type t, string val)
         {

@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -44,6 +44,7 @@ using System.Xml.Schema;
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
+using DNPreBuild.Core.Parse;
 using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core 
@@ -209,6 +210,17 @@ namespace DNPreBuild.Core
             m_Log.Write("");
         }
 
+        private string WriteTempXml(string xml)
+        {
+            string tmpFile = Path.GetTempFileName();
+            StreamWriter writer = new StreamWriter(tmpFile, false);
+            writer.Write(xml);
+            writer.Flush();
+            writer.Close();
+
+            return tmpFile;
+        }
+
         private void ProcessFile(string file)
         {
             m_CWDStack.Push();
@@ -231,6 +243,11 @@ namespace DNPreBuild.Core
                 Helper.SetCurrentDir(Path.GetDirectoryName(path));
             
                 XmlTextReader reader = new XmlTextReader(path);
+                Preprocessor pre = new Preprocessor();
+                string xml = pre.Process(reader);
+                string tmpFile = WriteTempXml(xml);
+
+                reader = new XmlTextReader(tmpFile);
                 XmlValidatingReader valReader = new XmlValidatingReader(reader);
                 valReader.Schemas.Add(m_Schemas);
 
