@@ -93,39 +93,14 @@ namespace DNPreBuild.Core.Targets
 
         #region Private Methods
 
-        private string MakeRefPath(SolutionNode solution)
+        private string MakeRefPath(ProjectNode project)
         {
-            StringCollection sc = new StringCollection();
-            if(solution.Options != null)
-            {
-                foreach(string path in solution.Options.ReferencePaths)
-                {
-                    if(!sc.Contains(path))
-                        sc.Add(path);
-                }
-            }
-            
-            foreach(ConfigurationNode conf in solution.Configurations)
-            {
-                if(conf.Options != null)
-                {
-                    foreach(string path in conf.Options.ReferencePaths)
-                    {
-                        if(!sc.Contains(path))
-                            sc.Add(path);
-                    }
-                }
-            }
-
-            if(sc.Count < 1)
-                return "";
-
             string ret = "";
-            foreach(string path in sc)
+            foreach(ReferencePathNode node in project.ReferencePaths)
             {
                 try
                 {
-                    string fullPath = Helper.ResolvePath(path);
+                    string fullPath = Helper.ResolvePath(node.Path);
                     if(ret.Length < 1)
                         ret = fullPath;
                     else
@@ -133,7 +108,7 @@ namespace DNPreBuild.Core.Targets
                 }
                 catch(ArgumentException)
                 {
-                    m_Kernel.Log.Write(LogType.Warning, "Could not resolve reference path: {0}", path);
+                    m_Kernel.Log.Write(LogType.Warning, "Could not resolve reference path: {0}", node.Path);
                 }
             }
 
@@ -148,6 +123,9 @@ namespace DNPreBuild.Core.Targets
             ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
             string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
             StreamWriter ps = new StreamWriter(projectFile);
+
+            m_Kernel.CWDStack.Push();
+            Helper.SetCurrentDir(Path.GetDirectoryName(projectFile));
 
             using(ps)
             {
@@ -253,7 +231,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t<{0}>", toolInfo.XMLTag);
                 ps.WriteLine("\t\t<Build>");
 
-                ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(solution));
+                ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(project));
                 foreach(ConfigurationNode conf in solution.Configurations)
                 {
                     ps.WriteLine("\t\t\t\t<Config");
@@ -266,6 +244,8 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
                 ps.WriteLine("</VisualStudioProject>");
             }
+
+            m_Kernel.CWDStack.Pop();
         }
 
         private void WriteSolution(SolutionNode solution)
@@ -282,6 +262,9 @@ namespace DNPreBuild.Core.Targets
             m_Kernel.Log.Write("");
             string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
             StreamWriter ss = new StreamWriter(solutionFile);
+
+            m_Kernel.CWDStack.Push();
+            Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
             
             using(ss)
             {
@@ -351,6 +334,8 @@ namespace DNPreBuild.Core.Targets
 
                 ss.WriteLine("EndGlobal");
             }
+
+            m_Kernel.CWDStack.Pop();
         }
 
         private void CleanProject(ProjectNode project)

@@ -60,6 +60,7 @@ namespace DNPreBuild.Core.Nodes
         private Runtime m_Runtime = Runtime.Microsoft;
         private string m_StartupObject = "";
 
+        private ArrayList m_ReferencePaths = null;
         private ArrayList m_References = null;
         private FilesNode m_Files = null;
 
@@ -69,6 +70,7 @@ namespace DNPreBuild.Core.Nodes
 
         public ProjectNode()
         {
+            m_ReferencePaths = new ArrayList();
             m_References = new ArrayList();
         }
 
@@ -132,6 +134,14 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public ArrayList ReferencePaths
+        {
+            get
+            {
+                return m_ReferencePaths;
+            }
+        }
+
         public ArrayList References
         {
             get
@@ -179,7 +189,9 @@ namespace DNPreBuild.Core.Nodes
                 foreach(XmlNode child in node.ChildNodes)
                 {
                     IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                    if(dataNode is ReferenceNode)
+                    if(dataNode is ReferencePathNode)
+                        m_ReferencePaths.Add(dataNode);
+                    else if(dataNode is ReferenceNode)
                         m_References.Add(dataNode);
                     else if(dataNode is FilesNode)
                         m_Files = (FilesNode)dataNode;

@@ -108,16 +108,11 @@ namespace DNPreBuild.Core.Util
         {
             string tmp = NormalizePath(basePath, '/');
             string src = NormalizePath(relPath, '/');
-            string subTmp, prefix = "";
+            string prefix = "";
 
             while(true)
             {
-                if(src.Length > tmp.Length)
-                    subTmp = src.Substring(0, tmp.Length);
-                else
-                    subTmp = src;
-
-                if(tmp == subTmp)
+                if(String.Compare(tmp, 0, src, 0, tmp.Length) == 0)
                 {
                     int size = tmp.Length;
                     if(size == src.Length)
