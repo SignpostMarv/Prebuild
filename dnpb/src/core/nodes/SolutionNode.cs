@@ -44,7 +44,7 @@ namespace DNPreBuild.Core.Nodes
         private OptionsNode m_Options = null;
         private FilesNode m_Files = null;
         private ArrayList m_Configurations = null;
-        private ArrayList m_Projects = null;
+        private Hashtable m_Projects = null;
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace DNPreBuild.Core.Nodes
         public SolutionNode()
         {
             m_Configurations = new ArrayList();
-            m_Projects = new ArrayList();
+            m_Projects = new Hashtable();
         }
 
         #endregion
@@ -100,7 +100,15 @@ namespace DNPreBuild.Core.Nodes
             }
         }
         
-        public ArrayList Projects
+        public ICollection Projects
+        {
+            get
+            {
+                return m_Projects.Values;
+            }
+        }
+
+        public Hashtable ProjectsTable
         {
             get
             {
@@ -141,7 +149,7 @@ namespace DNPreBuild.Core.Nodes
                 else if(dataNode is ConfigurationNode)
                     m_Configurations.Add((ConfigurationNode)dataNode);
                 else if(dataNode is ProjectNode)
-                    m_Projects.Add(dataNode);
+                    m_Projects[((ProjectNode)dataNode).Name] = dataNode;
             }
 
             Root.Instance.CWDStack.Pop();

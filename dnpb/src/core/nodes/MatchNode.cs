@@ -38,7 +38,7 @@ namespace DNPreBuild.Core.Nodes
     {
         #region Fields
 
-        private string[] m_Files = null;
+        private StringCollection m_Files = null;
 
         #endregion
 
@@ -46,18 +46,49 @@ namespace DNPreBuild.Core.Nodes
 
         public MatchNode()
         {
-            m_Files = new string[0];
+            m_Files = new StringCollection();
         }
 
         #endregion
 
         #region Properties
 
-        public string[] Files
+        public StringCollection Files
         {
             get
             {
                 return m_Files;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        public void RecurseDirs(string path, string pattern, bool recurse)
+        {
+            try
+            {
+                string[] files = Directory.GetFiles(path, pattern);
+                if(files != null)
+                {
+                    m_Files.AddRange(files);
+                    if(recurse)
+                    {
+                        string[] dirs = Directory.GetDirectories(path);
+                        if(dirs != null && dirs.Length > 0)
+                        {
+                            foreach(string str in dirs)
+                                RecurseDirs(Helper.NormalizePath(str), pattern, recurse);
+                        }
+                    }
+                }
+                else
+                    return;
+            }
+            catch
+            {
+                return;
             }
         }
 
@@ -69,6 +100,7 @@ namespace DNPreBuild.Core.Nodes
         {
             string path = Helper.AttributeValue(node, "path", null);
             string pattern = Helper.AttributeValue(node, "pattern", null);
+            bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
 
             if(path == null)
                 throw new WarningException("Match must have a 'path' attribute");
@@ -79,10 +111,10 @@ namespace DNPreBuild.Core.Nodes
             path = Helper.NormalizePath(path);
             if(!Directory.Exists(path))
                 throw new WarningException("Match path does not exist: {0}", path);
-            
-            m_Files = Directory.GetFiles(path, pattern);
-            if(m_Files.Length < 1)
-                throw new WarningException("Math ({0}{1}) did not match any files", Helper.EndPath(path), pattern);
+
+            RecurseDirs(path, pattern, recurse);
+            if(m_Files.Count < 1)
+                throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
         }
 
         #endregion

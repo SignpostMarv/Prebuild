@@ -48,6 +48,7 @@ namespace DNPreBuild.Core.Nodes
         private string m_Path = "./";
         private string m_Language = "C#";
         private ProjectType m_Type = ProjectType.Exe;
+        private string m_StartupObject = "";
 
         private ArrayList m_References = null;
         private FilesNode m_Files = null;
@@ -97,6 +98,14 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public string StartupObject
+        {
+            get
+            {
+                return m_StartupObject;
+            }
+        }
+
         public ArrayList References
         {
             get
@@ -123,8 +132,8 @@ namespace DNPreBuild.Core.Nodes
             m_Path = Helper.AttributeValue(node, "path", m_Path);
             m_Language = Helper.AttributeValue(node, "language", m_Language);
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
+            m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 
-            
             m_Path = Helper.NormalizePath(m_Path);
             string tmpPath = m_Path;
             try
