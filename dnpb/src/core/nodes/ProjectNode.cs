@@ -23,6 +23,15 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
+#region CVS Information
+/*
+ * $Source$
+ * $Author$
+ * $Date$
+ * $Revision$
+ */
+#endregion
+
 using System;
 using System.Collections;
 using System.IO;
@@ -59,6 +68,7 @@ namespace DNPreBuild.Core.Nodes
         private ProjectType m_Type = ProjectType.Exe;
         private Runtime m_Runtime = Runtime.Microsoft;
         private string m_StartupObject = "";
+        private string m_RootNamespace = null;
 
         private Hashtable m_Configurations = null;
         private ArrayList m_ReferencePaths = null;
@@ -133,6 +143,14 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_StartupObject;
+            }
+        }
+
+        public string RootNamespace
+        {
+            get
+            {
+                return m_RootNamespace;
             }
         }
 
@@ -213,6 +231,10 @@ namespace DNPreBuild.Core.Nodes
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
             m_Runtime = (Runtime)Helper.EnumAttributeValue(node, "runtime", typeof(Runtime), m_Runtime);
             m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
+            m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
+            
+            if(m_RootNamespace == null || m_RootNamespace.Length < 1)
+                m_RootNamespace = m_Name;
 
             m_FullPath = m_Path;
             try
