@@ -166,7 +166,7 @@ namespace DNPreBuild.Core.Nodes
         public override void Parse(XmlNode node)
         {
             foreach(XmlNode child in node.ChildNodes)
-                SetOption(child.Name, child.InnerText);
+                SetOption(child.Name, Helper.ParseValue(child.InnerText));
         }
 
         public void CopyTo(OptionsNode opt)

@@ -13,6 +13,7 @@
 				<?endif ?>
 				<OptimizeCode>false</OptimizeCode>
 				<DebugInformation>true</DebugInformation>
+				<OutputPath>bin\Debug</OutputPath>
 			</Options>
 		</Configuration>
 		
@@ -25,6 +26,7 @@
 				<?endif ?>
 				<OptimizeCode>true</OptimizeCode>
 				<DebugInformation>false</DebugInformation>
+				<OutputPath>bin\Release</OutputPath>
 			</Options>
 		</Configuration>
 		

@@ -39,6 +39,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
+using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -67,7 +68,7 @@ namespace DNPreBuild.Core.Nodes
 
         public override void Parse(XmlNode node)
         {
-            m_Path = node.InnerText;
+            m_Path = Helper.ParseValue(node.InnerText);
             if(m_Path == null)
                 m_Path = "";
 
