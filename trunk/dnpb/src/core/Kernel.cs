@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -28,6 +30,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Schema;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
@@ -36,7 +39,7 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core 
 {
-    public sealed class Root
+    public sealed class Kernel
     {
         #region Inner Classes
 
@@ -50,12 +53,13 @@ namespace DNPreBuild.Core
 
         #region Fields
 
-        private static Root m_Instance = new Root();
+        private static Kernel m_Instance = new Kernel();
 
         private Version m_Version = null;
         private CommandLine m_CommandLine = null;
         private Log m_Log = null;
         private CurrentDirStack m_CWDStack = null;
+        private XmlSchemaCollection m_Schemas = null;
         
         private Hashtable m_Targets = null;
         private Hashtable m_Nodes = null;
@@ -68,13 +72,83 @@ namespace DNPreBuild.Core
 
         #region Constructors
 
-        private Root()
+        private Kernel()
         {
         }
 
         #endregion
 
+        #region Properties
+
+        public static Kernel Instance
+        {
+            get
+            {
+                return m_Instance;
+            }
+        }
+
+        public string Version
+        {
+            get
+            {
+                return String.Format("{0}.{1}.{2}", m_Version.Major, m_Version.Minor, m_Version.Build);
+            }
+        }
+
+        public CommandLine CommandLine
+        {
+            get
+            {
+                return m_CommandLine;
+            }
+        }
+
+        public Hashtable Targets
+        {
+            get
+            {
+                return m_Targets;
+            }
+        }
+
+        public Log Log
+        {
+            get
+            {
+                return m_Log;
+            }
+        }
+
+        public CurrentDirStack CWDStack
+        {
+            get
+            {
+                return m_CWDStack;
+            }
+        }
+
+        public ArrayList Solutions
+        {
+            get
+            {
+                return m_Solutions;
+            }
+        }
+
+        #endregion
+
         #region Private Methods
+
+        private void LoadSchema()
+        {
+            Assembly assembly = this.GetType().Assembly;
+            Stream stream = assembly.GetManifestResourceStream("DNPreBuild.data.dnpb-1.0.xsd");
+            XmlReader schema = new XmlTextReader(stream);
+            
+            m_Schemas = new XmlSchemaCollection();
+            m_Schemas.Add("http://dnpb.sourceforge.net/schemas/dnpb-1.0.xsd", schema);
+        }
 
         private void CacheVersion() 
         {
@@ -114,7 +188,7 @@ namespace DNPreBuild.Core
 
         private void LogBanner()
         {
-            m_Log.Write(".NET Pre-Build v" + m_Version.ToString());
+            m_Log.Write(".NET Pre-Build v" + this.Version);
             m_Log.Write("Copyright (c) 2004 Matthew Holmes");
             m_Log.Write("See 'dnpb /usage' for help");
             m_Log.Write("");
@@ -131,8 +205,22 @@ namespace DNPreBuild.Core
             m_CurrentFile = path;
             Environment.CurrentDirectory = Path.GetDirectoryName(path);
             
+            XmlTextReader reader = new XmlTextReader(file);
+            XmlValidatingReader valReader = new XmlValidatingReader(reader);
+            valReader.Schemas.Add(m_Schemas);
+
             XmlDocument doc = new XmlDocument();
-            doc.Load(path);
+            try
+            {                
+                doc.Load(valReader);
+            }
+            catch(XmlSchemaException xse)
+            {
+                m_Log.Write("XML validation error at line {0} in {1}:\n\n{2}",
+                    xse.LineNumber, path, xse.Message);
+                
+                return;
+            }
             
             foreach(XmlNode node in doc.DocumentElement.ChildNodes)
             {
@@ -164,7 +252,7 @@ namespace DNPreBuild.Core
                 Type type = ne.Type;
                 DataNodeAttribute dna = ne.Attribute;
                 
-                if(!dna.ValidParents.Contains(parentName))
+                if(dna.ValidParents.Count > 0 && !dna.ValidParents.Contains(parentName))
                     throw new XmlException("Invalid sub-node: " + node.Name);
 
                 Trace.WriteLine(String.Format("Creating new parser: {0}", type.FullName));
@@ -210,6 +298,8 @@ namespace DNPreBuild.Core
             
             m_Log = new Log(target, logFile);
             LogBanner();
+
+            LoadSchema();
             
             m_Targets = new Hashtable();
             CacheTargets(this.GetType().Assembly);
@@ -237,58 +327,6 @@ namespace DNPreBuild.Core
             m_Log.Flush();
         }
 
-        #endregion
-
-        #region Properties
-
-        public static Root Instance
-        {
-            get
-            {
-                return m_Instance;
-            }
-        }
-
-        public CommandLine CommandLine
-        {
-            get
-            {
-                return m_CommandLine;
-            }
-        }
-
-        public Hashtable Targets
-        {
-            get
-            {
-                return m_Targets;
-            }
-        }
-
-        public Log Log
-        {
-            get
-            {
-                return m_Log;
-            }
-        }
-
-        public CurrentDirStack CWDStack
-        {
-            get
-            {
-                return m_CWDStack;
-            }
-        }
-
-        public ArrayList Solutions
-        {
-            get
-            {
-                return m_Solutions;
-            }
-        }
-
-        #endregion
+        #endregion        
     }
 }
