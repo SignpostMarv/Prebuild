@@ -77,7 +77,7 @@ namespace DNPreBuild.Core.Nodes
 
         public override void Parse(XmlNode node)
         {
-            m_Path = node.InnerText;
+            m_Path = Helper.ParseValue(node.InnerText);
             if(m_Path == null)
                 m_Path = "";
 

@@ -3,6 +3,10 @@
 + = Addition
 ! = Bug Fix
 
+[ August 5, 2004 - 0.12.1 ]
+    + Added environment variable expansion for all values. Environment variables
+      should be listed in the form ${VAR}.
+
 [ July 30, 2004 - 0.12.0 ]
     + Added preprocessing via XML processing information tags. Available tags
       are: <?if <exp> ?>, <?elseif <exp> ?>, <?else ?> and <?endif ?>. The

@@ -47,6 +47,7 @@ namespace DNPreBuild.Core.Util
         #region Fields
 
         public static Stack m_DirStack = null;
+        public static Regex m_VarRegex = null;
 
         #endregion
 
@@ -55,6 +56,7 @@ namespace DNPreBuild.Core.Util
         static Helper()
         {
             m_DirStack = new Stack();
+            m_VarRegex = new Regex(@"\${(?<var>[\w|_]+)}");
         }
 
         #endregion
@@ -70,32 +72,8 @@ namespace DNPreBuild.Core.Util
         }
 
         #endregion
-
-        #region Private Methods
-
-        [DllImport("ole32.dll")]
-        private static extern int CLSIDFromProgID(string progid, out Guid clsid);
-
-        #endregion
         
         #region Public Methods
-
-        public static string GetCLSID(string progid)
-        {
-            Guid clsid;
-
-            if(!progid.EndsWith(".1"))
-                progid += ".1";
-
-            int ret = CLSIDFromProgID(progid, out clsid);
-            string retStr = null;
-            if(ret > 0)
-                retStr = clsid.ToString();
-            else
-                Marshal.ThrowExceptionForHR(ret);
-
-            return retStr;
-        }
 
         public static object TranslateValue(Type t, string val)
         {
@@ -257,12 +235,40 @@ namespace DNPreBuild.Core.Util
             return attrs[0];
         }
 
+        public static string ParseValue(string val)
+        {
+            if(val == null || val.Length < 1)
+                return val;
+
+            string tmp = val;
+            Match m = m_VarRegex.Match(val);
+            while(m.Success)
+            {
+                if(m.Groups["var"] == null)
+                    continue;
+
+                Capture c = m.Groups["var"].Captures[0];
+                if(c == null)
+                    continue;
+
+                string var = c.Value;
+                string envVal = Environment.GetEnvironmentVariable(var);
+                if(envVal == null)
+                    envVal = "";
+
+                tmp = tmp.Replace("${" + var + "}", envVal);
+                m = m.NextMatch();
+            }
+
+            return tmp;
+        }
+
         public static string AttributeValue(XmlNode node, string attr, string def)
         {
             if(node.Attributes[attr] == null)
                 return def;
 
-            return node.Attributes[attr].Value;
+            return ParseValue(node.Attributes[attr].Value);
         }
 
         public static object EnumAttributeValue(XmlNode node, string attr, Type enumType, object def)
