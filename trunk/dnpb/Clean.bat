@@ -1,1 +1,1 @@
-dnpb /clean all /pause
+dnpb /clean /removedir obj /pause

@@ -145,8 +145,9 @@ namespace DNPreBuild.Core.Nodes
             m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
                 Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
-            if(path == null)
-                throw new WarningException("Match must have a 'path' attribute");
+            if(path == null || path == string.Empty)
+				path = ".";//use current directory
+                //throw new WarningException("Match must have a 'path' attribute");
 
             if(pattern == null)
                 throw new WarningException("Match must have a 'pattern' attribute");

@@ -73,7 +73,7 @@
 			<Reference name="System.Runtime.Serialization.Formatters.Soap"/>
 			<Reference name="ICSharpCode.SharpZipLib"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -99,9 +99,10 @@
 			<Reference name="ode"/>  <!-- Assemblies that are located in the output directory to which the file is built can be referenced -->
 			<Reference name="RealmForge.Utility"/> <!-- When you reference the name of another project, then that project (and it's output) will be referenced instead of looking for a pre-built assembly-->
 			<Files>
+				<!-- path defaults to . or the directory that prebuild.exe resides in -->
 				<Match path="." pattern="*.cs" recurse="true"/>
-				<Match path="." pattern="*.bmp" recurse="true" buildAction="EmbeddedResource"/>
-				<Match path="." pattern="[^a]*\.(png|jpg)" useRegex="true" buildAction="EmbeddedResource"/>
+				<Match pattern="*.bmp" recurse="true" buildAction="EmbeddedResource"/>
+				<Match pattern="[^a]*\.(png|jpg)" useRegex="true" buildAction="EmbeddedResource"/>
 				
 				<!-- Uses a regex or regular expression to find all files that end with .png or .jpg but dont have the letter 'a' in their name and add them to the project as EmbeddedResource's.  Because recurse enabled (default is false), only the values in the files in that are directly in the project directory (not child directories) are checked.-->
 				<!--EmbeddedResource, Content, and Compile are valid buildAction's-->

@@ -37,7 +37,7 @@
 			<Reference name="System.XML" />
 			<Files>
 				<Match path="data" pattern="dnpb-1.3.xsd" buildAction="EmbeddedResource"/>
-				<Match path="." pattern="*.cs" recurse="true"/>				
+				<Match pattern="*.cs" recurse="true"/>				
 			</Files>
 		</Project>
 	</Solution>

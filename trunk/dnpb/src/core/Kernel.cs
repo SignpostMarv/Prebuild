@@ -65,6 +65,7 @@ namespace DNPreBuild.Core
 
         private static Kernel m_Instance = new Kernel();
 
+		private string tmpFile = null;
         private static string m_SchemaVersion = "1.3";
         private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
         private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
@@ -81,6 +82,7 @@ namespace DNPreBuild.Core
         ArrayList m_Solutions = null;        
         string m_Target = null;
         string m_Clean = null;
+		string m_RemoveDirectories = null;
         string m_CurrentFile = null;
 		bool m_PauseAfterFinish = false;
         StringCollection m_Refs = null;
@@ -161,6 +163,29 @@ namespace DNPreBuild.Core
 
         #region Private Methods
 
+		private void RemoveDirectories(string rootDir, string dirName) {
+			foreach(string dir in Directory.GetDirectories(rootDir)) {
+				string simpleName = Path.GetFileName(dir);
+
+				//if(simpleName == "src") continue;
+				if(simpleName == dirName) {//delete if the name matches 
+					string fullDirPath = Path.GetFullPath(dir);
+					Directory.Delete(fullDirPath,true);
+				} else
+					RemoveDirectories(dir,dirName);//recurse
+			}
+		}
+
+		private void RemoveDirectoryMatches(string rootDir, string dirPattern) {
+			foreach(string dir in Directory.GetDirectories(rootDir)) {
+				foreach(string match in Directory.GetDirectories(dir)) {//delete all child directories that match
+					Directory.Delete(Path.GetFullPath(match),true);
+				}
+				//recure through the rest checking for nested matches to delete
+				RemoveDirectoryMatches(dir,dirPattern);
+			}
+		}
+
         private void LoadSchema()
         {
             Assembly assembly = this.GetType().Assembly;
@@ -215,17 +240,27 @@ namespace DNPreBuild.Core
             m_Log.Write();
         }
 
-        private string WriteTempXml(string xml)
+		[Conditional("DEBUG")]
+        private void WriteTempXml(string xml)
         {
-            string tmpFile = Path.GetTempFileName();
+            tmpFile = Path.GetTempFileName();
             tmpFile = Path.GetFileName(tmpFile);
             StreamWriter writer = new StreamWriter(tmpFile, false);
             writer.Write(xml);
             writer.Flush();
             writer.Close();
-
-            return tmpFile;
         }
+
+		[Conditional("DEBUG")]
+		private void DeleteTempXml() {
+			if(tmpFile != null && File.Exists(tmpFile) ) {
+				try{
+					File.Delete(tmpFile);
+				} catch (Exception e) {
+					Console.WriteLine("Could not delete temporary xml file {0}",tmpFile);
+				}
+			}
+		}
 
         private void ProcessFile(string file)
         {
@@ -251,7 +286,8 @@ namespace DNPreBuild.Core
                 XmlTextReader reader = new XmlTextReader(path);
                 Core.Parse.Preprocessor pre = new Core.Parse.Preprocessor();
                 string xml = pre.Process(reader);
-                string tmpFile = WriteTempXml(xml);
+                WriteTempXml(xml);  //only compiled for DEBUG builds
+
                 if(m_CommandLine.WasPassed("ppo"))
                 {
                     string ppoFile = m_CommandLine["ppo"];
@@ -267,7 +303,7 @@ namespace DNPreBuild.Core
                         Console.WriteLine("Could not write PPO file '{0}': {1}", ppoFile, ex.Message);
                     }
 
-                    File.Delete(tmpFile);
+                    DeleteTempXml();
                     return;
                 }
 
@@ -290,7 +326,8 @@ namespace DNPreBuild.Core
                 if(version != m_SchemaVersion)
                     throw new XmlException(String.Format("Invalid schema version referenced {0}, requires {1}", version, m_SchemaVersion));
 
-                File.Delete(tmpFile);
+				DeleteTempXml();
+
                 foreach(XmlNode node in doc.DocumentElement.ChildNodes)
                 {
                     IDataNode dataNode = ParseNode(node, null);
@@ -408,6 +445,7 @@ namespace DNPreBuild.Core
 
             m_Target = m_CommandLine["target"];
 			m_Clean = m_CommandLine["clean"];
+			m_RemoveDirectories = m_CommandLine["removedir"];
 
 			m_PauseAfterFinish = m_CommandLine.WasPassed("pause");
 
@@ -419,6 +457,17 @@ namespace DNPreBuild.Core
 
         public void Process()
         {
+			bool perfomedOtherTask = false;
+			if(m_RemoveDirectories != null && m_RemoveDirectories != string.Empty) {
+				try{
+					RemoveDirectories(".",m_RemoveDirectories);
+				} catch(Exception e) {
+					m_Log.Write("Failed to remove directories named {0}",m_RemoveDirectories);
+					m_Log.WriteException(LogType.Error,e);
+				}
+				perfomedOtherTask = true;
+			}
+
             if(m_Target != null && m_Clean != null)
             {
                 m_Log.Write(LogType.Error, "The options /target and /clean cannot be passed together");
@@ -426,6 +475,8 @@ namespace DNPreBuild.Core
             }
             else if(m_Target == null && m_Clean == null)
             {
+				if(perfomedOtherTask) //finished
+					return;
                 m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a .NET pre-build file");
                 return;
             }
@@ -450,6 +501,7 @@ namespace DNPreBuild.Core
                 if((ret.ToLower() != "y" && ret.ToLower() != "yes"))
                     return;
             }
+
 
             foreach(ITarget targ in m_Targets.Values)
             {
