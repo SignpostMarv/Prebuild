@@ -35,13 +35,13 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Solution", "DNPreBuild")]
+    [DataNode("Solution")]
     public class SolutionNode : DataNode
     {
         #region Fields
         
         private string m_Name = "unknown";
-        private string m_Path = "./";
+        private string m_Path = "";
         
         private OptionsNode m_Options = null;
         private FilesNode m_Files = null;
@@ -126,12 +126,11 @@ namespace DNPreBuild.Core.Nodes
         {
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             m_Path = Helper.AttributeValue(node, "path", m_Path);
-            
-            m_Path = Helper.NormalizePath(m_Path);
+
             string tmpPath = m_Path;
             try
-            {        
-                tmpPath = System.IO.Path.GetFullPath(tmpPath);
+            {
+                tmpPath = Helper.ResolvePath(tmpPath);
             }
             catch
             {

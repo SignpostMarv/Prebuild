@@ -251,11 +251,6 @@ namespace DNPreBuild.Core
                 NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
                 Type type = ne.Type;
                 DataNodeAttribute dna = ne.Attribute;
-                
-                if(dna.ValidParents.Count > 0 && !dna.ValidParents.Contains(parentName))
-                    throw new XmlException("Invalid sub-node: " + node.Name);
-
-                Trace.WriteLine(String.Format("Creating new parser: {0}", type.FullName));
 
                 dataNode = (IDataNode)type.Assembly.CreateInstance(type.FullName);
                 if(dataNode == null)

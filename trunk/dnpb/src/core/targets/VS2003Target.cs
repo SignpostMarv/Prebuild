@@ -200,6 +200,25 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
                 ps.WriteLine("</VisualStudioProject>");
             }
+
+            ps = new StreamWriter(projectFile + ".user");
+            using(ps)
+            {
+                ps.WriteLine("<VisualStudioProject>");
+                ps.WriteLine("\t<{0}>", toolInfo.XMLTag);
+                ps.WriteLine("\t\t<Build>");
+
+                foreach(ConfigurationNode conf in solution.Configurations)
+                {
+                    ps.WriteLine("\t\t\t<Config");
+                    ps.WriteLine("\t\t\t\tName = \"{0}\"", conf.Name);
+                    ps.WriteLine("\t\t\t/>");
+                }
+
+                ps.WriteLine("\t\t</Build>");
+                ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
+                ps.WriteLine("</VisualStudioProject>");
+            }
         }
 
         private void WriteSolution(SolutionNode solution)

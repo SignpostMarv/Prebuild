@@ -35,7 +35,7 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Match", "Files")]
+    [DataNode("Match")]
     public class MatchNode : DataNode
     {
         #region Fields

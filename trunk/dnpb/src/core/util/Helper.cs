@@ -61,15 +61,6 @@ namespace DNPreBuild.Core.Util
         #endregion
 
         #region Public Methods
-        
-        public static string Indent(int tabs, string fmt, params object[] args)
-        {
-            string tab = "";
-            for(int i = 0; i < tabs; i++)
-                tab += "\t";
-
-            return String.Format(tab + fmt, args);
-        }
 
         public static object TranslateValue(Type t, string val)
         {
@@ -92,8 +83,20 @@ namespace DNPreBuild.Core.Util
             }
         }
 
+        public static string ResolvePath(string path)
+        {
+            string tmpPath = NormalizePath(path);
+            if(tmpPath.Length < 1)
+                tmpPath = ".";
+            
+            return Path.GetFullPath(tmpPath);
+        }
+
         public static string NormalizePath(string path)
         {
+            if(path == null)
+                return "";
+
             string tmpPath = path.Replace('\\', '/');
             tmpPath = tmpPath.Replace('/', Path.DirectorySeparatorChar);
             return tmpPath;

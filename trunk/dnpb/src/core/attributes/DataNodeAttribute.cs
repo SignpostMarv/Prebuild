@@ -33,22 +33,14 @@ namespace DNPreBuild.Core.Attributes
         #region Fields
 
         private string m_Name = "unknown";
-        private StringCollection m_ValidParents = null;
 
         #endregion
 
         #region Constructors
 
-		public DataNodeAttribute(string name, params object[] args)
+		public DataNodeAttribute(string name)
 		{
             m_Name = name;
-            m_ValidParents = new StringCollection();
-
-            foreach(object o in args)
-            {
-                if(o is string)
-                    m_ValidParents.Add((string)o);
-            }
 		}
 
         #endregion
@@ -60,14 +52,6 @@ namespace DNPreBuild.Core.Attributes
             get
             {
                 return m_Name;
-            }
-        }
-
-        public StringCollection ValidParents
-        {
-            get
-            {
-                return m_ValidParents;
             }
         }
 
