@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<DNPreBuild version="1.0">
+	<Solution name="dnpb">
+		<Files>
+			<File>prebuild.xml</File>
+			<File>doc\dnpb.xsd</File>
+		</Files>
+		
+		<Configuration name="Debug">
+			<Options>
+				<CompilerDefines>DEBUG;TRACE</CompilerDefines>
+				<OptimizeCode>false</OptimizeCode>
+				<DebugInformation>true</DebugInformation>
+			</Options>
+		</Configuration>
+		
+		<Configuration name="Release">
+			<Options>
+				<CompilerDefines>TRACE</CompilerDefines>
+				<OptimizeCode>true</OptimizeCode>
+				<DebugInformation>false</DebugInformation>
+			</Options>
+		</Configuration>
+		
+		<Project
+			name="dnpb"
+			path="src\"
+			language="C#"
+		>
+			<Reference name="System" />
+			<Reference name="System.XML" />
+			
+			<Files>
+				<Match
+					path="src\"
+					pattern="*.cs"
+					recurse="true"
+				/>
+			</Files>
+		</Project>
+	</Solution>
+</DNPreBuild>
