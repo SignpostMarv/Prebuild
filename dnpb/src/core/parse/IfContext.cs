@@ -34,36 +34,91 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 
-namespace DNPreBuild.Core.Attributes
+namespace DNPreBuild.Core.Parse
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public sealed class TargetAttribute : Attribute
+    public enum IfState
     {
-        #region Fields
+        None,
+        If,
+        ElseIf,
+        Else
+    }
 
-        private string m_Name;
+	/// <summary>
+	/// Summary description for IfContext.
+	/// </summary>
+	// Inspired by the equivalent WiX class (see www.sourceforge.net/projects/wix/)
+	public class IfContext
+	{
+        #region Properties
+
+        bool m_Active = false;
+        bool m_Keep = false;
+        bool m_EverKept = false;
+        IfState m_State = IfState.None;
 
         #endregion
 
         #region Constructors
 
-        public TargetAttribute(string name)
-        {
-            m_Name = name;
-        }
+		public IfContext(bool active, bool keep, IfState state)
+		{
+            m_Active = active;
+            m_Keep = keep;
+            m_EverKept = keep;
+            m_State = state;
+		}
 
         #endregion
 
         #region Properties
 
-        public string Name
+        public bool Active
         {
             get
             {
-                return m_Name;
+                return m_Active;
+            }
+            set
+            {
+                m_Active = value;
+            }
+        }
+
+        public bool Keep
+        {
+            get
+            {
+                return m_Keep;
+            }
+            set
+            {
+                m_Keep = value;
+                if(m_Keep)
+                    m_EverKept = true;
+            }
+        }
+
+        public bool EverKept
+        {
+            get
+            {
+                return m_EverKept;
+            }
+        }
+
+        public IfState State
+        {
+            get
+            {
+                return m_State;
+            }
+            set
+            {
+                m_State = value;
             }
         }
 
         #endregion
-    }
+	}
 }

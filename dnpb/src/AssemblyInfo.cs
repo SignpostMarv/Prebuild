@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -68,7 +68,7 @@ using System.Security.Permissions;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.11.4")]
+[assembly: AssemblyVersion("0.12.0")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

@@ -3,6 +3,14 @@
 + = Addition
 ! = Bug Fix
 
+[ July 30, 2004 - 0.12.0 ]
+    + Added preprocessing via XML processing information tags. Available tags
+      are: <?if <exp> ?>, <?elseif <exp> ?>, <?else ?> and <?endif ?>. The
+      current expression parser is very basic, but will be replaced with a more
+      capable parser over time. Current operators available are: =, !=, <, >,
+      <=, >=. Current test variables available: OS, RuntimeVersion, RuntimeMajor,
+      RuntimeMinor, RuntimeRevision.
+
 [ July 27, 2004 - 0.11.4 ]
     + Added 'useRegex' attribute to the Match tag. Matches can now use regular
       expressions to match filenames.

@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -38,9 +38,9 @@ using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
 
+#if (DEBUG && _DEBUG_TARGET)
 namespace DNPreBuild.Core.Targets
 {
-#if DEBUG
 	[Target("debug")]
     public class DebugTarget : ITarget
 	{
@@ -96,5 +96,5 @@ namespace DNPreBuild.Core.Targets
 
         #endregion
     }
-#endif
 }
+#endif
