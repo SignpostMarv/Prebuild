@@ -42,71 +42,73 @@ using DNPreBuild.Core.Util;
 namespace DNPreBuild.Core.Nodes
 {
 	[DataNode("Reference")]
-    public class ReferenceNode : DataNode
+	public class ReferenceNode : DataNode
 	{
-        #region Fields
+		#region Fields
 
-        private string m_Name = "unknown";
-        private string m_Path = null;
-        private string m_LocalCopy = null;
-        private string m_Version = null;
+		private string m_Name = "unknown";
+		private string m_Path = null;
+		private string m_LocalCopy = null;
+		private string m_Version = null;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Name
-        {
-            get
-            {
-                return m_Name;
-            }
-        }
+		public string Name
+		{
+			get
+			{
+				return m_Name;
+			}
+		}
 
-        public string Path
-        {
-            get
-            {
-                return m_Path;
-            }
-        }
+		public string Path
+		{
+			get
+			{
+				return m_Path;
+			}
+		}
 
-		public bool LocalCopySpecified {
-			get {
+		public bool LocalCopySpecified 
+		{
+			get 
+			{
 				return ( m_LocalCopy != null && m_LocalCopy != string.Empty);
 			}
 		}
 
-        public bool LocalCopy
-        {
-            get
-            {
-                if( m_LocalCopy == null || m_LocalCopy == string.Empty)
+		public bool LocalCopy
+		{
+			get
+			{
+				if( m_LocalCopy == null || m_LocalCopy == string.Empty)
 					return true;
 				return bool.Parse(m_LocalCopy);
-            }
-        }
+			}
+		}
 
-        public string Version
-        {
-            get
-            {
-                return m_Version;
-            }
-        }
+		public string Version
+		{
+			get
+			{
+				return m_Version;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            m_Name = Helper.AttributeValue(node, "name", m_Name);
-            m_Path = Helper.AttributeValue(node, "path", m_Path);
-            m_LocalCopy = Helper.AttributeValue(node, "localCopy", m_LocalCopy);
-            m_Version = Helper.AttributeValue(node, "version", m_Version);
-        }
+		public override void Parse(XmlNode node)
+		{
+			m_Name = Helper.AttributeValue(node, "name", m_Name);
+			m_Path = Helper.AttributeValue(node, "path", m_Path);
+			m_LocalCopy = Helper.AttributeValue(node, "localCopy", m_LocalCopy);
+			m_Version = Helper.AttributeValue(node, "version", m_Version);
+		}
 
-        #endregion
+		#endregion
 	}
 }

@@ -43,55 +43,55 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Process")]
+	[DataNode("Process")]
 	public class ProcessNode : DataNode
 	{
-        #region Fields
+		#region Fields
 
-        private string m_Path = null;
-        private bool m_IsValid = true;
+		private string m_Path = null;
+		private bool m_IsValid = true;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Path
-        {
-            get
-            {
-                return m_Path;
-            }
-        }
+		public string Path
+		{
+			get
+			{
+				return m_Path;
+			}
+		}
 
-        public bool IsValid
-        {
-            get
-            {
-                return m_IsValid;
-            }
-        }
+		public bool IsValid
+		{
+			get
+			{
+				return m_IsValid;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            m_Path = Helper.ParseValue(node.InnerText);
-            if(m_Path == null)
-                m_Path = "";
+		public override void Parse(XmlNode node)
+		{
+			m_Path = Helper.InterpolateForEnvironmentVariables(node.InnerText);
+			if(m_Path == null)
+				m_Path = "";
 
-            try
-            {
-                m_Path = Helper.ResolvePath(m_Path);
-            }
-            catch(ArgumentException)
-            {
-                Kernel.Instance.Log.Write(LogType.Warning, "Could not find prebuild file for processing: {0}", m_Path);
-                m_IsValid = false;
-            }
-        }
+			try
+			{
+				m_Path = Helper.ResolvePath(m_Path);
+			}
+			catch(ArgumentException)
+			{
+				Kernel.Instance.Log.Write(LogType.Warning, "Could not find prebuild file for processing: {0}", m_Path);
+				m_IsValid = false;
+			}
+		}
 
-        #endregion
+		#endregion
 	}
 }

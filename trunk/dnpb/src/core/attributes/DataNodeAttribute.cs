@@ -37,34 +37,34 @@ using System.Collections.Specialized;
 
 namespace DNPreBuild.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
 	public sealed class DataNodeAttribute : Attribute
 	{
-        #region Fields
+		#region Fields
 
-        private string m_Name = "unknown";
+		private string m_Name = "unknown";
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
 		public DataNodeAttribute(string name)
 		{
-            m_Name = name;
+			m_Name = name;
 		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Name
-        {
-            get
-            {
-                return m_Name;
-            }
-        }
+		public string Name
+		{
+			get
+			{
+				return m_Name;
+			}
+		}
 
-        #endregion
+		#endregion
 	}
 }

@@ -36,34 +36,34 @@ using System;
 
 namespace DNPreBuild.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public sealed class TargetAttribute : Attribute
-    {
-        #region Fields
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+	public sealed class TargetAttribute : Attribute
+	{
+		#region Fields
 
-        private string m_Name;
+		private string m_Name;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public TargetAttribute(string name)
-        {
-            m_Name = name;
-        }
+		public TargetAttribute(string name)
+		{
+			m_Name = name;
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Name
-        {
-            get
-            {
-                return m_Name;
-            }
-        }
+		public string Name
+		{
+			get
+			{
+				return m_Name;
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

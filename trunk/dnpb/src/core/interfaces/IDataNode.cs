@@ -37,9 +37,9 @@ using System.Xml;
 
 namespace DNPreBuild.Core.Interfaces 
 {
-    public interface IDataNode 
-    {
-        IDataNode Parent { get; set; }        
-        void Parse(XmlNode node);
+	public interface IDataNode 
+	{
+		IDataNode Parent { get; set; }        
+		void Parse(XmlNode node);
 	}
 }

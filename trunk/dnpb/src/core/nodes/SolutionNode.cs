@@ -44,149 +44,150 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Solution")]
-    public class SolutionNode : DataNode
-    {
-        #region Fields
+	[DataNode("Solution")]
+	public class SolutionNode : DataNode
+	{
+		#region Fields
         
-        private string m_Name = "unknown";
-        private string m_Path = "";
-        private string m_FullPath = "";
+		private string m_Name = "unknown";
+		private string m_Path = "";
+		private string m_FullPath = "";
         
-        private OptionsNode m_Options = null;
-        private FilesNode m_Files = null;
-        private Hashtable m_Configurations = null;
-        private Hashtable m_Projects = null;
+		private OptionsNode m_Options = null;
+		private FilesNode m_Files = null;
+		private Hashtable m_Configurations = null;
+		private Hashtable m_Projects = null;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public SolutionNode()
-        {
-            m_Configurations = new Hashtable();
-            m_Projects = new Hashtable();
-        }
+		public SolutionNode()
+		{
+			m_Configurations = new Hashtable();
+			m_Projects = new Hashtable();
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string Name 
-        {
-            get 
-            {
-                return m_Name;
-            }
-        }
+		public string Name 
+		{
+			get 
+			{
+				return m_Name;
+			}
+		}
 
-        public string Path 
-        {
-            get 
-            {
-                return m_Path;
-            }
-        }
 
-        public string FullPath
-        {
-            get
-            {
-                return m_FullPath;
-            }
-        }
+		public string Path 
+		{
+			get 
+			{
+				return m_Path;
+			}
+		}
 
-        public OptionsNode Options
-        {
-            get
-            {
-                return m_Options;
-            }
-        }
+		public string FullPath
+		{
+			get
+			{
+				return m_FullPath;
+			}
+		}
 
-        public FilesNode Files
-        {
-            get
-            {
-                return m_Files;
-            }
-        }
+		public OptionsNode Options
+		{
+			get
+			{
+				return m_Options;
+			}
+		}
 
-        public ICollection Configurations
-        {
-            get
-            {
-                return m_Configurations.Values;
-            }
-        }
+		public FilesNode Files
+		{
+			get
+			{
+				return m_Files;
+			}
+		}
 
-        public Hashtable ConfigurationsTable
-        {
-            get
-            {
-                return m_Configurations;
-            }
-        }
+		public ICollection Configurations
+		{
+			get
+			{
+				return m_Configurations.Values;
+			}
+		}
+
+		public Hashtable ConfigurationsTable
+		{
+			get
+			{
+				return m_Configurations;
+			}
+		}
         
-        public ICollection Projects
-        {
-            get
-            {
-                return m_Projects.Values;
-            }
-        }
+		public ICollection Projects
+		{
+			get
+			{
+				return m_Projects.Values;
+			}
+		}
 
-        public Hashtable ProjectsTable
-        {
-            get
-            {
-                return m_Projects;
-            }
-        }
+		public Hashtable ProjectsTable
+		{
+			get
+			{
+				return m_Projects;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            m_Name = Helper.AttributeValue(node, "name", m_Name);
-            m_Path = Helper.AttributeValue(node, "path", m_Path);
+		public override void Parse(XmlNode node)
+		{
+			m_Name = Helper.AttributeValue(node, "name", m_Name);
+			m_Path = Helper.AttributeValue(node, "path", m_Path);
 
-            m_FullPath = m_Path;
-            try
-            {
-                m_FullPath = Helper.ResolvePath(m_FullPath);
-            }
-            catch
-            {
-                throw new WarningException("Could not resolve solution path: {0}", m_Path);
-            }
+			m_FullPath = m_Path;
+			try
+			{
+				m_FullPath = Helper.ResolvePath(m_FullPath);
+			}
+			catch
+			{
+				throw new WarningException("Could not resolve solution path: {0}", m_Path);
+			}
 
-            Kernel.Instance.CWDStack.Push();
-            try
-            {
-                Helper.SetCurrentDir(m_FullPath);
+			Kernel.Instance.CWDStack.Push();
+			try
+			{
+				Helper.SetCurrentDir(m_FullPath);
 
-                foreach(XmlNode child in node.ChildNodes)
-                {
-                    IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                    if(dataNode is OptionsNode)
-                        m_Options = (OptionsNode)dataNode;
-                    else if(dataNode is FilesNode)
-                        m_Files = (FilesNode)dataNode;
-                    else if(dataNode is ConfigurationNode)
-                        m_Configurations[((ConfigurationNode)dataNode).Name] = dataNode;
-                    else if(dataNode is ProjectNode)
-                        m_Projects[((ProjectNode)dataNode).Name] = dataNode;
-                }
-            }
-            finally
-            {
-                Kernel.Instance.CWDStack.Pop();
-            }
-        }
+				foreach(XmlNode child in node.ChildNodes)
+				{
+					IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+					if(dataNode is OptionsNode)
+						m_Options = (OptionsNode)dataNode;
+					else if(dataNode is FilesNode)
+						m_Files = (FilesNode)dataNode;
+					else if(dataNode is ConfigurationNode)
+						m_Configurations[((ConfigurationNode)dataNode).Name] = dataNode;
+					else if(dataNode is ProjectNode)
+						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
+				}
+			}
+			finally
+			{
+				Kernel.Instance.CWDStack.Pop();
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

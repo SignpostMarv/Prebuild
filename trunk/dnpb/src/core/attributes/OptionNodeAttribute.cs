@@ -36,34 +36,34 @@ using System;
 
 namespace DNPreBuild.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Field)]
+	[AttributeUsage(AttributeTargets.Field)]
 	public sealed class OptionNodeAttribute : Attribute
 	{
-        #region Fields
+		#region Fields
 
-        private string m_NodeName;
+		private string m_NodeName;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public OptionNodeAttribute(string nodeName)
+		public OptionNodeAttribute(string nodeName)
 		{
-            m_NodeName = nodeName;
+			m_NodeName = nodeName;
 		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public string NodeName
-        {
-            get
-            {
-                return m_NodeName;
-            }
-        }
+		public string NodeName
+		{
+			get
+			{
+				return m_NodeName;
+			}
+		}
 
-        #endregion
+		#endregion
 	}
 }

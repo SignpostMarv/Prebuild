@@ -44,135 +44,135 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Match")]
-    public class MatchNode : DataNode
-    {
-        #region Fields
+	[DataNode("Match")]
+	public class MatchNode : DataNode
+	{
+		#region Fields
 
-        private StringCollection m_Files = null;
-        private Regex m_Regex = null;
-        private BuildAction m_BuildAction = BuildAction.Compile;
+		private StringCollection m_Files = null;
+		private Regex m_Regex = null;
+		private BuildAction m_BuildAction = BuildAction.Compile;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public MatchNode()
-        {
-            m_Files = new StringCollection();
-        }
+		public MatchNode()
+		{
+			m_Files = new StringCollection();
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public StringCollection Files
-        {
-            get
-            {
-                return m_Files;
-            }
-        }
+		public StringCollection Files
+		{
+			get
+			{
+				return m_Files;
+			}
+		}
 
-        public BuildAction BuildAction
-        {
-            get
-            {
-                return m_BuildAction;
-            }
-        }
+		public BuildAction BuildAction
+		{
+			get
+			{
+				return m_BuildAction;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Private Methods
+		#region Private Methods
 
-        public void RecurseDirs(string path, string pattern, bool recurse, bool useRegex)
-        {
-            try
-            {
-                string[] files;
+		public void RecurseDirs(string path, string pattern, bool recurse, bool useRegex)
+		{
+			try
+			{
+				string[] files;
 
-                if(!useRegex)
-                {
-                    files = Directory.GetFiles(path, pattern);
-                    if(files != null)
-                        m_Files.AddRange(files);
-                    else
-                        return;
-                }
-                else
-                {
-                    Match match;
-                    files = Directory.GetFiles(path);
-                    foreach(string file in files)
-                    {
-                        match = m_Regex.Match(file);
-                        if(match.Success)
-                            m_Files.Add(file);
-                    }
-                }
+				if(!useRegex)
+				{
+					files = Directory.GetFiles(path, pattern);
+					if(files != null)
+						m_Files.AddRange(files);
+					else
+						return;
+				}
+				else
+				{
+					Match match;
+					files = Directory.GetFiles(path);
+					foreach(string file in files)
+					{
+						match = m_Regex.Match(file);
+						if(match.Success)
+							m_Files.Add(file);
+					}
+				}
                 
-                if(recurse)
-                {
-                    string[] dirs = Directory.GetDirectories(path);
-                    if(dirs != null && dirs.Length > 0)
-                    {
-                        foreach(string str in dirs)
-                            RecurseDirs(Helper.NormalizePath(str), pattern, recurse, useRegex);
-                    }
-                }
-            }
-            catch(DirectoryNotFoundException)
-            {
-                return;
-            }
-            catch(ArgumentException)
-            {
-                return;
-            }
-        }
+				if(recurse)
+				{
+					string[] dirs = Directory.GetDirectories(path);
+					if(dirs != null && dirs.Length > 0)
+					{
+						foreach(string str in dirs)
+							RecurseDirs(Helper.NormalizePath(str), pattern, recurse, useRegex);
+					}
+				}
+			}
+			catch(DirectoryNotFoundException)
+			{
+				return;
+			}
+			catch(ArgumentException)
+			{
+				return;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public override void Parse(XmlNode node)
-        {
-            string path = Helper.AttributeValue(node, "path", ".");
-            string pattern = Helper.AttributeValue(node, "pattern", "*");
-            bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
-            bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
-            m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
-                Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+		public override void Parse(XmlNode node)
+		{
+			string path = Helper.AttributeValue(node, "path", ".");
+			string pattern = Helper.AttributeValue(node, "pattern", "*");
+			bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
+			bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
+			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
+				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
-            if(path == null || path == string.Empty)
+			if(path == null || path == string.Empty)
 				path = ".";//use current directory
-                //throw new WarningException("Match must have a 'path' attribute");
+			//throw new WarningException("Match must have a 'path' attribute");
 
-            if(pattern == null)
-                throw new WarningException("Match must have a 'pattern' attribute");
+			if(pattern == null)
+				throw new WarningException("Match must have a 'pattern' attribute");
 
-            path = Helper.NormalizePath(path);
-            if(!Directory.Exists(path))
-                throw new WarningException("Match path does not exist: {0}", path);
+			path = Helper.NormalizePath(path);
+			if(!Directory.Exists(path))
+				throw new WarningException("Match path does not exist: {0}", path);
 
-            try
-            {
-                if(useRegex)
-                    m_Regex = new Regex(pattern);
-            }
-            catch(ArgumentException ex)
-            {
-                throw new WarningException("Could not compile regex pattern: {0}", ex.Message);
-            }
+			try
+			{
+				if(useRegex)
+					m_Regex = new Regex(pattern);
+			}
+			catch(ArgumentException ex)
+			{
+				throw new WarningException("Could not compile regex pattern: {0}", ex.Message);
+			}
 
-            RecurseDirs(path, pattern, recurse, useRegex);
-            if(m_Files.Count < 1)
-                throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
+			RecurseDirs(path, pattern, recurse, useRegex);
+			if(m_Files.Count < 1)
+				throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
 
-            m_Regex = null;
-        }
+			m_Regex = null;
+		}
 
-        #endregion
+		#endregion
 	}
 }

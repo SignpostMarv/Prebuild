@@ -39,108 +39,108 @@ using System.Diagnostics;
 
 namespace DNPreBuild.Core.Util
 {    
-    /// <summary>
+	/// <summary>
 	/// The CommandLine class parses and interprets the command-line arguments passed to
 	/// dnpb.
 	/// </summary>
-    public class CommandLine : IEnumerable 
-    {
-        #region Fields
+	public class CommandLine : IEnumerable 
+	{
+		#region Fields
 
-        // The raw OS arguments
-        private string[] m_RawArgs = null;
+		// The raw OS arguments
+		private string[] m_RawArgs = null;
 
-        // Command-line argument storage
-        private Hashtable m_Arguments = null;
+		// Command-line argument storage
+		private Hashtable m_Arguments = null;
         
-        #endregion
+		#endregion
         
-        #region Constructors
+		#region Constructors
         
-        /// <summary>
-        /// Create a new CommandLine instance and set some internal variables.
-        /// </summary>
-        public CommandLine(string[] args) 
-        {
-            m_RawArgs = args;
-            m_Arguments = new Hashtable();
+		/// <summary>
+		/// Create a new CommandLine instance and set some internal variables.
+		/// </summary>
+		public CommandLine(string[] args) 
+		{
+			m_RawArgs = args;
+			m_Arguments = new Hashtable();
             
-            Parse();
+			Parse();
 		}
 
-        #endregion
+		#endregion
 
-        #region Private Methods
+		#region Private Methods
 
-        private void Parse() 
-        {
-            if(m_RawArgs.Length < 1)
-                return;
+		private void Parse() 
+		{
+			if(m_RawArgs.Length < 1)
+				return;
 
-            int idx = 0;
-            string arg = null, lastArg = null;
+			int idx = 0;
+			string arg = null, lastArg = null;
 
-            while(idx <m_RawArgs.Length) 
-            {
-                arg = m_RawArgs[idx];
+			while(idx <m_RawArgs.Length) 
+			{
+				arg = m_RawArgs[idx];
 
-                if(arg.Length > 2 && arg[0] == '/') 
-                {
-                    arg = arg.Substring(1);
-                    lastArg = arg;
-                    m_Arguments[arg] = "";
-                } 
-                else 
-                {
-                    if(lastArg != null)
-                    {
-                        m_Arguments[lastArg] = arg;
-                        lastArg = null;
-                    }
-                }
+				if(arg.Length > 2 && arg[0] == '/') 
+				{
+					arg = arg.Substring(1);
+					lastArg = arg;
+					m_Arguments[arg] = "";
+				} 
+				else 
+				{
+					if(lastArg != null)
+					{
+						m_Arguments[lastArg] = arg;
+						lastArg = null;
+					}
+				}
 
-                idx++;
-            }
-        }
+				idx++;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public bool WasPassed(string arg)
-        {
-            return (m_Arguments.ContainsKey(arg));
-        }
+		public bool WasPassed(string arg)
+		{
+			return (m_Arguments.ContainsKey(arg));
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
 		/// <summary>
 		/// Gets the parameter associated with the command line option
 		/// </summary>
 		/// <remarks>Returns null if option was not specified,
 		/// null string if no parameter was specified, and the value if a parameter was specified</remarks>
-        public string this[string idx] 
-        {
-            get 
-            {
-                if(m_Arguments.ContainsKey(idx))
-                    return (string)(m_Arguments[idx]);
-                else
-                    return null;
-            }
-        }
+		public string this[string idx] 
+		{
+			get 
+			{
+				if(m_Arguments.ContainsKey(idx))
+					return (string)(m_Arguments[idx]);
+				else
+					return null;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region IEnumerable Members
+		#region IEnumerable Members
 
-        public IEnumerator GetEnumerator() 
-        {
-            return m_Arguments.Keys.GetEnumerator();
-        }
+		public IEnumerator GetEnumerator() 
+		{
+			return m_Arguments.Keys.GetEnumerator();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

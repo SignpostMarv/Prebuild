@@ -36,10 +36,10 @@ using System;
 
 namespace DNPreBuild.Core.Interfaces 
 {
-    public interface ITarget 
-    {
-        void Write(Kernel kern);
-        void Clean(Kernel kern);
-        string Name { get; }
-    }
+	public interface ITarget 
+	{
+		void Write(Kernel kern);
+		void Clean(Kernel kern);
+		string Name { get; }
+	}
 }

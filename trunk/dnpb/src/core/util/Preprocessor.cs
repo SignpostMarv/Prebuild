@@ -13,12 +13,12 @@ namespace DNPreBuild.Core.Util
 {
 	public class Preprocessor
 	{
-        #region Constructors
+		#region Constructors
 
 		public Preprocessor()
 		{
 		}
 
-        #endregion
+		#endregion
 	}
 }

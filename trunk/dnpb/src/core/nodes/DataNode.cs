@@ -41,31 +41,31 @@ using DNPreBuild.Core.Interfaces;
 namespace DNPreBuild.Core.Nodes
 {
 	public class DataNode : IDataNode
-    {
-        #region Fields
+	{
+		#region Fields
 
-        protected IDataNode m_Parent;
+		protected IDataNode m_Parent;
 
-        #endregion
+		#endregion
 
-        #region IDataNode Members
+		#region IDataNode Members
 
-        public virtual IDataNode Parent
-        {
-            get
-            {
-                return m_Parent;
-            }
-            set
-            {
-                m_Parent = value;
-            }
-        }
+		public virtual IDataNode Parent
+		{
+			get
+			{
+				return m_Parent;
+			}
+			set
+			{
+				m_Parent = value;
+			}
+		}
 
-        public virtual void Parse(XmlNode node)
-        {
-        }
+		public virtual void Parse(XmlNode node)
+		{
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -42,80 +42,80 @@ using DNPreBuild.Core.Interfaces;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Files")]
+	[DataNode("Files")]
 	public class FilesNode : DataNode
 	{
-        #region Fields
+		#region Fields
 
-        private StringCollection m_Files = null;
-        private Hashtable m_BuildActions = null;
+		private StringCollection m_Files = null;
+		private Hashtable m_BuildActions = null;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public FilesNode()
-        {
-            m_Files = new StringCollection();
-            m_BuildActions = new Hashtable();
-        }
+		public FilesNode()
+		{
+			m_Files = new StringCollection();
+			m_BuildActions = new Hashtable();
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public int Count
-        {
-            get
-            {
-                return m_Files.Count;
-            }
-        }
+		public int Count
+		{
+			get
+			{
+				return m_Files.Count;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public BuildAction GetBuildAction(string file)
-        {
-            if(!m_BuildActions.ContainsKey(file))
-                return BuildAction.Compile;
+		public BuildAction GetBuildAction(string file)
+		{
+			if(!m_BuildActions.ContainsKey(file))
+				return BuildAction.Compile;
 
-            return (BuildAction)m_BuildActions[file];
-        }
+			return (BuildAction)m_BuildActions[file];
+		}
 
-        public override void Parse(XmlNode node)
-        {
-            foreach(XmlNode child in node.ChildNodes)
-            {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                if(dataNode is FileNode)
-                {
-                    FileNode fileNode = (FileNode)dataNode;
-                    if(fileNode.IsValid)
-                    {
-                        m_Files.Add(fileNode.Path);
-                        m_BuildActions[fileNode.Path] = fileNode.BuildAction;
-                    }
-                }
-                else if(dataNode is MatchNode)
-                {
-                    foreach(string file in ((MatchNode)dataNode).Files)
-                    {
-                        m_Files.Add(file);
-                        m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
-                    }
-                }
-            }
-        }
+		public override void Parse(XmlNode node)
+		{
+			foreach(XmlNode child in node.ChildNodes)
+			{
+				IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+				if(dataNode is FileNode)
+				{
+					FileNode fileNode = (FileNode)dataNode;
+					if(fileNode.IsValid)
+					{
+						m_Files.Add(fileNode.Path);
+						m_BuildActions[fileNode.Path] = fileNode.BuildAction;
+					}
+				}
+				else if(dataNode is MatchNode)
+				{
+					foreach(string file in ((MatchNode)dataNode).Files)
+					{
+						m_Files.Add(file);
+						m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
+					}
+				}
+			}
+		}
 
-        // TODO: Check in to why StringCollection's enumerator doesn't implement
-        // IEnumerator?
-        public StringEnumerator GetEnumerator()
-        {
-            return m_Files.GetEnumerator();
-        }
+		// TODO: Check in to why StringCollection's enumerator doesn't implement
+		// IEnumerator?
+		public StringEnumerator GetEnumerator()
+		{
+			return m_Files.GetEnumerator();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }
