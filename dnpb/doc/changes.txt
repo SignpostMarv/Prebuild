@@ -1,0 +1,7 @@
+[ Key ]
+* = Change or information
++ = Addition
+! = Bug Fix
+
+[ April 6, 2004 - 0.10.0 ]
+    * First Release
