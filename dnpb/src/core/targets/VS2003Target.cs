@@ -80,10 +80,10 @@ namespace DNPreBuild.Core.Targets
         protected string m_SchemaVersion = "2.0";
         protected string m_VersionName = "2003";
         protected VSVersion m_Version = VSVersion.VS71;
-        
-        private Kernel m_Kernel = null;
+
         private Hashtable m_ProjectUUIDs = null;
         private Hashtable m_Tools = null;
+        private Kernel m_Kernel = null;
 
         #endregion
 
@@ -372,7 +372,7 @@ namespace DNPreBuild.Core.Targets
 
         private void CleanSolution(SolutionNode solution)
         {
-            m_Kernel.Log.Write("Cleaning solution and project files for: {0}", solution.Name);
+            m_Kernel.Log.Write("Cleaning Visual Studio {0} solution and project files", m_VersionName, solution.Name);
 
             string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
             string suoFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "suo");
@@ -382,41 +382,35 @@ namespace DNPreBuild.Core.Targets
 
             foreach(ProjectNode project in solution.Projects)
                 CleanProject(project);
+
+            m_Kernel.Log.Write("");
         }
 
         #endregion
 
         #region ITarget Members
 
-        public virtual void Write()
+        public virtual void Write(Kernel kern)
         {
+            m_Kernel = kern;
             foreach(SolutionNode sol in m_Kernel.Solutions)
                 WriteSolution(sol);
+            m_Kernel = null;
         }
 
-        public virtual void Clean()
+        public virtual void Clean(Kernel kern)
         {
+            m_Kernel = kern;
             foreach(SolutionNode sol in m_Kernel.Solutions)
                 CleanSolution(sol);
+            m_Kernel = null;
         }
 
-        public string Name
+        public virtual string Name
         {
             get
             {
                 return "vs2003";
-            }
-        }
-
-        public Kernel Kernel
-        {
-            get
-            {
-                return m_Kernel;
-            }
-            set
-            {
-                m_Kernel = value;
             }
         }
 
