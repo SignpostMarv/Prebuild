@@ -91,19 +91,29 @@ namespace DNPreBuild.Core.Parse
 
         #region Private Methods
 
+        /*
+         * Parts of this code were taken from NAnt and is subject to the GPL
+         * as per NAnt's license. Thanks to the NAnt guys for this little gem.
+         */
         private string GetOS()
         {
-            switch(Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                case PlatformID.WinCE:
-                    return "Windows";
+            PlatformID platId = Environment.OSVersion.Platform;
+            if(platId == PlatformID.Win32NT || platId == PlatformID.Win32Windows)
+                return "Win32";
 
-                default:
-                    return "POSIX";
+            /*
+             * .NET 1.x, under Mono, the UNIX code is 128. Under
+             * .NET 2.x, Mono or MS, the UNIX code is 4
+             */
+            if(Environment.Version.Major == 1)
+            {
+                if((int)platId == 128)
+                    return "UNIX";
             }
+            else if((int)platId == 4)
+                return "UNIX";
+
+            return "Unknown";
         }
 
         private bool CompareNum(Operators oper, int val1, int val2)

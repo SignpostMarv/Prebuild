@@ -114,7 +114,11 @@ namespace DNPreBuild.Core.Targets
 
             using(ss)
             {
-                ss.WriteLine("<Project name=\"{0}\" description=\"\" newfilesearch=\"None\" enableviewstate=\"True\" version=\"1.1\" projecttype=\"C#\">", project.Name);
+                ss.WriteLine(
+                    "<Project name=\"{0}\" description=\"\" standardNamespace=\"{1}\" newfilesearch=\"None\" enableviewstate=\"True\" version=\"1.1\" projecttype=\"C#\">",
+                    project.Name,
+                    project.RootNamespace
+                );
 
                 ss.WriteLine("\t<Contents>");
                 foreach(string file in project.Files)

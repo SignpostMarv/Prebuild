@@ -51,6 +51,7 @@ namespace DNPreBuild.Core.Nodes
 
         private StringCollection m_Files = null;
         private Regex m_Regex = null;
+        private BuildAction m_BuildAction = BuildAction.Compile;
 
         #endregion
 
@@ -70,6 +71,14 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_Files;
+            }
+        }
+
+        public BuildAction BuildAction
+        {
+            get
+            {
+                return m_BuildAction;
             }
         }
 
@@ -133,6 +142,8 @@ namespace DNPreBuild.Core.Nodes
             string pattern = Helper.AttributeValue(node, "pattern", "*");
             bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
             bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
+            m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
+                Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
             if(path == null)
                 throw new WarningException("Match must have a 'path' attribute");

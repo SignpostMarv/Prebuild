@@ -6,7 +6,7 @@
 	<Solution name="dnpb">
 		<Configuration name="Debug">
 			<Options>
-			    <?if OS = "Windows" ?>
+			    <?if OS = "Win32" ?>
 				<CompilerDefines>DEBUG;TRACE;WIN32</CompilerDefines>
 				<?else ?>
 				<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
@@ -19,7 +19,7 @@
 		
 		<Configuration name="Release">
 			<Options>
-			    <?if OS = "Windows" ?>
+			    <?if OS = "Win32" ?>
 				<CompilerDefines>TRACE;WIN32</CompilerDefines>
 				<?else ?>
 				<CompilerDefines>TRACE;POSIX</CompilerDefines>
