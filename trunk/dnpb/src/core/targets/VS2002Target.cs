@@ -41,16 +41,32 @@ namespace DNPreBuild.Core.Targets
     [Target("vs2002")]
 	public class VS2002Target : VS2003Target
 	{
-        #region Constructors
+        #region Private Methods
 
-		public VS2002Target() : base()
-		{
+        private void SetVS2002()
+        {
             m_SolutionVersion = "7.00";
             m_ProductVersion = "7.0.9254";
             m_SchemaVersion = "1.0";
             m_VersionName = "2002";
             m_Version = VSVersion.VS70;
-		}
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public override void Write()
+        {
+            SetVS2002();
+            base.Write();
+        }
+
+        public override void Clean()
+        {
+            SetVS2002();
+            base.Clean();
+        }
 
         #endregion
 	}

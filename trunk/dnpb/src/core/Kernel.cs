@@ -79,6 +79,7 @@ namespace DNPreBuild.Core
         
         ArrayList m_Solutions = null;        
         string m_Target = null;
+        string m_Clean = null;
         string m_CurrentFile = null;
         StringCollection m_Refs = null;
 
@@ -325,13 +326,24 @@ namespace DNPreBuild.Core
             string logFile = "DNPreBuild.log";
             if(m_CommandLine.WasPassed("log"))
                 logFile = m_CommandLine["log"];
+            
+            m_Log = new Log(target, logFile);
+            LogBanner();
 
             m_CWDStack = new CurrentDirStack();
 
             m_Target = m_CommandLine["target"];
-            
-            m_Log = new Log(target, logFile);
-            LogBanner();
+            m_Clean = m_CommandLine["clean"];
+            if(m_Target != null && m_Clean != null)
+            {
+                m_Log.Write(LogType.Error, "The options /target and /clean cannot be passed together");
+                return;
+            }
+            else if(m_Target == null && m_Clean == null)
+            {
+                m_Log.Write(LogType.Error, "Must pass either /target or /clean to");
+                return;
+            }
 
             LoadSchema();
             
@@ -353,14 +365,39 @@ namespace DNPreBuild.Core
 
             ProcessFile(file);
 
+            
             if(m_Targets.ContainsKey(m_Target))
             {
-                ITarget target = (ITarget)m_Targets[m_Target];
-                target.Kernel = this;
-                if(m_CommandLine.WasPassed("clean"))
-                    target.Clean();
+                string target = (m_Target != null ? m_Target : m_Clean);
+                if(target.ToLower() == "all")
+                {
+                    if(m_Clean != null)
+                    {
+                        Console.Write("WARNING: This will erase all build files for all targets, are you sure? (y/n): ");
+                        while(true)
+                        {
+                            char c = (char)Console.Read();
+                            if(Char.ToLower(c) == 'y')
+                                break;
+                            else if(Char.ToLower(c) == 'n')
+                                return;
+                            else
+                                Console.Write("Please choose Y or N: ");
+                        }
+                    }
+                    foreach(ITarget target in m_Targets.Values)
+                    {
+                    }
+                }
                 else
-                    target.Write();
+                {
+                    ITarget target = (ITarget)m_Targets[m_Target];
+                    target.Kernel = this;
+                    if(m_CommandLine.WasPassed("clean"))
+                        target.Clean();
+                    else
+                        target.Write();
+                }
             }
 
             m_Log.Flush();
