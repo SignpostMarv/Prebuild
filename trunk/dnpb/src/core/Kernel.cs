@@ -276,25 +276,44 @@ namespace DNPreBuild.Core
 
         #region Public Methods
 
+        public Type GetNodeType(XmlNode node)
+        {
+            if(!m_Nodes.ContainsKey(node.Name))
+                return null;
+
+            NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
+            return ne.Type;
+        }
+
         public IDataNode ParseNode(XmlNode node, IDataNode parent)
+        {
+            return ParseNode(node, parent, null);
+        }
+
+        public IDataNode ParseNode(XmlNode node, IDataNode parent, IDataNode preNode)
         {
             IDataNode dataNode = null;
 
             try
             {
-                if(!m_Nodes.ContainsKey(node.Name))
+                if(preNode == null)
                 {
-                    //throw new XmlException("Unknown XML node: " + node.Name);
-                    return null;
+                    if(!m_Nodes.ContainsKey(node.Name))
+                    {
+                        //throw new XmlException("Unknown XML node: " + node.Name);
+                        return null;
+                    }
+
+                    NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
+                    Type type = ne.Type;
+                    DataNodeAttribute dna = ne.Attribute;
+
+                    dataNode = (IDataNode)type.Assembly.CreateInstance(type.FullName);
+                    if(dataNode == null)
+                        throw new OutOfMemoryException("Could not create new parser instance: " + type.FullName);
                 }
-
-                NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
-                Type type = ne.Type;
-                DataNodeAttribute dna = ne.Attribute;
-
-                dataNode = (IDataNode)type.Assembly.CreateInstance(type.FullName);
-                if(dataNode == null)
-                    throw new OutOfMemoryException("Could not create new parser instance: " + type.FullName);
+                else
+                    dataNode = preNode;
 
                 dataNode.Parent = parent;
                 dataNode.Parse(node);

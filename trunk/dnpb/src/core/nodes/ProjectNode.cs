@@ -70,6 +70,7 @@ namespace DNPreBuild.Core.Nodes
         private Runtime m_Runtime = Runtime.Microsoft;
         private string m_StartupObject = "";
         private string m_RootNamespace = null;
+        private Guid m_Guid;
 
         private Hashtable m_Configurations = null;
         private ArrayList m_ReferencePaths = null;
@@ -203,29 +204,45 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public override IDataNode Parent
+        {
+            get
+            {
+                return m_Parent;
+            }
+            set
+            {
+                m_Parent = value;
+                if(m_Parent is SolutionNode && m_Configurations.Count < 1)
+                {
+                    SolutionNode parent = (SolutionNode)m_Parent;
+                    foreach(ConfigurationNode conf in parent.Configurations)
+                        m_Configurations[conf.Name] = conf.Clone();
+                }
+            }
+        }
+
+        public Guid Guid
+        {
+            get
+            {
+                return m_Guid;
+            }
+        }
+
         #endregion
 
         #region Private Methods
 
         private void HandleConfiguration(ConfigurationNode conf)
         {
-            if(m_Parent is SolutionNode)
+            if(m_Configurations.ContainsKey(conf.Name))
             {
-                SolutionNode solution = (SolutionNode)m_Parent;
-                if(solution.ConfigurationsTable.ContainsKey(conf.Name))
-                {
-                    ConfigurationNode parentConf = (ConfigurationNode)solution.ConfigurationsTable[conf.Name];
-                    
-                    OptionsNode tempOptions = new OptionsNode();
-                    parentConf.Options.CopyTo(ref tempOptions);
-                    conf.Options.CopyTo(ref tempOptions);
-                    conf.Options = tempOptions;
-                }
-                else
-                    solution.ConfigurationsTable[conf.Name] = conf;
+                ConfigurationNode parentConf = (ConfigurationNode)m_Configurations[conf.Name];
+                conf.CopyTo(parentConf);
             }
-
-            m_Configurations[conf.Name] = conf;
+            else
+                m_Configurations[conf.Name] = conf;
         }
 
         #endregion
@@ -242,6 +259,7 @@ namespace DNPreBuild.Core.Nodes
             m_Runtime = (Runtime)Helper.EnumAttributeValue(node, "runtime", typeof(Runtime), m_Runtime);
             m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
             m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
+            m_Guid = Guid.NewGuid();
             
             if(m_AssemblyName == null || m_AssemblyName.Length < 1)
                 m_AssemblyName = m_Name;

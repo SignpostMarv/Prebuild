@@ -42,7 +42,7 @@ using DNPreBuild.Core.Util;
 namespace DNPreBuild.Core.Nodes
 {
     [DataNode("Configuration")]
-	public class ConfigurationNode : DataNode
+	public class ConfigurationNode : DataNode, ICloneable
     {
         #region Fields
 
@@ -75,7 +75,7 @@ namespace DNPreBuild.Core.Nodes
                 {
                     SolutionNode node = (SolutionNode)base.Parent;
                     if(node != null && node.Options != null)
-                        node.Options.CopyTo(ref m_Options);
+                        node.Options.CopyTo(m_Options);
                 }
             }
         }
@@ -111,8 +111,25 @@ namespace DNPreBuild.Core.Nodes
             {
                 IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
                 if(dataNode is OptionsNode)
-                    ((OptionsNode)dataNode).CopyTo(ref m_Options);
+                    ((OptionsNode)dataNode).CopyTo(m_Options);
             }
+        }
+
+        public void CopyTo(ConfigurationNode conf)
+        {
+            m_Options.CopyTo(conf.m_Options);
+        }
+
+        #endregion
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            ConfigurationNode ret = new ConfigurationNode();
+            ret.m_Name = m_Name;
+            m_Options.CopyTo(ret.m_Options);
+            return ret;
         }
 
         #endregion

@@ -169,7 +169,7 @@ namespace DNPreBuild.Core.Nodes
                 SetOption(child.Name, child.InnerText);
         }
 
-        public void CopyTo(ref OptionsNode opt)
+        public void CopyTo(OptionsNode opt)
         {
             if(opt == null)
                 return;
