@@ -61,7 +61,7 @@
 			<Reference name="System.Runtime.Serialization.Formatters.Soap"/>
 			<Reference name="ICSharpCode.SharpZipLib"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -91,7 +91,8 @@
 			<Reference name="csogg"/>
 			<Reference name="csvorbis"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
+				<Match pattern="*.txt" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -118,7 +119,7 @@
 			<Reference name="RealmForge.Utility"/>
 			<Reference name="RealmForge.Framework"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 				
@@ -172,7 +173,7 @@
 				<File buildAction="EmbeddedResource">Forms\IDEWindow.resx</File>
 				<File buildAction="EmbeddedResource">Forms\Launcher.resx</File>
 				<File buildAction="EmbeddedResource">Forms\MainRenderFrame.resx</File>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 		
@@ -209,7 +210,7 @@
 				<Reference name="RealmForge.Utility"/>
 				<Reference name="ode"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -239,7 +240,7 @@
 			<Reference name="RealmForge.Framework"/>
 			<Reference name="RealmForge.Utility"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -263,7 +264,7 @@
 			<Reference name="RealmForge.Framework"/>
 			<Reference name="RealmForge.Utility"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 
@@ -289,7 +290,7 @@
 			<Reference name="RealmForge.Framework"/>
 			<Reference name="RealmForge.Utility"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match pattern="*.cs" recurse="true"/>
 			</Files>
 		</Project>
 		

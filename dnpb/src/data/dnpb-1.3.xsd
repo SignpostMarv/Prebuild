@@ -188,7 +188,7 @@
 
 	<xs:element name="Match">
 		<xs:complexType>
-			<xs:attribute name="path" type="xs:string" use="required" />			
+			<xs:attribute name="path" type="xs:string" />			
 			<xs:attribute name="pattern" type="xs:string" use="required" />
 			<xs:attribute name="recurse" type="xs:boolean" default="false" />
 			<xs:attribute name="useRegex" type="xs:boolean" default="false" />
