@@ -32,6 +32,7 @@
 			name="dnpb"
 			path="src\"
 			language="C#"
+			type="Exe"
 			startupObject="DNPreBuild.DNPreBuild"
 			rootNamespace="DNPreBuild"
 		>

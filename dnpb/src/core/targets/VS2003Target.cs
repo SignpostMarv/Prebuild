@@ -58,14 +58,14 @@ namespace DNPreBuild.Core.Targets
         protected struct ToolInfo
         {
             public string Name;
-            public string GUID;
+            public string Guid;
             public string FileExtension;
             public string XMLTag;
 
             public ToolInfo(string name, string guid, string fileExt, string xml)
             {
                 Name = name;
-                GUID = guid;
+                Guid = guid;
                 FileExtension = fileExt;
                 XMLTag = xml;
             }
@@ -81,7 +81,6 @@ namespace DNPreBuild.Core.Targets
         protected string m_VersionName = "2003";
         protected VSVersion m_Version = VSVersion.VS71;
 
-        private Hashtable m_ProjectUUIDs = null;
         private Hashtable m_Tools = null;
         private Kernel m_Kernel = null;
 
@@ -91,7 +90,6 @@ namespace DNPreBuild.Core.Targets
 
         public VS2003Target()
         {
-            m_ProjectUUIDs = new Hashtable();
             m_Tools = new Hashtable();
 
             m_Tools["C#"] = new ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP");
@@ -143,7 +141,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t\tProjectType = \"Local\"");
                 ps.WriteLine("\t\tProductVersion = \"{0}\"", m_ProductVersion);
                 ps.WriteLine("\t\tSchemaVersion = \"{0}\"", m_SchemaVersion);
-                ps.WriteLine("\t\tProjectGuid = \"{{{0}}}\"", ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper());
+                ps.WriteLine("\t\tProjectGuid = \"{{{0}}}\"", project.Guid.ToString().ToUpper());
                 ps.WriteLine("\t>");
 
                 ps.WriteLine("\t\t<Build>");
@@ -188,7 +186,7 @@ namespace DNPreBuild.Core.Targets
 
                     ps.WriteLine("\t\t\t\t\tOptimize = \"{0}\"", conf.Options["OptimizeCode"]);                    
                     ps.WriteLine("\t\t\t\t\tOutputPath = \"{0}\"", 
-                        Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())) + Helper.EndPath(conf.Name));
+                        Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
                     ps.WriteLine("\t\t\t\t\tRegisterForComInterop = \"{0}\"", conf.Options["RegisterCOMInterop"]);
                     ps.WriteLine("\t\t\t\t\tRemoveIntegerChecks = \"{0}\"", conf.Options["RemoveIntegerChecks"]);
                     ps.WriteLine("\t\t\t\t\tTreatWarningsAsErrors = \"{0}\"", conf.Options["WarningsAsErrors"]);
@@ -207,8 +205,8 @@ namespace DNPreBuild.Core.Targets
                     if(solution.ProjectsTable.ContainsKey(refr.Name))
                     {
                         ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
-                        ps.WriteLine("\t\t\t\t\tProject = \"{{{0}}}\"", ((Guid)m_ProjectUUIDs[refProject]).ToString().ToUpper());
-                        ps.WriteLine("\t\t\t\t\tPackage = \"{0}\"", toolInfo.GUID.ToString().ToUpper());
+                        ps.WriteLine("\t\t\t\t\tProject = \"{{{0}}}\"", refProject.Guid.ToString().ToUpper());
+                        ps.WriteLine("\t\t\t\t\tPackage = \"{0}\"", toolInfo.Guid.ToString().ToUpper());
                     }
                     else
                     {
@@ -272,11 +270,10 @@ namespace DNPreBuild.Core.Targets
 
             foreach(ProjectNode project in solution.Projects)
             {
-                m_ProjectUUIDs[project] = Guid.NewGuid();
                 m_Kernel.Log.Write("...Creating project: {0}", project.Name);
                 WriteProject(solution, project);
             }
-            
+
             m_Kernel.Log.Write("");
             string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
             StreamWriter ss = new StreamWriter(solutionFile);
@@ -296,8 +293,8 @@ namespace DNPreBuild.Core.Targets
                 
                     string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
                     ss.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"",
-                        toolInfo.GUID, project.Name, Helper.MakeFilePath(path, project.Name,
-                        toolInfo.FileExtension), ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper());
+                        toolInfo.Guid, project.Name, Helper.MakeFilePath(path, project.Name,
+                        toolInfo.FileExtension), project.Guid.ToString().ToUpper());
 
                     ss.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
                     ss.WriteLine("\tEndProjectSection");
@@ -319,11 +316,14 @@ namespace DNPreBuild.Core.Targets
                     {
                         ReferenceNode refr = (ReferenceNode)project.References[i];
                         if(solution.ProjectsTable.ContainsKey(refr.Name))
+                        {
+                            ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
                             ss.WriteLine("\t\t({{{0}}}).{1} = ({{{2}}})", 
-                                ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper()
+                                project.Guid.ToString().ToUpper()
                                 , i, 
-                                ((Guid)m_ProjectUUIDs[solution.ProjectsTable[refr.Name]]).ToString().ToUpper()
+                                refProject.Guid.ToString().ToUpper()
                             );
+                        }
                     }
                 }
                 ss.WriteLine("\tEndGlobalSection");
@@ -334,11 +334,11 @@ namespace DNPreBuild.Core.Targets
                     foreach(ConfigurationNode conf in solution.Configurations)
                     {
                         ss.WriteLine("\t\t{{{0}}}.{1}.ActiveCfg = {1}|.NET",
-                            ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
+                            project.Guid.ToString().ToUpper(),
                             conf.Name);
 
                         ss.WriteLine("\t\t{{{0}}}.{1}.Build.0 = {1}|.NET",
-                            ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
+                            project.Guid.ToString().ToUpper(),
                             conf.Name);
                     }
                 }

@@ -150,7 +150,6 @@ namespace DNPreBuild.Core.Targets
                     ss.WriteLine("\t\t{0}", BuildReference(solution, refr));
                 ss.WriteLine("\t</References>");
 
-                
                 int count = 0;
                 foreach(ConfigurationNode conf in solution.Configurations)
                 {
