@@ -23,6 +23,15 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
+#region CVS Information
+/*
+ * File: $Source$
+ * Author: $Author$
+ * Date: $Date$
+ * Revision: $Revision$
+ */
+#endregion
+
 using System;
 using System.IO;
 
