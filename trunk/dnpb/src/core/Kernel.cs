@@ -56,7 +56,7 @@ namespace DNPreBuild.Core
         private static Kernel m_Instance = new Kernel();
 
         private Version m_Version = null;
-        private string m_Revision = "a";
+        private string m_Revision = "";
         private CommandLine m_CommandLine = null;
         private Log m_Log = null;
         private CurrentDirStack m_CWDStack = null;
@@ -68,6 +68,7 @@ namespace DNPreBuild.Core
         ArrayList m_Solutions = null;        
         string m_Target = null;
         string m_CurrentFile = null;
+        StringCollection m_Refs = null;
 
         #endregion
 
@@ -197,47 +198,54 @@ namespace DNPreBuild.Core
 
         private void ProcessFile(string file)
         {
-            if(!File.Exists(file))
-                throw new IOException("Could not open .NET Pre-Build file: " + file);
-
             m_CWDStack.Push();
             
-            string path = Path.GetFullPath(file);
-            m_CurrentFile = path;
-            Helper.SetCurrentDir(Path.GetDirectoryName(path));
-            
-            XmlTextReader reader = new XmlTextReader(file);
-            XmlValidatingReader valReader = new XmlValidatingReader(reader);
-            valReader.Schemas.Add(m_Schemas);
-
-            XmlDocument doc = new XmlDocument();
+            string path = null;
             try
-            {                
+            {
+                if(!File.Exists(file))
+                    throw new IOException("Could not open .NET Pre-Build file: " + file);
+
+                path = Path.GetFullPath(file);
+                m_CurrentFile = path;
+                Helper.SetCurrentDir(Path.GetDirectoryName(path));
+            
+                XmlTextReader reader = new XmlTextReader(file);
+                XmlValidatingReader valReader = new XmlValidatingReader(reader);
+                valReader.Schemas.Add(m_Schemas);
+
+                XmlDocument doc = new XmlDocument();
                 doc.Load(valReader);
+            
+                foreach(XmlNode node in doc.DocumentElement.ChildNodes)
+                {
+                    IDataNode dataNode = ParseNode(node, null);
+                    if(dataNode is ProcessNode)
+                    {
+                        ProcessNode proc = (ProcessNode)dataNode;
+                        if(proc.IsValid)
+                            ProcessFile(proc.Path);
+                    }
+                    else if(dataNode is SolutionNode)
+                        m_Solutions.Add(dataNode);
+                }
             }
             catch(XmlSchemaException xse)
             {
                 m_Log.Write("XML validation error at line {0} in {1}:\n\n{2}",
                     xse.LineNumber, path, xse.Message);
-                
-                return;
             }
-            
-            foreach(XmlNode node in doc.DocumentElement.ChildNodes)
+            finally
             {
-                IDataNode dataNode = ParseNode(node, null, "DNPreBuild");
-                if(dataNode is SolutionNode)
-                    m_Solutions.Add(dataNode);
+                m_CWDStack.Pop();
             }
-
-            m_CWDStack.Pop();
         }
 
         #endregion
 
         #region Public Methods
 
-        public IDataNode ParseNode(XmlNode node, IDataNode parent, string parentName)
+        public IDataNode ParseNode(XmlNode node, IDataNode parent)
         {
             IDataNode dataNode = null;
 
@@ -304,6 +312,7 @@ namespace DNPreBuild.Core
             CacheNodeTypes(this.GetType().Assembly);
 
             m_Solutions = new ArrayList();
+            m_Refs = new StringCollection();
         }
 
         public void Process()
@@ -317,7 +326,11 @@ namespace DNPreBuild.Core
             if(m_Targets.ContainsKey(m_Target))
             {
                 ITarget target = (ITarget)m_Targets[m_Target];
-                target.Write(this);
+                target.Kernel = this;
+                if(m_CommandLine.WasPassed("clean"))
+                    target.Clean();
+                else
+                    target.Write();
             }
 
             m_Log.Flush();

@@ -3,6 +3,24 @@
 + = Addition
 ! = Bug Fix
 
+[ April 19, 2004 - 0.11.0 ]
+	* Added several attributes across the code to make FxCop happy
+	! Fixed bugs in reference paths being written in the VS targets.
+	! Fixed a bug in ProjectNode which was doing two CWDStack.Push() calls instead of
+	  a Push/Pop pair. Was wreaking havoc with <Process> tags.	
+	! Fixed some bugs in the path tracking, both the Project and Solution nodes now
+	  have a FullPath property, which is the full path to the file resolved at load
+	  time. This should fix all path relativity problems.
+	+ Added new /clean switch, allowing the target to clean up any files it generated.
+	  in accordance, the ITarget interface has been updated to support a new Clean()
+	  method.
+	+ Completed addition of the <Process> tag, to allow the referencing of external
+	  prebuild.xml files.
+	+ Added the runtime attribute to the Project element. This allows the developer
+	  to specify which runtime a project should target (Mono or Microsoft). This is
+	  of course ignored in certain targets like the Visual Studio targets.
+	+ Added the SharpDevelop target.
+
 [ April 13, 2004 - 0.10.1a ]
     + Added the buildAction attribute to the File node. This is needed for dnpb
     to even be able to bootstrap itself (dnpb-1.0.xsd must be an embedded resource)

@@ -25,7 +25,9 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections.Specialized;
+using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 using DNPreBuild.Core;
 using DNPreBuild.Core.Util;
@@ -67,7 +69,7 @@ namespace DNPreBuild
 #if DEBUG
                 Console.WriteLine("{0}", ex.StackTrace);
 #endif
-                Environment.Exit(1);
+                throw;
             }
 		}
 
@@ -81,6 +83,7 @@ namespace DNPreBuild
             Console.WriteLine("Available command-line switches:");
             Console.WriteLine("");
             Console.WriteLine("/target          Target for .NET Pre-Build");
+            Console.WriteLine("/clean           Clean the build files for the given target");
             Console.WriteLine("/file            XML file to process");
             Console.WriteLine("/log             Log file to write to");
             Console.WriteLine("");
@@ -92,8 +95,14 @@ namespace DNPreBuild
         {
             Console.WriteLine("Targets available in .NET Pre-build:");
             Console.WriteLine("");
-            foreach(string target in kern.Targets.Keys)
-                Console.WriteLine(target);
+            if(kern.Targets.Keys.Count > 0)
+            {
+                string[] targs = new string[kern.Targets.Keys.Count];
+                kern.Targets.Keys.CopyTo(targs, 0);
+                Array.Sort(targs);
+                foreach(string target in targs)
+                    Console.WriteLine(target);
+            }
             Console.WriteLine("");
         }
         

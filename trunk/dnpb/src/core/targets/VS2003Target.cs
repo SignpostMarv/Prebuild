@@ -25,6 +25,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
 
 using DNPreBuild.Core.Attributes;
@@ -92,13 +93,60 @@ namespace DNPreBuild.Core.Targets
 
         #region Private Methods
 
+        private string MakeRefPath(SolutionNode solution)
+        {
+            StringCollection sc = new StringCollection();
+            if(solution.Options != null)
+            {
+                foreach(string path in solution.Options.ReferencePaths)
+                {
+                    if(!sc.Contains(path))
+                        sc.Add(path);
+                }
+            }
+            
+            foreach(ConfigurationNode conf in solution.Configurations)
+            {
+                if(conf.Options != null)
+                {
+                    foreach(string path in conf.Options.ReferencePaths)
+                    {
+                        if(!sc.Contains(path))
+                            sc.Add(path);
+                    }
+                }
+            }
+
+            if(sc.Count < 1)
+                return "";
+
+            string ret = "";
+            foreach(string path in sc)
+            {
+                try
+                {
+                    string fullPath = Helper.ResolvePath(path);
+                    if(ret.Length < 1)
+                        ret = fullPath;
+                    else
+                        ret += ";" + fullPath;
+                }
+                catch(ArgumentException)
+                {
+                    m_Kernel.Log.Write(LogType.Warning, "Could not resolve reference path: {0}", path);
+                }
+            }
+
+            return ret;
+        }
+
         private void WriteProject(SolutionNode solution, ProjectNode project)
         {
             if(!m_Tools.ContainsKey(project.Language))
                 throw new Exception("Unknown .NET language: " + project.Language);
 
             ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
-            string projectFile = Path.GetFullPath(Helper.MakeFilePath(project.Path, project.Name, toolInfo.FileExtension));
+            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
             StreamWriter ps = new StreamWriter(projectFile);
 
             using(ps)
@@ -168,12 +216,9 @@ namespace DNPreBuild.Core.Targets
                 {
                     ps.WriteLine("\t\t\t\t<Reference");
                     ps.WriteLine("\t\t\t\t\tName = \"{0}\"", refr.Name);
-                    
-                    if(refr.Assembly != null)
-                        ps.WriteLine("\t\t\t\t\tAssemblyName = \"{0}\"", refr.Assembly);
 
                     if(refr.Path != null)
-                        ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", refr.Path);
+                        ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
 
                     if(refr.LocalCopy)
                         ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"", refr.LocalCopy);
@@ -208,12 +253,14 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t<{0}>", toolInfo.XMLTag);
                 ps.WriteLine("\t\t<Build>");
 
+                ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(solution));
                 foreach(ConfigurationNode conf in solution.Configurations)
                 {
-                    ps.WriteLine("\t\t\t<Config");
-                    ps.WriteLine("\t\t\t\tName = \"{0}\"", conf.Name);
-                    ps.WriteLine("\t\t\t/>");
+                    ps.WriteLine("\t\t\t\t<Config");
+                    ps.WriteLine("\t\t\t\t\tName = \"{0}\"", conf.Name);
+                    ps.WriteLine("\t\t\t\t/>");
                 }
+                ps.WriteLine("\t\t\t</Settings>");
 
                 ps.WriteLine("\t\t</Build>");
                 ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
@@ -233,7 +280,7 @@ namespace DNPreBuild.Core.Targets
             }
             
             m_Kernel.Log.Write("");
-            string solutionFile = Path.GetFullPath(Helper.MakeFilePath(solution.Path, solution.Name, "sln"));
+            string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
             StreamWriter ss = new StreamWriter(solutionFile);
             
             using(ss)
@@ -246,8 +293,9 @@ namespace DNPreBuild.Core.Targets
 
                     ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
                 
+                    string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
                     ss.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"",
-                        toolInfo.GUID, project.Name, Helper.MakeFilePath(project.Path, project.Name,
+                        toolInfo.GUID, project.Name, Helper.MakeFilePath(path, project.Name,
                         toolInfo.FileExtension), ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper());
 
                     ss.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
@@ -302,19 +350,49 @@ namespace DNPreBuild.Core.Targets
                 }
 
                 ss.WriteLine("EndGlobal");
-                ss.Flush();
             }
+        }
+
+        private void CleanProject(ProjectNode project)
+        {
+            m_Kernel.Log.Write("...Cleaning project: {0}", project.Name);
+
+            ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
+            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
+            string userFile = projectFile + ".user";
+            
+            Helper.DeleteIfExists(projectFile);
+            Helper.DeleteIfExists(userFile);
+        }
+
+        private void CleanSolution(SolutionNode solution)
+        {
+            m_Kernel.Log.Write("Cleaning solution and project files for: {0}", solution.Name);
+
+            string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
+            string suoFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "suo");
+            
+            Helper.DeleteIfExists(slnFile);
+            Helper.DeleteIfExists(suoFile);
+
+            foreach(ProjectNode project in solution.Projects)
+                CleanProject(project);
         }
 
         #endregion
 
         #region ITarget Members
 
-        public virtual void Write(Kernel kern)
+        public virtual void Write()
         {
-            m_Kernel = kern;
-            foreach(SolutionNode sol in kern.Solutions)
+            foreach(SolutionNode sol in m_Kernel.Solutions)
                 WriteSolution(sol);
+        }
+
+        public virtual void Clean()
+        {
+            foreach(SolutionNode sol in m_Kernel.Solutions)
+                CleanSolution(sol);
         }
 
         public string Name
@@ -322,6 +400,18 @@ namespace DNPreBuild.Core.Targets
             get
             {
                 return "vs2003";
+            }
+        }
+
+        public Kernel Kernel
+        {
+            get
+            {
+                return m_Kernel;
+            }
+            set
+            {
+                m_Kernel = value;
             }
         }
 

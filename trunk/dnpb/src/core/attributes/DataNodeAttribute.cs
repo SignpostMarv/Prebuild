@@ -28,7 +28,8 @@ using System.Collections.Specialized;
 
 namespace DNPreBuild.Core.Attributes
 {
-	public class DataNodeAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+	public sealed class DataNodeAttribute : Attribute
 	{
         #region Fields
 

@@ -88,7 +88,7 @@ namespace DNPreBuild.Core.Nodes
                 else
                     return;
             }
-            catch
+            catch(DirectoryNotFoundException)
             {
                 return;
             }

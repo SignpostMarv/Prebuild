@@ -23,8 +23,16 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+
+// FxCop recommended attributes
+[assembly: ComVisible(false)]
+[assembly: FileIOPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
+[assembly: CLSCompliant(true)]
 
 //
 // General Information about an assembly is controlled through the following 
@@ -51,7 +59,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.10.1")]
+[assembly: AssemblyVersion("0.11.0")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

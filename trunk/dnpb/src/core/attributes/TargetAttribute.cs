@@ -27,7 +27,8 @@ using System;
 
 namespace DNPreBuild.Core.Attributes
 {
-    public class TargetAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+    public sealed class TargetAttribute : Attribute
     {
         #region Fields
 

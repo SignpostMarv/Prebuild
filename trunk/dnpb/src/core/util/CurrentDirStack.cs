@@ -56,7 +56,7 @@ namespace DNPreBuild.Core.Util
         {
             if(m_Stack.Count < 1)
                 return;
-
+            
             string cwd = (string)m_Stack.Pop();
             Helper.SetCurrentDir(cwd);
         }

@@ -35,11 +35,17 @@ namespace DNPreBuild.Core.Targets
 	[Target("debug")]
     public class DebugTarget : ITarget
 	{
+        #region Fields
+
+        private Kernel m_Kernel = null;
+
+        #endregion
+
         #region ITarget Members
 
-        public void Write(Kernel kern)
+        public void Write()
         {
-            foreach(SolutionNode s in kern.Solutions)
+            foreach(SolutionNode s in m_Kernel.Solutions)
             {
                 Console.WriteLine("Solution [ {0}, {1} ]", s.Name, s.Path);
                 foreach(string file in s.Files)
@@ -54,11 +60,28 @@ namespace DNPreBuild.Core.Targets
             }
         }
 
+        public void Clean()
+        {
+            Console.WriteLine("Not implemented");
+        }
+
         public string Name
         {
             get
             {
                 return "debug";
+            }
+        }
+
+        public Kernel Kernel
+        {
+            get
+            {
+                return m_Kernel;
+            }
+            set
+            {
+                m_Kernel = value;
             }
         }
 

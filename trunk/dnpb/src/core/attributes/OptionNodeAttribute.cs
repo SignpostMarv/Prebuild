@@ -27,7 +27,8 @@ using System;
 
 namespace DNPreBuild.Core.Attributes
 {
-	public class OptionNodeAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Field)]
+	public sealed class OptionNodeAttribute : Attribute
 	{
         #region Fields
 
