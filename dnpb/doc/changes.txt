@@ -3,6 +3,16 @@
 + = Addition
 ! = Bug Fix
 
+[ December 25, 2004 - 1.0 ]
+    + Added the /removedir option for cleaning directories like obj before file releases
+    + Changed WriteTempXml() and the new DeleteTempXml() methods to be compiled only in DEBUG builds
+    * Made path optional for Match elements (defaults to current directory) and updates schema for it
+    ! Fixed XML example in the readme.txt
+    + Added example xml files to docs directory
+    * Updated license.txt to add Dan Moorehead and update copyright years
+    + Updated prebuild.xml to take advantage of the default path attribute for match elements
+    + Updated Clean to delete the obj directories
+
 [ December 25, 2004 - 0.13 ]
     + Added dnpb.exe so that it can be used to generate the project files
     + Added dnpb.ico
@@ -11,7 +21,6 @@
     * Added support for All configuration name under a Project node signifying common settings for all configurations
     ! Fixed the SupressWarnings by adding the corresponding field to OptionsNode
     * Wrote documentation in docs/readme.txt
-    * Made path optional for Math elements (default to current directory)
     * Added Dan Moorehead to copyrights and extended date from 2004 to 2004-2005
     * Updated prebuild.xml
     * Optimized Log class
