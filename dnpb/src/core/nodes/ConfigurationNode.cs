@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -94,7 +96,7 @@ namespace DNPreBuild.Core.Nodes
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             foreach(XmlNode child in node.ChildNodes)
             {
-                IDataNode dataNode = Root.Instance.ParseNode(child, this, "Configuration");
+                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Configuration");
                 if(dataNode is OptionsNode)
                     ((OptionsNode)dataNode).CopyTo(ref m_Options);
             }
