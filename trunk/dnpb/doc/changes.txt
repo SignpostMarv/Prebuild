@@ -3,6 +3,9 @@
 + = Addition
 ! = Bug Fix
 
+[ September 27, 2004 - 0.12.2a ]
+    ! Fixed a nasty bug when trying to delete our temp file for pre-processing.
+
 [ September 15, 2004 - 0.12.2 ]
     + Expanded platform identification, thanks to the NAnt guys for shedding some
       light on how to properly check for UNIX platforms! Thanks guys!
