@@ -53,7 +53,7 @@ namespace DNPreBuild.Core.Nodes
         private bool m_AllowUnsafe = false;
         
         [OptionNode("WarningLevel")]
-        private int m_WarningLevel = 1;
+        private int m_WarningLevel = 4;
         
         [OptionNode("WarningsAsErrors")]
         private bool m_WarningsAsErrors = false;
@@ -82,6 +82,7 @@ namespace DNPreBuild.Core.Nodes
         [OptionNode("NoStdLib")]
         private bool m_NoStdLib = false;
 
+        private StringCollection m_ReferencePaths = null;
         private StringCollection m_FieldsChanged = null;
 
         #endregion
@@ -107,6 +108,7 @@ namespace DNPreBuild.Core.Nodes
         public OptionsNode()
         {
             m_FieldsChanged = new StringCollection();
+            m_ReferencePaths = new StringCollection();
         }
 
         #endregion
@@ -125,6 +127,14 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public StringCollection ReferencePaths
+        {
+            get
+            {
+                return m_ReferencePaths;
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -137,14 +147,19 @@ namespace DNPreBuild.Core.Nodes
 
         private void SetOption(string nodeName, string val)
         {
-            lock(m_OptionFields)
+            if(nodeName == "ReferencePath")
+                m_ReferencePaths.Add(val);
+            else
             {
-                if(!m_OptionFields.ContainsKey(nodeName))
-                    return;
+                lock(m_OptionFields)
+                {
+                    if(!m_OptionFields.ContainsKey(nodeName))
+                        return;
 
-                FieldInfo f = (FieldInfo)m_OptionFields[nodeName];
-                f.SetValue(this, Helper.TranslateValue(f.FieldType, val));
-                FlagChanged(f.Name);
+                    FieldInfo f = (FieldInfo)m_OptionFields[nodeName];
+                    f.SetValue(this, Helper.TranslateValue(f.FieldType, val));
+                    FlagChanged(f.Name);
+                }
             }
         }
 

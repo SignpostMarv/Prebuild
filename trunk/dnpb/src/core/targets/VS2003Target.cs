@@ -126,7 +126,7 @@ namespace DNPreBuild.Core.Targets
 
                 ps.WriteLine("\t\t\t\tOutputType = \"{0}\"", project.Type.ToString());
                 ps.WriteLine("\t\t\t\tRootNamespace = \"{0}\"", project.Name);
-                ps.WriteLine("\t\t\t\tStartupObject = \"\"");
+                ps.WriteLine("\t\t\t\tStartupObject = \"{0}\"", project.StartupObject);
                 ps.WriteLine("\t\t\t>");
 
                 foreach(ConfigurationNode conf in solution.Configurations)
@@ -187,7 +187,7 @@ namespace DNPreBuild.Core.Targets
                 foreach(string file in project.Files)
                 {
                     ps.WriteLine("\t\t\t\t<File");
-                    ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file);
+                    ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file.Replace(".\\", ""));
                     ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
                     ps.WriteLine("\t\t\t\t\tBuildAction = \"Compile\"");
                     ps.WriteLine("\t\t\t\t/>");
@@ -227,8 +227,8 @@ namespace DNPreBuild.Core.Targets
                     ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
                 
                     ss.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"",
-                        toolInfo.GUID, project.Name, Helper.MakeFilePath(project.Path, project.Name, toolInfo.FileExtension),
-                        ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper());
+                        toolInfo.GUID, project.Name, Helper.MakeFilePath(project.Path, project.Name,
+                        toolInfo.FileExtension), ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper());
 
                     ss.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
                     ss.WriteLine("\tEndProjectSection");
@@ -246,17 +246,31 @@ namespace DNPreBuild.Core.Targets
                 }
                 ss.WriteLine("\tEndGlobalSection");
 
+                ss.WriteLine("\tGlobalSection(ProjectDependencies) = postSolution");
+                foreach(ProjectNode project in solution.Projects)
+                {
+                    for(int i = 0; i < project.References.Count; i++)
+                    {
+                        ReferenceNode refr = (ReferenceNode)project.References[i];
+                        if(solution.ProjectsTable.ContainsKey(refr.Name))
+                            ss.WriteLine("\t\t{0}.{1} = {2}", 
+                                m_ProjectUUIDs[project],i, m_ProjectUUIDs[solution.ProjectsTable[refr.Name]]
+                            );
+                    }
+                }
+                ss.WriteLine("\tEndGlobalSection");
+
                 ss.WriteLine("\tGlobalSection(ProjectConfiguration) = postSolution");
                 foreach(ProjectNode project in solution.Projects)
                 {
                     foreach(ConfigurationNode conf in solution.Configurations)
                     {
                         ss.WriteLine("\t\t({{{0}}}).{1}.ActiveCfg = {1}|.NET",
-                            ((Guid)m_ProjectUUIDs[project]).ToString(),
+                            ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
                             conf.Name);
 
                         ss.WriteLine("\t\t({{{0}}}).{1}.Build.0 = {1}|.NET",
-                            ((Guid)m_ProjectUUIDs[project]).ToString(),
+                            ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper(),
                             conf.Name);
                     }
                 }
