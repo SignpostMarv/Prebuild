@@ -6,7 +6,7 @@
 >
 	<xs:annotation>
 		<xs:documentation>
-			Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+			Copyright (c) 2004 Matthew Holmes (calefaction _at_ houston _._ rr _._ com)
 
 			Redistribution and use in source and binary forms, with or without modification, are permitted
 			provided that the following conditions are met:
@@ -107,6 +107,7 @@
 			</xs:attribute>
 			
 			<xs:attribute name="startupObject" type="xs:string" default="" />
+			<xs:attribute name="rootNamespace" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 

@@ -25,10 +25,10 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 #region CVS Information
 /*
- * File: $Source$
- * Author: $Author$
- * Date: $Date$
- * Revision: $Revision$
+ * $Source$
+ * $Author$
+ * $Date$
+ * $Revision$
  */
 #endregion
 

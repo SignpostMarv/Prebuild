@@ -23,6 +23,15 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
+#region CVS Information
+/*
+ * $Source$
+ * $Author$
+ * $Date$
+ * $Revision$
+ */
+#endregion
+
 using System;
 using System.Diagnostics;
 using System.Collections;
@@ -202,7 +211,6 @@ namespace DNPreBuild.Core
         private void ProcessFile(string file)
         {
             m_CWDStack.Push();
-            Console.WriteLine("[DEBUG] CWD: {0}", Environment.CurrentDirectory);
             
             string path = file;
             try
