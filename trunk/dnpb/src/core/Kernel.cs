@@ -246,6 +246,24 @@ namespace DNPreBuild.Core
                 Preprocessor pre = new Preprocessor();
                 string xml = pre.Process(reader);
                 string tmpFile = WriteTempXml(xml);
+                if(m_CommandLine.WasPassed("ppo"))
+                {
+                    string ppoFile = m_CommandLine["ppo"];
+                    if(ppoFile == null || ppoFile.Trim().Length < 1)
+                        ppoFile = "preprocessed.xml";
+
+                    try
+                    {
+                        File.Copy(tmpFile, ppoFile, true);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Could not write PPO file '{0}': {1}", ppoFile, ex.Message);
+                    }
+                    
+                    File.Delete(tmpFile);
+                    return;
+                }
 
                 reader = new XmlTextReader(tmpFile);
                 XmlValidatingReader valReader = new XmlValidatingReader(reader);
@@ -264,7 +282,8 @@ namespace DNPreBuild.Core
                 string version = Helper.AttributeValue(doc.DocumentElement, "version", null);
                 if(version != m_SchemaVersion)
                     throw new XmlException(String.Format("Invalid schema version referenced {0}, requires {1}", version, m_SchemaVersion));
-            
+
+                File.Delete(tmpFile);
                 foreach(XmlNode node in doc.DocumentElement.ChildNodes)
                 {
                     IDataNode dataNode = ParseNode(node, null);

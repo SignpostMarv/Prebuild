@@ -94,6 +94,7 @@ namespace DNPreBuild
             Console.WriteLine("/clean           Clean the build files for the given target");
             Console.WriteLine("/file            XML file to process");
             Console.WriteLine("/log             Log file to write to");
+            Console.WriteLine("/ppo             Pre-process the file, but perform no other processing");
             Console.WriteLine("");
             Console.WriteLine("See 'dnpb /showtargets for a list of available targets");
             Console.WriteLine("");

@@ -103,7 +103,7 @@ namespace DNPreBuild.Core.Nodes
                     foreach(string file in ((MatchNode)dataNode).Files)
                     {
                         m_Files.Add(file);
-                        m_BuildActions[file] = BuildAction.Compile;
+                        m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
                     }
                 }
             }
