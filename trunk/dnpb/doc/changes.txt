@@ -3,6 +3,26 @@
 + = Addition
 ! = Bug Fix
 
+[ April 22, 2004 - 0.11.2 ]
+	! Fixed a bug with the /file command-line operator. Was using the unresolved
+	  file path rather then the resolved one, was making the attempt to open the
+	  dnpb file fail.
+	! Fixed a bug in the schema that required at least 1 solution and 1 reference
+	  path. We can do just fine with 0 of either of these. Some files may be all
+	  <Process> statements and not have any <Solution> tags.
+	! Fixed a bug that caused the project references not to be written with the
+	  SharpDevelop target.
+	* Changed the schema to version 1.2, allowing for Configuration nodes to exist
+	  under project nodes. The inheritance of values is hierarchical. Meaning, if
+	  you define a configuration named Debug at the Soltion level, and one by the
+	  same name at the Project level, the one at the Project level will first
+	  inherit the options of the Solution level configuration, then set it's own
+	  options. If you define a configuration at the Project level and it does not
+	  exist at the Solution level, it will be created at the Solution level.
+	* Project references should now work correctly across the board. Note that due
+	  to a restriction in Visual Studio, you can only reference projects in the same
+	  solution.
+
 [ April 21, 2004 - 0.11.1 ]
     ! Fixed a problem with resolving paths in various targets. Was not properly
       setting the CWD.

@@ -60,20 +60,28 @@ namespace DNPreBuild.Core.Targets
             return tmpPath;
         }
 
-        private string BuildReference(ReferenceNode refr)
+        private string BuildReference(SolutionNode solution, ReferenceNode refr)
         {
             string ret = "\t\t<Reference type=\"";
-            if(refr.Path != null)
+            if(solution.ProjectsTable.ContainsKey(refr.Name))
             {
-                ret += "Assembly\" refto=\"";
-                ret += Helper.MakeFilePath(refr.Path, refr.Name, "dll");
+                ret += "Project\" refto=\"" + refr.Name;
                 ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
             }
             else
             {
-                ret += "Gac\" refto=\"";
-                ret += Helper.MakeFilePath("", refr.Name, "dll");
-                ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+                if(refr.Path != null)
+                {
+                    ret += "Assembly\" refto=\"";
+                    ret += Helper.MakeFilePath(refr.Path, refr.Name, "dll");
+                    ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+                }
+                else
+                {
+                    ret += "Gac\" refto=\"";
+                    ret += Helper.MakeFilePath("", refr.Name, "dll");
+                    ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+                }
             }
 
             return ret;
@@ -130,9 +138,7 @@ namespace DNPreBuild.Core.Targets
 
                 ss.WriteLine("\t<References>");
                 foreach(ReferenceNode refr in project.References)
-                {
-                    string refStr = BuildReference(refr);
-                }
+                    ss.WriteLine("\t\t{0}", BuildReference(solution, refr));
                 ss.WriteLine("\t</References>");
 
                 

@@ -84,7 +84,7 @@ namespace DNPreBuild.Core.Nodes
         [OptionNode("NoStdLib")]
         private bool m_NoStdLib = false;
 
-        private StringCollection m_FieldsChanged = null;
+        private StringCollection m_FieldsDefined = null;
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace DNPreBuild.Core.Nodes
 
         public OptionsNode()
         {
-            m_FieldsChanged = new StringCollection();
+            m_FieldsDefined = new StringCollection();
         }
 
         #endregion
@@ -131,10 +131,10 @@ namespace DNPreBuild.Core.Nodes
 
         #region Private Methods
 
-        private void FlagChanged(string name)
+        private void FlagDefined(string name)
         {
-            if(!m_FieldsChanged.Contains(name))
-                m_FieldsChanged.Add(name);
+            if(!m_FieldsDefined.Contains(name))
+                m_FieldsDefined.Add(name);
         }
 
         private void SetOption(string nodeName, string val)
@@ -146,7 +146,7 @@ namespace DNPreBuild.Core.Nodes
 
                 FieldInfo f = (FieldInfo)m_OptionFields[nodeName];
                 f.SetValue(this, Helper.TranslateValue(f.FieldType, val));
-                FlagChanged(f.Name);
+                FlagDefined(f.Name);
             }
         }
 
@@ -167,8 +167,11 @@ namespace DNPreBuild.Core.Nodes
 
             foreach(FieldInfo f in m_OptionFields.Values)
             {
-                if(m_FieldsChanged.Contains(f.Name))
+                if(m_FieldsDefined.Contains(f.Name))
+                {
                     f.SetValue(opt, f.GetValue(this));
+                    opt.m_FieldsDefined.Add(f.Name);
+                }
             }
         }
 

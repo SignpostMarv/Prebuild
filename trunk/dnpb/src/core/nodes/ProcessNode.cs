@@ -24,6 +24,8 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Xml;
 
 using DNPreBuild.Core.Attributes;
@@ -32,62 +34,31 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Configuration")]
-	public class ConfigurationNode : DataNode
-    {
+    [DataNode("Process")]
+	public class ProcessNode : DataNode
+	{
         #region Fields
 
-        private string m_Name = "unknown";
-        private OptionsNode m_Options = null;
-
-        #endregion
-
-        #region Constructors
-
-        public ConfigurationNode()
-        {
-            m_Options = new OptionsNode();
-        }
+        private string m_Path = null;
+        private bool m_IsValid = true;
 
         #endregion
 
         #region Properties
 
-        public override IDataNode Parent
+        public string Path
         {
             get
             {
-                return base.Parent;
-            }
-            set
-            {
-                base.Parent = value;
-                if(base.Parent is SolutionNode)
-                {
-                    SolutionNode node = (SolutionNode)base.Parent;
-                    if(node != null && node.Options != null)
-                        node.Options.CopyTo(ref m_Options);
-                }
+                return m_Path;
             }
         }
 
-        public string Name
+        public bool IsValid
         {
             get
             {
-                return m_Name;
-            }
-        }
-
-        public OptionsNode Options
-        {
-            get
-            {
-                return m_Options;
-            }
-            set
-            {
-                m_Options = value;
+                return m_IsValid;
             }
         }
 
@@ -97,15 +68,21 @@ namespace DNPreBuild.Core.Nodes
 
         public override void Parse(XmlNode node)
         {
-            m_Name = Helper.AttributeValue(node, "name", m_Name);
-            foreach(XmlNode child in node.ChildNodes)
+            m_Path = node.InnerText;
+            if(m_Path == null)
+                m_Path = "";
+
+            try
             {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                if(dataNode is OptionsNode)
-                    ((OptionsNode)dataNode).CopyTo(ref m_Options);
+                m_Path = Helper.ResolvePath(m_Path);
+            }
+            catch(ArgumentException)
+            {
+                Kernel.Instance.Log.Write(LogType.Warning, "Could not find prebuild file for processing: {0}", m_Path);
+                m_IsValid = false;
             }
         }
 
         #endregion
-    }
+	}
 }

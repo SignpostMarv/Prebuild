@@ -55,7 +55,8 @@ namespace DNPreBuild.Core
 
         private static Kernel m_Instance = new Kernel();
 
-        private static string m_Schema = "dnpb-1.1.xsd";
+        private static string m_SchemaVersion = "1.2";
+        private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
         private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
         private Version m_Version = null;
         private string m_Revision = "";
@@ -201,18 +202,26 @@ namespace DNPreBuild.Core
         private void ProcessFile(string file)
         {
             m_CWDStack.Push();
+            Console.WriteLine("[DEBUG] CWD: {0}", Environment.CurrentDirectory);
             
-            string path = null;
+            string path = file;
             try
             {
-                if(!File.Exists(file))
-                    throw new IOException("Could not open .NET Pre-Build file: " + file);
+                try
+                {
+                    path = Helper.ResolvePath(path);
+                }
+                catch(ArgumentException)
+                {
+                    m_Log.Write("Could not open .NET Pre-Build file: " + path);
+                    m_CWDStack.Pop();
+                    return;
+                }
 
-                path = Path.GetFullPath(file);
                 m_CurrentFile = path;
                 Helper.SetCurrentDir(Path.GetDirectoryName(path));
             
-                XmlTextReader reader = new XmlTextReader(file);
+                XmlTextReader reader = new XmlTextReader(path);
                 XmlValidatingReader valReader = new XmlValidatingReader(reader);
                 valReader.Schemas.Add(m_Schemas);
 
@@ -227,8 +236,8 @@ namespace DNPreBuild.Core
                     ));
 
                 string version = Helper.AttributeValue(doc.DocumentElement, "version", null);
-                if(version != "1.1")
-                    throw new XmlException(String.Format("Invalid schema version referenced {0}, requires 1.1", version));
+                if(version != m_SchemaVersion)
+                    throw new XmlException(String.Format("Invalid schema version referenced {0}, requires {1}", version, m_SchemaVersion));
             
                 foreach(XmlNode node in doc.DocumentElement.ChildNodes)
                 {
