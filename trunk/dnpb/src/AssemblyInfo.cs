@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -53,7 +53,7 @@ using System.Security.Permissions;
 [assembly: AssemblyConfiguration(".NET CLR")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright (c) 2004 Matthew Holmes")]
+[assembly: AssemblyCopyright("Copyright (c) 2004-2005 Matthew Holmes, Dan Moorehead")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -64,7 +64,8 @@ namespace DNPreBuild.Core.Nodes
         private string m_Name = "unknown";
         private string m_Path = "";
         private string m_FullPath = "";
-        private string m_AssemblyName = null;
+		private string m_AssemblyName = null;
+		private string m_AppIcon = "";
         private string m_Language = "C#";
         private ProjectType m_Type = ProjectType.Exe;
         private Runtime m_Runtime = Runtime.Microsoft;
@@ -123,6 +124,12 @@ namespace DNPreBuild.Core.Nodes
                 return m_AssemblyName;
             }
         }
+
+		public string AppIcon {
+			get {
+				return m_AppIcon;
+			}
+		}
 
         public string Language
         {
@@ -252,7 +259,8 @@ namespace DNPreBuild.Core.Nodes
         public override void Parse(XmlNode node)
         {
             m_Name = Helper.AttributeValue(node, "name", m_Name);
-            m_Path = Helper.AttributeValue(node, "path", m_Path);
+			m_Path = Helper.AttributeValue(node, "path", m_Path);
+			m_AppIcon = Helper.AttributeValue(node, "icon", m_AppIcon);
             m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
             m_Language = Helper.AttributeValue(node, "language", m_Language);
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);

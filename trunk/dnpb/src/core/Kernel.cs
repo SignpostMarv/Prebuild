@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -65,11 +65,11 @@ namespace DNPreBuild.Core
 
         private static Kernel m_Instance = new Kernel();
 
-        private static string m_SchemaVersion = "1.2";
+        private static string m_SchemaVersion = "1.3";
         private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
         private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
         private Version m_Version = null;
-        private string m_Revision = "a";
+        private string m_Revision = "";
         private CommandLine m_CommandLine = null;
         private Log m_Log = null;
         private CurrentDirStack m_CWDStack = null;
@@ -82,6 +82,7 @@ namespace DNPreBuild.Core
         string m_Target = null;
         string m_Clean = null;
         string m_CurrentFile = null;
+		bool m_PauseAfterFinish = false;
         StringCollection m_Refs = null;
 
         #endregion
@@ -95,6 +96,10 @@ namespace DNPreBuild.Core
         #endregion
 
         #region Properties
+
+		public bool PauseAfterFinish {
+			get{ return m_PauseAfterFinish; } 
+		}
 
         public static Kernel Instance
         {
@@ -205,9 +210,9 @@ namespace DNPreBuild.Core
         private void LogBanner()
         {
             m_Log.Write(".NET Pre-Build v" + this.Version);
-            m_Log.Write("Copyright (c) 2004 Matthew Holmes");
+            m_Log.Write(" Matthew Holmes, Dan Moorehead");
             m_Log.Write("See 'dnpb /usage' for help");
-            m_Log.Write("");
+            m_Log.Write();
         }
 
         private string WriteTempXml(string xml)
@@ -244,7 +249,7 @@ namespace DNPreBuild.Core
                 Helper.SetCurrentDir(Path.GetDirectoryName(path));
             
                 XmlTextReader reader = new XmlTextReader(path);
-                Preprocessor pre = new Preprocessor();
+                Core.Parse.Preprocessor pre = new Core.Parse.Preprocessor();
                 string xml = pre.Process(reader);
                 string tmpFile = WriteTempXml(xml);
                 if(m_CommandLine.WasPassed("ppo"))
@@ -385,9 +390,16 @@ namespace DNPreBuild.Core
 
             m_CommandLine = new CommandLine(args);
             
-            string logFile = "DNPreBuild.log";
-            if(m_CommandLine.WasPassed("log"))
-                logFile = m_CommandLine["log"];
+            string logFile = null;
+			if(m_CommandLine.WasPassed("log")) {
+				logFile = m_CommandLine["log"];
+
+				if(logFile == null || logFile == string.Empty)
+					logFile = "DNPreBuild.log";
+			}
+			else {
+				target = target & ~LogTarget.File;	//dont output to a file
+			}
             
             m_Log = new Log(target, logFile);
             LogBanner();
@@ -395,7 +407,9 @@ namespace DNPreBuild.Core
             m_CWDStack = new CurrentDirStack();
 
             m_Target = m_CommandLine["target"];
-            m_Clean = m_CommandLine["clean"];
+			m_Clean = m_CommandLine["clean"];
+
+			m_PauseAfterFinish = m_CommandLine.WasPassed("pause");
 
             LoadSchema();
 
@@ -424,12 +438,16 @@ namespace DNPreBuild.Core
 
             string target = (m_Target != null ? m_Target.ToLower() : m_Clean.ToLower());
             bool clean = (m_Target == null);
-            if(clean && target == "all")
+			if(clean && target == string.Empty)
+				target = "all";
+            if(clean && target == "all")//default to all if no target was specified for clean
             {
-                Console.Write("WARNING: This operation will clean ALL project files for all targets, are you sure? (y/n):");
+                Console.WriteLine("WARNING: This operation will clean ALL project files for all targets, are you sure? (y/n):");
                 string ret = Console.ReadLine();
-                ret = ret.Trim();
-                if(ret == null || (ret.ToLower() != "y" && ret.ToLower() != "yes"))
+                if(ret == null)
+					return;
+				ret = ret.Trim().ToLower();
+                if((ret.ToLower() != "y" && ret.ToLower() != "yes"))
                     return;
             }
 
@@ -438,7 +456,7 @@ namespace DNPreBuild.Core
                 // Because VS2003 and VS2002 use the same file extensions, we pass over
                 // VS2003 when 'all' is selected, because VS2002 files can be converted
                 // to VS2003 files by VS2003
-                if(target == "all" && targ.Name == "vs2003")
+                if(target == "all" && targ.Name == "vs2002")
                     continue;
 
                 if(targ.Name.ToLower() == target || target == "all")

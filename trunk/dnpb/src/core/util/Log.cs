@@ -1,6 +1,6 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com)
+Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -79,9 +79,23 @@ namespace DNPreBuild.Core.Util
 
         #region Public Methods
 
+		public void Write() {
+			Write(string.Empty);
+		}
+
+		public void Write(string msg) {
+			if((m_Target & LogTarget.Null) != 0)
+				return;
+
+			if((m_Target & LogTarget.Console) != 0)
+				Console.WriteLine(msg);
+			if((m_Target & LogTarget.File) != 0 && m_Writer != null)
+				m_Writer.WriteLine(msg);
+		}
+
         public void Write(string fmt, params object[] args)
         {
-            Write(LogType.None, fmt, args);
+            Write(string.Format(fmt,args));
         }
 
         public void Write(LogType type, string fmt, params object[] args)
@@ -89,20 +103,17 @@ namespace DNPreBuild.Core.Util
             if((m_Target & LogTarget.Null) != 0)
                 return;
 
-            string str = "";
-            if(type == LogType.Info)
-                str = "[I] ";
-            else if(type == LogType.Warning)
-                str = "[!] ";
-            else if(type == LogType.Error)
-                str = "[X] ";
+			string str = "";
+			switch(type) {
+				case LogType.Info:
+					str = "[I] "; break;
+				case LogType.Warning:
+					str = "[!] "; break;
+				case LogType.Error:
+					str = "[X] "; break;
+			}
 
-            fmt = str + fmt;
-
-            if((m_Target & LogTarget.Console) != 0)
-                Console.WriteLine(fmt, args);
-            if((m_Target & LogTarget.File) != 0 && m_Writer != null)
-                m_Writer.WriteLine(fmt, args);
+            Write(str + fmt,args);
         }
 
         public void WriteException(LogType type, Exception ex)
