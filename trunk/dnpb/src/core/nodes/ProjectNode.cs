@@ -64,6 +64,7 @@ namespace DNPreBuild.Core.Nodes
         private string m_Name = "unknown";
         private string m_Path = "";
         private string m_FullPath = "";
+        private string m_AssemblyName = null;
         private string m_Language = "C#";
         private ProjectType m_Type = ProjectType.Exe;
         private Runtime m_Runtime = Runtime.Microsoft;
@@ -111,6 +112,14 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_FullPath;
+            }
+        }
+
+        public string AssemblyName
+        {
+            get
+            {
+                return m_AssemblyName;
             }
         }
 
@@ -227,12 +236,16 @@ namespace DNPreBuild.Core.Nodes
         {
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             m_Path = Helper.AttributeValue(node, "path", m_Path);
+            m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
             m_Language = Helper.AttributeValue(node, "language", m_Language);
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
             m_Runtime = (Runtime)Helper.EnumAttributeValue(node, "runtime", typeof(Runtime), m_Runtime);
             m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
             m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
             
+            if(m_AssemblyName == null || m_AssemblyName.Length < 1)
+                m_AssemblyName = m_Name;
+
             if(m_RootNamespace == null || m_RootNamespace.Length < 1)
                 m_RootNamespace = m_Name;
 

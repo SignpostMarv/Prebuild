@@ -174,7 +174,7 @@ namespace DNPreBuild.Core.Targets
 
                     ss.WriteLine("\t\t\t<Output");
                     ss.WriteLine("\t\t\t\tdirectory=\"{0}\"", conf.Options["OutputPath"]);
-                    ss.WriteLine("\t\t\t\tassembly=\"{0}\"", project.Name);
+                    ss.WriteLine("\t\t\t\tassembly=\"{0}\"", project.AssemblyName);
                     ss.WriteLine("\t\t\t\texecuteScript=\"\"");
                     ss.WriteLine("\t\t\t\texecuteBeforeBuild=\"\"");
                     ss.WriteLine("\t\t\t\texecuteAfterBuild=\"\"");
