@@ -46,7 +46,7 @@ namespace DNPreBuild.Core.Nodes
         
         private OptionsNode m_Options = null;
         private FilesNode m_Files = null;
-        private ArrayList m_Configurations = null;
+        private Hashtable m_Configurations = null;
         private Hashtable m_Projects = null;
 
         #endregion
@@ -55,7 +55,7 @@ namespace DNPreBuild.Core.Nodes
 
         public SolutionNode()
         {
-            m_Configurations = new ArrayList();
+            m_Configurations = new Hashtable();
             m_Projects = new Hashtable();
         }
 
@@ -103,7 +103,15 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
-        public ArrayList Configurations
+        public ICollection Configurations
+        {
+            get
+            {
+                return m_Configurations.Values;
+            }
+        }
+
+        public Hashtable ConfigurationsTable
         {
             get
             {
@@ -159,7 +167,7 @@ namespace DNPreBuild.Core.Nodes
                     else if(dataNode is FilesNode)
                         m_Files = (FilesNode)dataNode;
                     else if(dataNode is ConfigurationNode)
-                        m_Configurations.Add((ConfigurationNode)dataNode);
+                        m_Configurations[((ConfigurationNode)dataNode).Name] = dataNode;
                     else if(dataNode is ProjectNode)
                         m_Projects[((ProjectNode)dataNode).Name] = dataNode;
                 }

@@ -60,6 +60,7 @@ namespace DNPreBuild.Core.Nodes
         private Runtime m_Runtime = Runtime.Microsoft;
         private string m_StartupObject = "";
 
+        private Hashtable m_Configurations = null;
         private ArrayList m_ReferencePaths = null;
         private ArrayList m_References = null;
         private FilesNode m_Files = null;
@@ -70,6 +71,7 @@ namespace DNPreBuild.Core.Nodes
 
         public ProjectNode()
         {
+            m_Configurations = new Hashtable();
             m_ReferencePaths = new ArrayList();
             m_References = new ArrayList();
         }
@@ -134,6 +136,22 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public ICollection Configurations
+        {
+            get
+            {
+                return m_Configurations.Values;
+            }
+        }
+
+        public Hashtable ConfigurationsTable
+        {
+            get
+            {
+                return m_Configurations;
+            }
+        }
+
         public ArrayList ReferencePaths
         {
             get
@@ -156,6 +174,31 @@ namespace DNPreBuild.Core.Nodes
             {
                 return m_Files;
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void HandleConfiguration(ConfigurationNode conf)
+        {
+            if(m_Parent is SolutionNode)
+            {
+                SolutionNode solution = (SolutionNode)m_Parent;
+                if(solution.ConfigurationsTable.ContainsKey(conf.Name))
+                {
+                    ConfigurationNode parentConf = (ConfigurationNode)solution.ConfigurationsTable[conf.Name];
+                    
+                    OptionsNode tempOptions = new OptionsNode();
+                    parentConf.Options.CopyTo(ref tempOptions);
+                    conf.Options.CopyTo(ref tempOptions);
+                    conf.Options = tempOptions;
+                }
+                else
+                    solution.ConfigurationsTable[conf.Name] = conf;
+            }
+
+            m_Configurations[conf.Name] = conf;
         }
 
         #endregion
@@ -189,7 +232,9 @@ namespace DNPreBuild.Core.Nodes
                 foreach(XmlNode child in node.ChildNodes)
                 {
                     IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
-                    if(dataNode is ReferencePathNode)
+                    if(dataNode is ConfigurationNode)
+                        HandleConfiguration((ConfigurationNode)dataNode);
+                    else if(dataNode is ReferencePathNode)
                         m_ReferencePaths.Add(dataNode);
                     else if(dataNode is ReferenceNode)
                         m_References.Add(dataNode);

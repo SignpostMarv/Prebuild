@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <DNPreBuild 
-	xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.0.xsd"
-	version="1.0"
+	xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.2.xsd"
+	version="1.2"
 >
 	<Solution name="dnpb">
 		<Configuration name="Debug">

@@ -65,11 +65,10 @@ namespace DNPreBuild
             }
             catch(Exception ex)
             {
-                Console.WriteLine("Unhandled exception: {0}", ex.Message);
+                Console.WriteLine("Unhandled error: {0}", ex.Message);
 #if DEBUG
                 Console.WriteLine("{0}", ex.StackTrace);
 #endif
-                throw;
             }
 		}
 

@@ -157,7 +157,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t\t\t\tStartupObject = \"{0}\"", project.StartupObject);
                 ps.WriteLine("\t\t\t>");
 
-                foreach(ConfigurationNode conf in solution.Configurations)
+                foreach(ConfigurationNode conf in project.Configurations)
                 {
                     ps.WriteLine("\t\t\t\t<Config");
                     ps.WriteLine("\t\t\t\t\tName = \"{0}\"", conf.Name);
@@ -195,11 +195,20 @@ namespace DNPreBuild.Core.Targets
                     ps.WriteLine("\t\t\t\t<Reference");
                     ps.WriteLine("\t\t\t\t\tName = \"{0}\"", refr.Name);
 
-                    if(refr.Path != null)
-                        ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
+                    if(solution.ProjectsTable.ContainsKey(refr.Name))
+                    {
+                        ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
+                        ps.WriteLine("\t\t\t\t\tProject = \"{{{0}}}\"", ((Guid)m_ProjectUUIDs[refProject]).ToString().ToUpper());
+                        ps.WriteLine("\t\t\t\t\tPackage = \"{0}\"", toolInfo.GUID.ToString().ToUpper());
+                    }
+                    else
+                    {
+                        if(refr.Path != null)
+                            ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
 
-                    if(refr.LocalCopy)
-                        ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"", refr.LocalCopy);
+                        if(refr.LocalCopy)
+                            ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"", refr.LocalCopy);
+                    }
                     
                     ps.WriteLine("\t\t\t\t/>");
                 }
@@ -232,7 +241,7 @@ namespace DNPreBuild.Core.Targets
                 ps.WriteLine("\t\t<Build>");
 
                 ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(project));
-                foreach(ConfigurationNode conf in solution.Configurations)
+                foreach(ConfigurationNode conf in project.Configurations)
                 {
                     ps.WriteLine("\t\t\t\t<Config");
                     ps.WriteLine("\t\t\t\t\tName = \"{0}\"", conf.Name);
@@ -301,8 +310,10 @@ namespace DNPreBuild.Core.Targets
                     {
                         ReferenceNode refr = (ReferenceNode)project.References[i];
                         if(solution.ProjectsTable.ContainsKey(refr.Name))
-                            ss.WriteLine("\t\t{0}.{1} = {2}", 
-                                m_ProjectUUIDs[project],i, m_ProjectUUIDs[solution.ProjectsTable[refr.Name]]
+                            ss.WriteLine("\t\t({{{0}}}).{1} = ({{{2}}})", 
+                                ((Guid)m_ProjectUUIDs[project]).ToString().ToUpper()
+                                , i, 
+                                ((Guid)m_ProjectUUIDs[solution.ProjectsTable[refr.Name]]).ToString().ToUpper()
                             );
                     }
                 }
