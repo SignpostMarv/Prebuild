@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -74,7 +76,7 @@ namespace DNPreBuild.Core.Nodes
             if(!File.Exists(m_Path))
             {
                 m_Valid = false;
-                Root.Instance.Log.Write(LogType.Warning, "File does not exist: {0}", m_Path);
+                Kernel.Instance.Log.Write(LogType.Warning, "File does not exist: {0}", m_Path);
             }
         }
 

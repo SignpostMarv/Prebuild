@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -69,7 +71,7 @@ namespace DNPreBuild.Core.Targets
         protected string m_VersionName = "2003";
         protected VSVersion m_Version = VSVersion.VS71;
         
-        private Root m_Root = null;
+        private Kernel m_Kernel = null;
         private Hashtable m_ProjectUUIDs = null;
         private Hashtable m_Tools = null;
 
@@ -125,7 +127,7 @@ namespace DNPreBuild.Core.Targets
                     ps.WriteLine("\t\t\t\tNoStandardLibraries = \"false\"");
 
                 ps.WriteLine("\t\t\t\tOutputType = \"{0}\"", project.Type.ToString());
-                ps.WriteLine("\t\t\t\tRootNamespace = \"{0}\"", project.Name);
+                ps.WriteLine("\t\t\t\tKernelNamespace = \"{0}\"", project.Name);
                 ps.WriteLine("\t\t\t\tStartupObject = \"{0}\"", project.StartupObject);
                 ps.WriteLine("\t\t\t>");
 
@@ -202,16 +204,16 @@ namespace DNPreBuild.Core.Targets
 
         private void WriteSolution(SolutionNode solution)
         {
-            m_Root.Log.Write("Creating Visual Studio {0} solution and project files", m_VersionName);
+            m_Kernel.Log.Write("Creating Visual Studio {0} solution and project files", m_VersionName);
 
             foreach(ProjectNode project in solution.Projects)
             {
                 m_ProjectUUIDs[project] = Guid.NewGuid();
-                m_Root.Log.Write("...Creating project: {0}", project.Name);
+                m_Kernel.Log.Write("...Creating project: {0}", project.Name);
                 WriteProject(solution, project);
             }
             
-            m_Root.Log.Write("");
+            m_Kernel.Log.Write("");
 
             string solutionFile = Path.GetFullPath(Helper.MakeFilePath(solution.Path, solution.Name, "sln"));
             StreamWriter ss = new StreamWriter(solutionFile);
@@ -292,10 +294,10 @@ namespace DNPreBuild.Core.Targets
 
         #region ITarget Members
 
-        public virtual void Write(Root root)
+        public virtual void Write(Kernel kern)
         {
-            m_Root = root;
-            foreach(SolutionNode sol in root.Solutions)
+            m_Kernel = kern;
+            foreach(SolutionNode sol in kern.Solutions)
                 WriteSolution(sol);
         }
 

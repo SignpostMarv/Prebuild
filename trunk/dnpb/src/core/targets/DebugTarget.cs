@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -35,9 +37,9 @@ namespace DNPreBuild.Core.Targets
 	{
         #region ITarget Members
 
-        public void Write(Root root)
+        public void Write(Kernel kern)
         {
-            foreach(SolutionNode s in root.Solutions)
+            foreach(SolutionNode s in kern.Solutions)
             {
                 Console.WriteLine("Solution [ {0}, {1} ]", s.Name, s.Path);
                 foreach(string file in s.Files)

@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -39,28 +41,29 @@ namespace DNPreBuild
         {
             try 
             {
-                Root root = Root.Instance;
-                root.Initialize(LogTarget.File | LogTarget.Console, args);
+                Kernel Kernel = Kernel.Instance;
+                Kernel.Initialize(LogTarget.File | LogTarget.Console, args);
                 bool exit = false;
 
-                if(root.CommandLine.WasPassed("usage"))
+                if(Kernel.CommandLine.WasPassed("usage"))
                 {
                     exit = true;
                     OutputUsage();
                 }
-                if(root.CommandLine.WasPassed("showtargets"))
+                if(Kernel.CommandLine.WasPassed("showtargets"))
                 {
                     exit = true;
-                    OutputTargets(root);
+                    OutputTargets(Kernel);
                 }
 
                 if(exit)
                     Environment.Exit(0);
 
-                root.Process();
+                Kernel.Process();
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine("Unhandled exception: {0}", ex.Message);
                 Environment.Exit(1);
             }
 		}
@@ -82,11 +85,11 @@ namespace DNPreBuild
             Console.WriteLine("");
         }
 
-        private static void OutputTargets(Root root)
+        private static void OutputTargets(Kernel kern)
         {
             Console.WriteLine("Targets available in .NET Pre-build:");
             Console.WriteLine("");
-            foreach(string target in root.Targets.Keys)
+            foreach(string target in kern.Targets.Keys)
                 Console.WriteLine(target);
             Console.WriteLine("");
         }

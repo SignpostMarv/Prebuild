@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -136,12 +138,12 @@ namespace DNPreBuild.Core.Nodes
                 throw new WarningException("Could not resolve Solution path: {0}", m_Path);
             }
 
-            Root.Instance.CWDStack.Push();
+            Kernel.Instance.CWDStack.Push();
             Environment.CurrentDirectory = tmpPath;
 
             foreach(XmlNode child in node.ChildNodes)
             {
-                IDataNode dataNode = Root.Instance.ParseNode(child, this, "Solution");
+                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Solution");
                 if(dataNode is OptionsNode)
                     m_Options = (OptionsNode)dataNode;
                 else if(dataNode is FilesNode)
@@ -152,7 +154,7 @@ namespace DNPreBuild.Core.Nodes
                     m_Projects[((ProjectNode)dataNode).Name] = dataNode;
             }
 
-            Root.Instance.CWDStack.Pop();
+            Kernel.Instance.CWDStack.Pop();
         }
 
         #endregion

@@ -1,5 +1,7 @@
 #region BSD License
 /*
+Copyright (c) 2004 Matthew Holmes (kerion@houston.rr.com)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
@@ -145,19 +147,19 @@ namespace DNPreBuild.Core.Nodes
                 throw new WarningException("Could not resolve Project path: {0}", m_Path);
             }
 
-            Root.Instance.CWDStack.Push();
+            Kernel.Instance.CWDStack.Push();
             Environment.CurrentDirectory = tmpPath;
 
             foreach(XmlNode child in node.ChildNodes)
             {
-                IDataNode dataNode = Root.Instance.ParseNode(child, this, "Project");
+                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Project");
                 if(dataNode is ReferenceNode)
                     m_References.Add(dataNode);
                 else if(dataNode is FilesNode)
                     m_Files = (FilesNode)dataNode;
             }
 
-            Root.Instance.CWDStack.Push();
+            Kernel.Instance.CWDStack.Push();
         }
 
 
