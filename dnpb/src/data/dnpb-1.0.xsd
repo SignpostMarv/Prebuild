@@ -138,9 +138,27 @@
 	<xs:element name="Files">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="File" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="File" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="Match" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="File">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="buildAction" default="Compile">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="Compile" />
+								<xs:enumeration value="Content" />
+								<xs:enumeration value="EmbeddedResource" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:extension>
+			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
 

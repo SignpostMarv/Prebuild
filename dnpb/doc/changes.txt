@@ -3,5 +3,9 @@
 + = Addition
 ! = Bug Fix
 
-[ April 6, 2004 - 0.10.0 ]
+[ April 13, 2004 - 0.10.1a ]
+    + Added the buildAction attribute to the File node. This is needed for dnpb
+    to even be able to bootstrap itself (dnpb-1.0.xsd must be an embedded resource)
+
+[ April 13, 2004 - 0.10.1 ]
     * First Release

@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
-<DNPreBuild>
+<DNPreBuild 
+	xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.0.xsd"
+	version="1.0"
+>
 	<Solution name="dnpb">
 		<Configuration name="Debug">
 			<Options>
@@ -19,23 +22,28 @@
 		
 		<Files>
 			<File>prebuild.xml</File>
+			<Match
+				path="doc\"
+				pattern="*.txt"
+			/>
 		</Files>
 		
 		<Project
 			name="dnpb"
 			path="src\"
 			language="C#"
+			startupObject="DNPreBuild.DNPreBuild"
 		>
 			<Reference name="System" />
 			<Reference name="System.XML" />
 			
 			<Files>
+				<File buildAction="EmbeddedResource">data\dnpb-1.0.xsd</File>
 				<Match
-					path="src\"
+					path=".\"
 					pattern="*.cs"
 					recurse="true"
-				/>
-				<File>src\data\dnpb-1.0.xsd</File>
+				/>				
 			</Files>
 		</Project>
 	</Solution>

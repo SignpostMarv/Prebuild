@@ -39,6 +39,7 @@ namespace DNPreBuild.Core.Nodes
         #region Fields
 
         private StringCollection m_Files = null;
+        private Hashtable m_BuildActions = null;
 
         #endregion
 
@@ -47,6 +48,7 @@ namespace DNPreBuild.Core.Nodes
         public FilesNode()
         {
             m_Files = new StringCollection();
+            m_BuildActions = new Hashtable();
         }
 
         #endregion
@@ -65,6 +67,14 @@ namespace DNPreBuild.Core.Nodes
 
         #region Public Methods
 
+        public BuildAction GetBuildAction(string file)
+        {
+            if(!m_BuildActions.ContainsKey(file))
+                return BuildAction.Compile;
+
+            return (BuildAction)m_BuildActions[file];
+        }
+
         public override void Parse(XmlNode node)
         {
             foreach(XmlNode child in node.ChildNodes)
@@ -72,13 +82,20 @@ namespace DNPreBuild.Core.Nodes
                 IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Files");
                 if(dataNode is FileNode)
                 {
-                    if(((FileNode)dataNode).IsValid)
-                        m_Files.Add(((FileNode)dataNode).Path);
+                    FileNode fileNode = (FileNode)dataNode;
+                    if(fileNode.IsValid)
+                    {
+                        m_Files.Add(fileNode.Path);
+                        m_BuildActions[fileNode.Path] = fileNode.BuildAction;
+                    }
                 }
                 else if(dataNode is MatchNode)
                 {
                     foreach(string file in ((MatchNode)dataNode).Files)
+                    {
                         m_Files.Add(file);
+                        m_BuildActions[file] = BuildAction.Compile;
+                    }
                 }
             }
         }

@@ -33,12 +33,20 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
+    public enum BuildAction
+    {
+        Compile,
+        Content,
+        EmbeddedResource
+    }
+
 	[DataNode("File")]
     public class FileNode : DataNode
 	{
         #region Fields
 
         private string m_Path = null;
+        private BuildAction m_BuildAction = BuildAction.Compile;
         private bool m_Valid = false;
 
         #endregion
@@ -50,6 +58,14 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_Path;
+            }
+        }
+
+        public BuildAction BuildAction
+        {
+            get
+            {
+                return m_BuildAction;
             }
         }
 
@@ -67,6 +83,9 @@ namespace DNPreBuild.Core.Nodes
 
         public override void Parse(XmlNode node)
         {
+            m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
+                Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+
             m_Path = node.InnerText;
             if(m_Path == null)
                 m_Path = "";

@@ -191,7 +191,7 @@ namespace DNPreBuild.Core.Targets
                     ps.WriteLine("\t\t\t\t<File");
                     ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file.Replace(".\\", ""));
                     ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
-                    ps.WriteLine("\t\t\t\t\tBuildAction = \"Compile\"");
+                    ps.WriteLine("\t\t\t\t\tBuildAction = \"{0}\"", project.Files.GetBuildAction(file));
                     ps.WriteLine("\t\t\t\t/>");
                 }
                 ps.WriteLine("\t\t\t</Include>");
@@ -259,11 +259,8 @@ namespace DNPreBuild.Core.Targets
                 ss.WriteLine("Global");
 
                 ss.WriteLine("\tGlobalSection(SolutionConfiguration) = preSolution");
-                for(int i = 0; i < solution.Configurations.Count; i++)
-                {
-                    ConfigurationNode conf = (ConfigurationNode)solution.Configurations[i];
+                foreach(ConfigurationNode conf in solution.Configurations)
                     ss.WriteLine("\t\t{0} = {0}", conf.Name);
-                }
                 ss.WriteLine("\tEndGlobalSection");
 
                 ss.WriteLine("\tGlobalSection(ProjectDependencies) = postSolution");
