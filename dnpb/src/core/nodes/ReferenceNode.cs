@@ -39,7 +39,6 @@ namespace DNPreBuild.Core.Nodes
 
         private string m_Name = "unknown";
         private string m_Path = null;
-        private string m_Assembly = null;
         private bool m_LocalCopy = false;
         private string m_Version = null;
 
@@ -60,14 +59,6 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_Path;
-            }
-        }
-
-        public string Assembly
-        {
-            get
-            {
-                return m_Assembly;
             }
         }
 
@@ -95,7 +86,6 @@ namespace DNPreBuild.Core.Nodes
         {
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             m_Path = Helper.AttributeValue(node, "path", m_Path);
-            m_Assembly = Helper.AttributeValue(node, "assembly", m_Assembly);
             m_LocalCopy = (bool)Helper.TranslateValue(typeof(bool),
                 Helper.AttributeValue(node, "localCopy", "false"));
             m_Version = Helper.AttributeValue(node, "version", m_Version);

@@ -188,5 +188,5 @@ namespace DNPreBuild.Core.Nodes
         }
 
         #endregion        
-    }
+   }
 }

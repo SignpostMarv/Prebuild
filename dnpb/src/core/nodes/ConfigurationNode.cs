@@ -96,7 +96,7 @@ namespace DNPreBuild.Core.Nodes
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             foreach(XmlNode child in node.ChildNodes)
             {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Configuration");
+                IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
                 if(dataNode is OptionsNode)
                     ((OptionsNode)dataNode).CopyTo(ref m_Options);
             }

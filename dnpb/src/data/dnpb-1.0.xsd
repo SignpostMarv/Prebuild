@@ -32,6 +32,7 @@
 	<xs:element name="DNPreBuild">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="Process" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="Solution" minOccurs="1" maxOccurs="unbounded" />
 			</xs:sequence>
 
@@ -39,12 +40,14 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="Process" type="xs:string" />
+
 	<xs:element name="Solution">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="Options" minOccurs="0" />
 				<xs:element ref="Configuration" minOccurs="1" maxOccurs="unbounded" />
-				<xs:element ref="Files" />
+				<xs:element ref="Files" minOccurs="0" />
 				<xs:element ref="Project" minOccurs="1" maxOccurs="unbounded" />
 			</xs:sequence>
 
@@ -60,7 +63,6 @@
 					<xs:complexType>
 						<xs:attribute name="name" type="xs:string" use="required" />
 						<xs:attribute name="path" type="xs:string" />
-						<xs:attribute name="assembly" type="xs:string" />
 						<xs:attribute name="localCopy" type="xs:boolean" />
 						<xs:attribute name="version" type="xs:string" />
 					</xs:complexType>
@@ -89,7 +91,16 @@
 						<xs:enumeration value="Library" />
 					</xs:restriction>
 				</xs:simpleType>
-			</xs:attribute>	
+			</xs:attribute>
+			
+			<xs:attribute name="runtime" default="Microsoft">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Microsoft" />
+						<xs:enumeration value="Mono" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 			
 			<xs:attribute name="startupObject" type="xs:string" default="" />
 		</xs:complexType>

@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace DNPreBuild.Core.Util
@@ -71,52 +72,132 @@ namespace DNPreBuild.Core.Util
             {
                 string lowerVal = val.ToLower();
                 if(t == typeof(bool))
-                    return (lowerVal == "true" || lowerVal == "1" || lowerVal == "y" || lowerVal == "yes");
+                    return (lowerVal == "true" || lowerVal == "1" || lowerVal == "y" || lowerVal == "yes" || lowerVal == "on");
                 else if(t == typeof(int))
                     return (Int32.Parse(val));
                 else
                     return val;
             }
-            catch
+            catch(FormatException)
             {
                 return null;
             }
+        }
+
+        public static bool DeleteIfExists(string file)
+        {
+            string resFile = null;
+            try
+            {
+                resFile = ResolvePath(file);
+            }
+            catch(ArgumentException)
+            {
+                return false;
+            }
+
+            if(!File.Exists(resFile))
+                return false;
+
+            File.Delete(resFile);
+            return true;
+        }
+
+        // This little gem was taken from the NeL source, thanks guys!
+        public static string MakePathRelativeTo(string basePath, string relPath)
+        {
+            string tmp = NormalizePath(basePath, '/');
+            string src = NormalizePath(relPath, '/');
+            string subTmp, prefix = "";
+
+            while(true)
+            {
+                if(src.Length > tmp.Length)
+                    subTmp = src.Substring(0, tmp.Length);
+                else
+                    subTmp = src;
+
+                if(tmp == subTmp)
+                {
+                    int size = tmp.Length;
+                    if(size == src.Length)
+                        return "./";
+
+                    string ret = prefix + relPath.Substring(size, relPath.Length - size);
+                    ret = ret.Trim();
+                    if(ret[0] == '/' || ret[0] == '\\')
+                        ret = "." + ret;
+
+                    return NormalizePath(ret);
+                }
+
+                if(tmp.Length < 2)
+                    break;
+
+                int lastPos = tmp.LastIndexOf('/', tmp.Length - 2);
+                int prevPos = tmp.IndexOf('/');
+
+                if((lastPos == prevPos) || (lastPos == -1))
+                    break;
+
+                tmp = tmp.Substring(0, lastPos + 1);
+                prefix += "../";
+            }
+
+            return relPath;
         }
 
         public static string ResolvePath(string path)
         {
             string tmpPath = NormalizePath(path);
             if(tmpPath.Length < 1)
-                return path;
+                tmpPath = ".";
             
-            return Path.GetFullPath(tmpPath);
+            tmpPath = Path.GetFullPath(tmpPath);
+            if(!File.Exists(tmpPath) && !Directory.Exists(tmpPath))
+                throw new ArgumentException("Path could not be resolved: " + tmpPath);
+
+            return tmpPath;
         }
 
-        public static string NormalizePath(string path)
+        public static string NormalizePath(string path, char sepChar)
         {
             if(path == null)
                 return "";
 
             string tmpPath = path.Replace('\\', '/');
-            tmpPath = tmpPath.Replace('/', Path.DirectorySeparatorChar);
+            tmpPath = tmpPath.Replace('/', sepChar);
             return tmpPath;
         }
+
+        public static string NormalizePath(string path)
+        {
+            return NormalizePath(path, Path.DirectorySeparatorChar);
+        }
         
-        public static string EndPath(string path)
+        public static string EndPath(string path, char sepChar)
         {
             if(path == null || path.Length < 1)
                 return "";
 
-            if(!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                return (path + Path.DirectorySeparatorChar);
+            if(!path.EndsWith(sepChar.ToString()))
+                return (path + sepChar);
 
             return path;
+        }
+
+        public static string EndPath(string path)
+        {
+            return EndPath(path, Path.DirectorySeparatorChar);
         }
 
         public static string MakeFilePath(string path, string name, string ext)
         {
             string ret = EndPath(NormalizePath(path));
-            ret += name + "." + ext;
+            
+            ret += name;
+            if(!name.EndsWith("." + ext))
+                ret += "." + ext;
             
             foreach(char c in Path.InvalidPathChars)
                 ret = ret.Replace(c, '_');

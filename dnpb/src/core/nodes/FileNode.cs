@@ -35,6 +35,7 @@ namespace DNPreBuild.Core.Nodes
 {
     public enum BuildAction
     {
+        Nothing,
         Compile,
         Content,
         EmbeddedResource

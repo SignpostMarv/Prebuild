@@ -79,7 +79,7 @@ namespace DNPreBuild.Core.Nodes
         {
             foreach(XmlNode child in node.ChildNodes)
             {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Files");
+                IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
                 if(dataNode is FileNode)
                 {
                     FileNode fileNode = (FileNode)dataNode;

@@ -41,6 +41,12 @@ namespace DNPreBuild.Core.Nodes
         Library
     }
 
+    public enum Runtime
+    {
+        Microsoft,
+        Mono
+    }
+
     [DataNode("Project")]
 	public class ProjectNode : DataNode
 	{
@@ -48,8 +54,10 @@ namespace DNPreBuild.Core.Nodes
 
         private string m_Name = "unknown";
         private string m_Path = "";
+        private string m_FullPath = "";
         private string m_Language = "C#";
         private ProjectType m_Type = ProjectType.Exe;
+        private Runtime m_Runtime = Runtime.Microsoft;
         private string m_StartupObject = "";
 
         private ArrayList m_References = null;
@@ -84,6 +92,14 @@ namespace DNPreBuild.Core.Nodes
             }
         }
 
+        public string FullPath
+        {
+            get
+            {
+                return m_FullPath;
+            }
+        }
+
         public string Language
         {
             get
@@ -97,6 +113,14 @@ namespace DNPreBuild.Core.Nodes
             get
             {
                 return m_Type;
+            }
+        }
+
+        public Runtime Runtime
+        {
+            get
+            {
+                return m_Runtime;
             }
         }
 
@@ -134,12 +158,13 @@ namespace DNPreBuild.Core.Nodes
             m_Path = Helper.AttributeValue(node, "path", m_Path);
             m_Language = Helper.AttributeValue(node, "language", m_Language);
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
+            m_Runtime = (Runtime)Helper.EnumAttributeValue(node, "runtime", typeof(Runtime), m_Runtime);
             m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 
-            string tmpPath = m_Path;
+            m_FullPath = m_Path;
             try
             {
-                tmpPath = Helper.ResolvePath(tmpPath);
+                m_FullPath = Helper.ResolvePath(m_FullPath);
             }
             catch
             {
@@ -147,18 +172,23 @@ namespace DNPreBuild.Core.Nodes
             }
 
             Kernel.Instance.CWDStack.Push();
-            Helper.SetCurrentDir(tmpPath);
-
-            foreach(XmlNode child in node.ChildNodes)
+            try
             {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Project");
-                if(dataNode is ReferenceNode)
-                    m_References.Add(dataNode);
-                else if(dataNode is FilesNode)
-                    m_Files = (FilesNode)dataNode;
-            }
+                Helper.SetCurrentDir(m_FullPath);
 
-            Kernel.Instance.CWDStack.Push();
+                foreach(XmlNode child in node.ChildNodes)
+                {
+                    IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+                    if(dataNode is ReferenceNode)
+                        m_References.Add(dataNode);
+                    else if(dataNode is FilesNode)
+                        m_Files = (FilesNode)dataNode;
+                }
+            }
+            finally
+            {
+                Kernel.Instance.CWDStack.Pop();
+            }
         }
 
 

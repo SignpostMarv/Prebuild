@@ -42,6 +42,7 @@ namespace DNPreBuild.Core.Nodes
         
         private string m_Name = "unknown";
         private string m_Path = "";
+        private string m_FullPath = "";
         
         private OptionsNode m_Options = null;
         private FilesNode m_Files = null;
@@ -75,6 +76,14 @@ namespace DNPreBuild.Core.Nodes
             get 
             {
                 return m_Path;
+            }
+        }
+
+        public string FullPath
+        {
+            get
+            {
+                return m_FullPath;
             }
         }
 
@@ -127,33 +136,38 @@ namespace DNPreBuild.Core.Nodes
             m_Name = Helper.AttributeValue(node, "name", m_Name);
             m_Path = Helper.AttributeValue(node, "path", m_Path);
 
-            string tmpPath = m_Path;
+            m_FullPath = m_Path;
             try
             {
-                tmpPath = Helper.ResolvePath(tmpPath);
+                m_FullPath = Helper.ResolvePath(m_FullPath);
             }
             catch
             {
-                throw new WarningException("Could not resolve Solution path: {0}", m_Path);
+                throw new WarningException("Could not resolve solution path: {0}", m_Path);
             }
 
             Kernel.Instance.CWDStack.Push();
-            Helper.SetCurrentDir(tmpPath);            
-
-            foreach(XmlNode child in node.ChildNodes)
+            try
             {
-                IDataNode dataNode = Kernel.Instance.ParseNode(child, this, "Solution");
-                if(dataNode is OptionsNode)
-                    m_Options = (OptionsNode)dataNode;
-                else if(dataNode is FilesNode)
-                    m_Files = (FilesNode)dataNode;
-                else if(dataNode is ConfigurationNode)
-                    m_Configurations.Add((ConfigurationNode)dataNode);
-                else if(dataNode is ProjectNode)
-                    m_Projects[((ProjectNode)dataNode).Name] = dataNode;
-            }
+                Helper.SetCurrentDir(m_FullPath);
 
-            Kernel.Instance.CWDStack.Pop();
+                foreach(XmlNode child in node.ChildNodes)
+                {
+                    IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+                    if(dataNode is OptionsNode)
+                        m_Options = (OptionsNode)dataNode;
+                    else if(dataNode is FilesNode)
+                        m_Files = (FilesNode)dataNode;
+                    else if(dataNode is ConfigurationNode)
+                        m_Configurations.Add((ConfigurationNode)dataNode);
+                    else if(dataNode is ProjectNode)
+                        m_Projects[((ProjectNode)dataNode).Name] = dataNode;
+                }
+            }
+            finally
+            {
+                Kernel.Instance.CWDStack.Pop();
+            }
         }
 
         #endregion
