@@ -56,6 +56,7 @@ namespace DNPreBuild.Core
         private static Kernel m_Instance = new Kernel();
 
         private Version m_Version = null;
+        private string m_Revision = "a";
         private CommandLine m_CommandLine = null;
         private Log m_Log = null;
         private CurrentDirStack m_CWDStack = null;
@@ -92,7 +93,7 @@ namespace DNPreBuild.Core
         {
             get
             {
-                return String.Format("{0}.{1}.{2}", m_Version.Major, m_Version.Minor, m_Version.Build);
+                return String.Format("{0}.{1}.{2}{3}", m_Version.Major, m_Version.Minor, m_Version.Build, m_Revision);
             }
         }
 
