@@ -33,7 +33,7 @@ using DNPreBuild.Core.Interfaces;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Files", "Solution", "Project")]
+    [DataNode("Files")]
 	public class FilesNode : DataNode
 	{
         #region Fields

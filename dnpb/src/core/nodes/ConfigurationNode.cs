@@ -32,7 +32,7 @@ using DNPreBuild.Core.Util;
 
 namespace DNPreBuild.Core.Nodes
 {
-    [DataNode("Configuration", "Solution")]
+    [DataNode("Configuration")]
 	public class ConfigurationNode : DataNode
     {
         #region Fields

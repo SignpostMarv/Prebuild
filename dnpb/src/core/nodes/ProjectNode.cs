@@ -41,13 +41,13 @@ namespace DNPreBuild.Core.Nodes
         Library
     }
 
-    [DataNode("Project", "Solution")]
+    [DataNode("Project")]
 	public class ProjectNode : DataNode
 	{
         #region Fields
 
         private string m_Name = "unknown";
-        private string m_Path = "./";
+        private string m_Path = "";
         private string m_Language = "C#";
         private ProjectType m_Type = ProjectType.Exe;
         private string m_StartupObject = "";
@@ -136,15 +136,14 @@ namespace DNPreBuild.Core.Nodes
             m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
             m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 
-            m_Path = Helper.NormalizePath(m_Path);
             string tmpPath = m_Path;
             try
-            {                
-                tmpPath = System.IO.Path.GetFullPath(tmpPath);
+            {
+                tmpPath = Helper.ResolvePath(tmpPath);
             }
             catch
             {
-                throw new WarningException("Could not resolve Project path: {0}", m_Path);
+                throw new WarningException("Could not resolve Solution path: {0}", m_Path);
             }
 
             Kernel.Instance.CWDStack.Push();

@@ -35,35 +35,38 @@ namespace DNPreBuild
 	class DNPreBuild
     {
         #region Main
-		
+
         [STAThread]
 		static void Main(string[] args) 
         {
             try 
             {
-                Kernel Kernel = Kernel.Instance;
-                Kernel.Initialize(LogTarget.File | LogTarget.Console, args);
+                Kernel kernel = Kernel.Instance;
+                kernel.Initialize(LogTarget.File | LogTarget.Console, args);
                 bool exit = false;
 
-                if(Kernel.CommandLine.WasPassed("usage"))
+                if(kernel.CommandLine.WasPassed("usage"))
                 {
                     exit = true;
                     OutputUsage();
                 }
-                if(Kernel.CommandLine.WasPassed("showtargets"))
+                if(kernel.CommandLine.WasPassed("showtargets"))
                 {
                     exit = true;
-                    OutputTargets(Kernel);
+                    OutputTargets(kernel);
                 }
 
                 if(exit)
                     Environment.Exit(0);
 
-                Kernel.Process();
+                kernel.Process();
             }
             catch(Exception ex)
             {
                 Console.WriteLine("Unhandled exception: {0}", ex.Message);
+#if DEBUG
+                Console.WriteLine("{0}", ex.StackTrace);
+#endif
                 Environment.Exit(1);
             }
 		}
