@@ -69,7 +69,7 @@ namespace DNPreBuild.Core
         private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
         private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
         private Version m_Version = null;
-        private string m_Revision = "";
+        private string m_Revision = "a";
         private CommandLine m_CommandLine = null;
         private Log m_Log = null;
         private CurrentDirStack m_CWDStack = null;
@@ -213,6 +213,7 @@ namespace DNPreBuild.Core
         private string WriteTempXml(string xml)
         {
             string tmpFile = Path.GetTempFileName();
+            tmpFile = Path.GetFileName(tmpFile);
             StreamWriter writer = new StreamWriter(tmpFile, false);
             writer.Write(xml);
             writer.Flush();
@@ -260,7 +261,7 @@ namespace DNPreBuild.Core
                     {
                         Console.WriteLine("Could not write PPO file '{0}': {1}", ppoFile, ex.Message);
                     }
-                    
+
                     File.Delete(tmpFile);
                     return;
                 }
@@ -271,6 +272,7 @@ namespace DNPreBuild.Core
 
                 XmlDocument doc = new XmlDocument();
                 doc.Load(valReader);
+                valReader.Close();
 
                 if(doc.DocumentElement.NamespaceURI != m_SchemaURI)
                     throw new XmlException(
