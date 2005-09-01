@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.4.xsd">
-	<Solution name="dnpb">
+<DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.5.xsd">
+	<Solution name=".NET Prebuild">
 		<Configuration name="Debug">
 			<Options>
 			    <?if OS = "Win32" ?>
@@ -32,11 +32,11 @@
 			<Match path="doc\" pattern="*.txt"/>
 		</Files>
 		
-		<Project name="dnpb" path="src\" language="C#" icon="..\dnpb.ico" type="Exe" rootNamespace="DNPreBuild">
+		<Project name=".NET Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
 			<Reference name="System" />
 			<Reference name="System.XML" />
 			<Files>
-				<Match path="data" pattern="dnpb-1.4.xsd" buildAction="EmbeddedResource"/>
+				<Match path="data" pattern="dnpb-1.5.xsd" buildAction="EmbeddedResource"/>
 				<Match pattern="*.cs" recurse="true"/>				
 			</Files>
 		</Project>

@@ -1,4 +1,4 @@
 #!/bin/sh
 # Generates a combine (.cmbx) and a set of project files (.prjx) 
-# for MonoDevelop, a Mono port of SharpDevelop (http://icsharpcode.net/OpenSource/SD/Default.aspx)
-./dnpb /target sharpdev  /pause
+# for MonoDevelop (http://www.monodevelop.com/), a GTK# port of SharpDevelop for cross-platform usage with Mono
+./Prebuild /target sharpdev /pause

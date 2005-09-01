@@ -52,6 +52,7 @@ namespace DNPreBuild.Core.Nodes
 		private string m_Name = "unknown";
 		private string m_Path = "";
 		private string m_FullPath = "";
+		private string m_ActiveConfig = "Debug";
         
 		private OptionsNode m_Options = null;
 		private FilesNode m_Files = null;
@@ -71,6 +72,8 @@ namespace DNPreBuild.Core.Nodes
 		#endregion
 
 		#region Properties
+
+		public string ActiveConfig { get { return m_ActiveConfig; } set { m_ActiveConfig = value; } }
 
 		public string Name 
 		{
@@ -152,6 +155,7 @@ namespace DNPreBuild.Core.Nodes
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
+			m_ActiveConfig = Helper.AttributeValue(node, "activeConfig", m_ActiveConfig);
 			m_Path = Helper.AttributeValue(node, "path", m_Path);
 
 			m_FullPath = m_Path;

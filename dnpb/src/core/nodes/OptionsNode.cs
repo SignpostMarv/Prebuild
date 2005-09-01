@@ -32,6 +32,8 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
  */
 #endregion
 
+
+
 using System;
 using System.Collections;
 using System.Collections.Specialized;
@@ -74,6 +76,9 @@ namespace DNPreBuild.Core.Nodes
         
 		[OptionNode("OutputPath")]
 		private string m_OutputPath = "bin/";
+
+		[OptionNode("GenerateXmlDocFile")]
+		private bool m_GenerateXmlDocFile = false;
         
 		[OptionNode("XmlDocFile")]
 		private string m_XmlDocFile = "";
@@ -138,6 +143,20 @@ namespace DNPreBuild.Core.Nodes
 				return f.GetValue(this);
 			}
 		}
+		
+		public object this[string idx, object defaultVal]
+		{
+			get
+			{
+				object val = this[idx];
+				if(val == null || val is string && string.Empty == (string)val) 
+				{
+					return defaultVal;
+				}
+				return val;
+			}
+		}
+
 
 		#endregion
 

@@ -13,37 +13,43 @@ The currently supported developement tools and their associated batch and shell 
 
 Visual Studio .NET 2003 (VS2003.bat)
 Visual Studio .NET 2002 (VS2002.bat)
+Visual Studio .NET 2005 Express (VS2005Express.bat)
 SharpDevelop (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 MonoDevelop (MonoDevelop.sh) - http://www.monodevelop.com/
 
 Notes:
-MonoDevelop uses the same project files as SharpDevelop as it is a Unix port for it using the open-source implementation of the .NET Framework, Mono.  A Unix Shell script is provided for it though, as this is far more appropriate.
-Visual Studio .NET 2005 and the Visual Express IDE's can import Visual Studio .NET 2003 files, but native support for it will come later.
-NAnt and Makefiles are currently not supported, but will are on the roadmap as well.
+MonoDevelop uses the same project files as SharpDevelop as it is a Unix port for it using the open-source implementation of the .NET Framework, Mono.
+A Unix Shell script is provided for it though, as this is far more appropriate then a windows batch file.
+Visual Studio .NET 2005 and the Visual Express IDE's can import solutions from older versions of Visual Studio .NET.
+NAnt and Makefiles are not currently supported as NAnt allows for VS.NET solutions to be executed directly.
 
 _________________________________________________________________________________
 Command Line Syntax:
  
 Example:
->dnpb /target vs2003 /log ../PrebuildLog.txt
+>dnpb /target vs2003
 
 This will generate the project files for Visual Studio.NET 2003 and place the redirect the log to a file named PrebuildLog.txt in the parent directory
 
 
- The syntax structure is as below, where commandParameter is optional depending on the command and you can provide several option-value pairs.
+The syntax structure is as below, where commandParameter is optional depending on the command and you can provide several option-value pairs.
 Note: The '>' signified the command line, do not actually enter this manually
 
->dnpb /<option> <commandParameter>
+>Prebuild /<option> <commandParameter>
 
->dnpb /target vs2003 /pause
+>Prebuild /target vs2003 /pause
 
->dnpb /target vs2003 /log ../Log.txt /pause /ppo /file ProjectConfig.xml
+>Prebuild /target vs2003 /log ../Log.txt /pause /ppo /file ProjectConfig.xml
 
->dnpb /target sharpdev /log
+>Prebuild /target sharpdev /log
 
->dnpb /clean
+>Prebuild /removedir obj|bin
 
->dnpb /clean vs2003
+>Prebuild /target vs2003 /allowedgroups Group1|Group2
+
+>Prebuild /clean
+
+>Prebuild /clean vs2003
 
 _________________________________________________________________________________
 Command Line Options:
@@ -65,6 +71,10 @@ This allows you to check if an errors occurred and - if so - what it was.
 
 /showtargets - Shows a list of all the targets that can be specified as values for the /clean and /target commands.
 
+/allowedgroups - This is followed by a pipe-delimited list of project group filter flags (eg. Group1|Group2) allow optional filtering of all projects that dont have at least one of these flags
+
+/removedir - This is followed by a pipe-delimited list of directory names that will be deleted while recursivly searching the directory of the prebuild application and its child directories (eg. use obj|bin to delete all output and temporary directories before file releases)
+
 _________________________________________________________________________________
 Example Batch Files and Shell Scripts
 
@@ -75,14 +85,14 @@ MonoDevelop
 #!/bin/sh
 # Generates a combine (.cmbx) and a set of project files (.prjx) 
 # for MonoDevelop, a Mono port of SharpDevelop (http://icsharpcode.net/OpenSource/SD/Default.aspx)
-./dnpb /target sharpdev /pause
+./Prebuild /target sharpdev /pause
 
 ______________________________
 Visual Studio .NET 2003
 
 @rem Generates a solution (.sln) and a set of project files (.csproj) 
 @rem for Microsoft Visual Studio .NET 2002
-dnpb /target vs2003 /pause
+Prebuild /target vs2003 /pause
 
 Notes:
 Text after lines that start with @rem are comments and are not evaluated
@@ -93,12 +103,14 @@ Example XML Configuration File
 
 Note:
 XML Comments (<!-- Comment -->) are used to markup the prebuild.xml file with notes
+The below file may be out-of-date, however the RealmForge Prebuild file serves as an up-to-date and extensive example.
+It can be viewed using Tigris.org's WebSVN (http://realmforge.tigris.org/source/browse/realmforge/trunk/src/prebuild.xml) by just clicking on the "view file" link for the latest revision.
 
 _________________________________
 
 <?xml version="1.0" encoding="utf-8"?>
     <!--The version of the XML schema specified in the version and xmlns attributes should match the one for which the version of dnpb.exe used was compiled for.  In this example it is the version 1.3 schema, you can find the XSD schema file at the url specified in the xmlns attribute. -->
-<DNPreBuild version="1.3" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.3.xsd">
+<DNPreBuild version="1.5" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.3.xsd">
 	<Solution name="RealmForge"> <!--The title and file name for the solution, combine, workspace, or project group (depending on what development tool you are using)-->
                        <!--Configurations found as children of Solution are used as templates for the configurations found in the project, this allows you to avoid writing the same options in each project (and maintaining each of these).  You can provide defaults and then override them in the configurations defined for each project. All options are optional.-->
 		<Configuration name="Debug">
@@ -145,6 +157,7 @@ _________________________________
 				<BaseAddress>285212672</BaseAddress>
 				<FileAlignment>4096</FileAlignment>
 				<NoStdLib>false</NoStdLib>
+				<GenerateXmlDocFile>true</GenerateXmlDocFile>
 				<XmlDocFile>Docs.xml</XmlDocFile>				
 			</Options>
 		</Configuration>

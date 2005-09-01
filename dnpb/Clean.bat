@@ -1,1 +1,1 @@
-dnpb /clean /removedir obj /pause
+Prebuild /clean /removedir obj /pause
