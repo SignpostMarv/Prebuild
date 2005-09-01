@@ -175,16 +175,17 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine("\t</References>");
 
 				int count = 0;
-				foreach(ConfigurationNode conf in solution.Configurations)
-				{
-					if(count == 0)
-						ss.WriteLine("\t<Configurations active=\"{0}\">", conf.Name);
+				
+				ss.WriteLine("\t<Configurations active=\"{0}\">", solution.ActiveConfig);
 
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
 					ss.WriteLine("\t\t<Configuration name=\"{0}\">", conf.Name);
 					ss.WriteLine("\t\t\t<CodeGeneration");
 					ss.WriteLine("\t\t\t\truntime=\"{0}\"", netRuntime);
 					ss.WriteLine("\t\t\t\tcompiler=\"{0}\"", csComp);
 					ss.WriteLine("\t\t\t\twarninglevel=\"{0}\"", conf.Options["WarningLevel"]);
+					ss.WriteLine("\t\t\t\tnowarn=\"{0}\"", conf.Options["SupressWarnings"]);
 					ss.WriteLine("\t\t\t\tincludedebuginformation=\"{0}\"", conf.Options["DebugInformation"]);
 					ss.WriteLine("\t\t\t\toptimize=\"{0}\"", conf.Options["OptimizeCode"]);
 					ss.WriteLine("\t\t\t\tunsafecodeallowed=\"{0}\"", conf.Options["AllowUnsafe"]);
@@ -192,7 +193,7 @@ namespace DNPreBuild.Core.Targets
 					ss.WriteLine("\t\t\t\tmainclass=\"{0}\"", project.StartupObject);
 					ss.WriteLine("\t\t\t\ttarget=\"{0}\"", project.Type);
 					ss.WriteLine("\t\t\t\tdefinesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
-					ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", (((string)conf.Options["XmlDocFile"]).Length > 0));
+					ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
 					ss.WriteLine("\t\t\t/>");
 
 					ss.WriteLine("\t\t\t<Output");
@@ -218,8 +219,11 @@ namespace DNPreBuild.Core.Targets
 			m_Kernel.Log.Write("Creating SharpDevelop combine and project files");
 			foreach(ProjectNode project in solution.Projects)
 			{
-				m_Kernel.Log.Write("...Creating project: {0}", project.Name);
-				WriteProject(solution, project);
+				if(m_Kernel.AllowProject(project.FilterGroups)) 
+				{
+					m_Kernel.Log.Write("...Creating project: {0}", project.Name);
+					WriteProject(solution, project);
+				}
 			}
 
 			m_Kernel.Log.Write("");

@@ -82,8 +82,8 @@ namespace DNPreBuild
 			{
 				if(kernel.PauseAfterFinish)	
 				{
-					Console.WriteLine("\nPress any key to continue...");
-					Console.Read();
+					Console.WriteLine("\nPress enter to continue...");
+					Console.ReadLine();
 				}
 			}
 		}

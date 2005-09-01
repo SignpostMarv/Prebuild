@@ -71,6 +71,7 @@ namespace DNPreBuild.Core.Nodes
 		private Runtime m_Runtime = Runtime.Microsoft;
 		private string m_StartupObject = "";
 		private string m_RootNamespace = null;
+		private string m_FilterGroups = "";
 		private Guid m_Guid;
 
 		private Hashtable m_Configurations = null;
@@ -108,6 +109,8 @@ namespace DNPreBuild.Core.Nodes
 				return m_Path;
 			}
 		}
+
+		public string FilterGroups { get { return m_FilterGroups; } }
 
 		public string FullPath
 		{
@@ -270,6 +273,7 @@ namespace DNPreBuild.Core.Nodes
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
 			m_Path = Helper.AttributeValue(node, "path", m_Path);
+			m_FilterGroups = Helper.AttributeValue(node, "filterGroups", m_FilterGroups);
 			m_AppIcon = Helper.AttributeValue(node, "icon", m_AppIcon);
 			m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
 			m_Language = Helper.AttributeValue(node, "language", m_Language);

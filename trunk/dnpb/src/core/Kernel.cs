@@ -66,11 +66,10 @@ namespace DNPreBuild.Core
 
 		private static Kernel m_Instance = new Kernel();
 
-		private string tmpFile = null;
 		/// <summary>
 		/// This must match the version of the schema that is embeeded
 		/// </summary>
-		private static string m_SchemaVersion = "1.4";
+		private static string m_SchemaVersion = "1.5";
 		private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
 		private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
 		private Version m_Version = null;
@@ -86,11 +85,13 @@ namespace DNPreBuild.Core
 		ArrayList m_Solutions = null;        
 		string m_Target = null;
 		string m_Clean = null;
-		string m_RemoveDirectories = null;
+		string[] m_RemoveDirectories = null;
 		string m_CurrentFile = null;
 		bool m_PauseAfterFinish = false;
+		string[] m_ProjectGroups;
 		StringCollection m_Refs = null;
 
+		
 		#endregion
 
 		#region Constructors
@@ -168,20 +169,19 @@ namespace DNPreBuild.Core
 
 		#region Private Methods
 
-		private void RemoveDirectories(string rootDir, string dirName) 
+		private void RemoveDirectories(string rootDir, string[] dirNames) 
 		{
 			foreach(string dir in Directory.GetDirectories(rootDir)) 
 			{
 				string simpleName = Path.GetFileName(dir);
 
-				//if(simpleName == "src") continue;
-				if(simpleName == dirName) 
-				{//delete if the name matches 
+				if(Array.IndexOf(dirNames, simpleName) != -1) 
+				{//delete if the name matches one of the directory names to delete
 					string fullDirPath = Path.GetFullPath(dir);
 					Directory.Delete(fullDirPath,true);
 				} 
-				else
-					RemoveDirectories(dir,dirName);//recurse
+				else//not a match, so check children
+					RemoveDirectories(dir,dirNames);//recurse, checking children for them
 			}
 		}
 
@@ -202,6 +202,13 @@ namespace DNPreBuild.Core
 		{
 			Assembly assembly = this.GetType().Assembly;
 			Stream stream = assembly.GetManifestResourceStream("DNPreBuild.data." + m_Schema);
+			if(stream == null) 
+			{
+				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
+				stream = assembly.GetManifestResourceStream(m_Schema);
+				if(stream == null)
+					throw new ApplicationException(string.Format("Could not find the scheme embeeded resource file '{0}'.", m_Schema));
+			}
 			XmlReader schema = new XmlTextReader(stream);
             
 			m_Schemas = new XmlSchemaCollection();
@@ -354,6 +361,25 @@ namespace DNPreBuild.Core
 
 		#region Public Methods
 
+		public bool AllowProject(string projectGroupsFlags) 
+		{
+			if(m_ProjectGroups != null && m_ProjectGroups.Length > 0) 
+			{
+				if(projectGroupsFlags != null && projectGroupsFlags != string.Empty) 
+				{
+					foreach(string group in projectGroupsFlags.Split('|')) 
+					{
+						if(Array.IndexOf(m_ProjectGroups, group) != -1) //if included in the filter list
+						{
+							return true;
+						}
+					}
+				}
+				return false;//not included in the list or no groups specified for the project
+			}
+			return true;//no filter specified in the command line args
+		}
+
 		public Type GetNodeType(XmlNode node)
 		{
 			if(!m_Nodes.ContainsKey(node.Name))
@@ -446,8 +472,15 @@ namespace DNPreBuild.Core
 
 			m_Target = m_CommandLine["target"];
 			m_Clean = m_CommandLine["clean"];
-			m_RemoveDirectories = m_CommandLine["removedir"];
+			string removeDirs = m_CommandLine["removedir"];
+			if(removeDirs != null && removeDirs != string.Empty) 
+			{
+				m_RemoveDirectories = removeDirs.Split('|');
+			}
 
+			string flags = m_CommandLine["allowedgroups"];//allows filtering by specifying a pipe-delimited list of groups to include
+			if(flags != null && flags != string.Empty)
+				m_ProjectGroups = flags.Split('|');
 			m_PauseAfterFinish = m_CommandLine.WasPassed("pause");
 
 			LoadSchema();
@@ -459,7 +492,7 @@ namespace DNPreBuild.Core
 		public void Process()
 		{
 			bool perfomedOtherTask = false;
-			if(m_RemoveDirectories != null && m_RemoveDirectories != string.Empty) 
+			if(m_RemoveDirectories != null && m_RemoveDirectories.Length > 0) 
 			{
 				try
 				{
@@ -506,24 +539,15 @@ namespace DNPreBuild.Core
 				if((ret.ToLower() != "y" && ret.ToLower() != "yes"))
 					return;
 			}
-
-
-			foreach(ITarget targ in m_Targets.Values)
-			{
-				// Because VS2003 and VS2002 use the same file extensions, we pass over
-				// VS2003 when 'all' is selected, because VS2002 files can be converted
-				// to VS2003 files by VS2003
-				if(target == "all" && targ.Name == "vs2002")
-					continue;
-
-				if(targ.Name.ToLower() == target || target == "all")
-				{
-					if(clean)
-						targ.Clean(this);
-					else
-						targ.Write(this);
-				}
-			}
+			
+			if(target == "all")
+				target = "vs2002";//can be imported by all other tools
+			ITarget targ = (ITarget)m_Targets[target];
+			
+			if(clean)
+				targ.Clean(this);
+			else
+				targ.Write(this);
 
 			m_Log.Flush();
 		}

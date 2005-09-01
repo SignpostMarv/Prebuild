@@ -47,7 +47,8 @@ namespace DNPreBuild.Core.Targets
 	public enum VSVersion
 	{
 		VS70,
-		VS71
+		VS71,
+		VS80
 	}
 
 	[Target("vs2003")]
@@ -173,7 +174,7 @@ namespace DNPreBuild.Core.Targets
 					ps.WriteLine("\t\t\t\t\tCheckForOverflowUnderflow = \"{0}\"", conf.Options["CheckUnderflowOverflow"]);
 					ps.WriteLine("\t\t\t\t\tConfigurationOverrideFile = \"\"");
 					ps.WriteLine("\t\t\t\t\tDefineConstants = \"{0}\"", conf.Options["CompilerDefines"]);
-					ps.WriteLine("\t\t\t\t\tDocumentationFile = \"{0}\"", conf.Options["XmlDocFile"]);
+					ps.WriteLine("\t\t\t\t\tDocumentationFile = \"{0}\"", GetXmlDocFile(project, conf));//default to the assembly name
 					ps.WriteLine("\t\t\t\t\tDebugSymbols = \"{0}\"", conf.Options["DebugInformation"]);
 					ps.WriteLine("\t\t\t\t\tFileAlignment = \"{0}\"", conf.Options["FileAlignment"]);
 					ps.WriteLine("\t\t\t\t\tIncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
@@ -265,14 +266,29 @@ namespace DNPreBuild.Core.Targets
 			m_Kernel.CWDStack.Pop();
 		}
 
+		public static string GetXmlDocFile(ProjectNode project, ConfigurationNode conf) 
+		{
+			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
+			{
+				return string.Empty;
+			}
+			string docFile = (string)conf.Options["XmlDocFile"];
+			if(docFile == null || docFile == string.Empty)//default to assembly name if not specified
+				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
+			return docFile;
+		}
+
 		private void WriteSolution(SolutionNode solution)
 		{
 			m_Kernel.Log.Write("Creating Visual Studio {0} solution and project files", m_VersionName);
 
 			foreach(ProjectNode project in solution.Projects)
 			{
-				m_Kernel.Log.Write("...Creating project: {0}", project.Name);
-				WriteProject(solution, project);
+				if(m_Kernel.AllowProject(project.FilterGroups)) 
+				{
+					m_Kernel.Log.Write("...Creating project: {0}", project.Name);
+					WriteProject(solution, project);
+				}
 			}
 
 			m_Kernel.Log.Write("");
