@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.5.xsd">
-	<Solution name=".NET Prebuild">
+	<Solution name="Prebuild">
 		<Configuration name="Debug">
 			<Options>
 			    <?if OS = "Win32" ?>
@@ -9,7 +9,7 @@
 				<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
 				<?endif ?>
 				<OptimizeCode>false</OptimizeCode>
-				<OutputPath>..\</OutputPath>
+				<OutputPath>.\bin\Debug</OutputPath>
 				<DebugInformation>true</DebugInformation>
 			</Options>
 		</Configuration>
@@ -21,7 +21,7 @@
 				<?else ?>
 				<CompilerDefines>TRACE;POSIX</CompilerDefines>
 				<?endif ?>
-				<OutputPath>..\</OutputPath>
+				<OutputPath>.\bin\Release</OutputPath>
 				<OptimizeCode>true</OptimizeCode>
 				<DebugInformation>false</DebugInformation>
 			</Options>
@@ -32,7 +32,7 @@
 			<Match path="doc\" pattern="*.txt"/>
 		</Files>
 		
-		<Project name=".NET Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+		<Project name="Prebuild" path="src\" language="C#" assemblyName="prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
 			<Reference name="System" />
 			<Reference name="System.XML" />
 			<Files>
