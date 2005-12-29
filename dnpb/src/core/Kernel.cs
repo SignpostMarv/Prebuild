@@ -301,7 +301,7 @@ namespace DNPreBuild.Core
 				} 
 				catch(Exception e) 
 				{
-					throw;
+					throw new Exception(e.ToString());
 				}
 
 				//is there a purpose to writing it?  An syntax/schema problem would have been found during pre.Process() and reported with details

@@ -32,7 +32,7 @@
 			<Match path="doc\" pattern="*.txt"/>
 		</Files>
 		
-		<Project name="Prebuild" path="src\" language="C#" assemblyName="prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+		<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
 			<Reference name="System" />
 			<Reference name="System.XML" />
 			<Files>
