@@ -278,6 +278,7 @@ namespace DNPreBuild.Core.Parse
 			}
 			catch(ArgumentException ex)
 			{
+				ex.ToString();
 				throw new WarningException("Invalid value type for system variable '{0}', expected int", id);
 			}
 
