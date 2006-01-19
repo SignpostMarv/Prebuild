@@ -35,7 +35,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.IO;
 
-namespace DNPreBuild.Core.Util
+namespace DNPreBuild.Core.Utilities
 {
 	public enum LogType
 	{
@@ -72,7 +72,9 @@ namespace DNPreBuild.Core.Util
 			m_Target = target;
             
 			if((m_Target & LogTarget.File) != 0)
+			{
 				m_Writer = new StreamWriter(fileName, false);
+			}
 		}
 
 		#endregion
@@ -87,36 +89,47 @@ namespace DNPreBuild.Core.Util
 		public void Write(string msg) 
 		{
 			if((m_Target & LogTarget.Null) != 0)
+			{
 				return;
+			}
 
 			if((m_Target & LogTarget.Console) != 0)
+			{
 				Console.WriteLine(msg);
+			}
 			if((m_Target & LogTarget.File) != 0 && m_Writer != null)
+			{
 				m_Writer.WriteLine(msg);
+			}
 		}
 
-		public void Write(string fmt, params object[] args)
+		public void Write(string format, params object[] args)
 		{
-			Write(string.Format(fmt,args));
+			Write(string.Format(format,args));
 		}
 
-		public void Write(LogType type, string fmt, params object[] args)
+		public void Write(LogType type, string format, params object[] args)
 		{
 			if((m_Target & LogTarget.Null) != 0)
+			{
 				return;
+			}
 
 			string str = "";
 			switch(type) 
 			{
 				case LogType.Info:
-					str = "[I] "; break;
+					str = "[I] "; 
+					break;
 				case LogType.Warning:
-					str = "[!] "; break;
+					str = "[!] "; 
+					break;
 				case LogType.Error:
-					str = "[X] "; break;
+					str = "[X] "; 
+					break;
 			}
 
-			Write(str + fmt,args);
+			Write(str + format,args);
 		}
 
 		public void WriteException(LogType type, Exception ex)
@@ -135,7 +148,9 @@ namespace DNPreBuild.Core.Util
 		public void Flush()
 		{
 			if(m_Writer != null)
+			{
 				m_Writer.Flush();
+			}
 		}
 
 		#endregion

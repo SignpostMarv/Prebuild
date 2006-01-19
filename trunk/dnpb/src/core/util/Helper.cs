@@ -41,7 +41,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Xml;
 
-namespace DNPreBuild.Core.Util
+namespace DNPreBuild.Core.Utilities
 {
 	public class Helper
 	{
@@ -93,11 +93,14 @@ namespace DNPreBuild.Core.Util
 		public static StringCollection FindGroups(string target, string beforeGroup, string afterGroup, bool includeDelimitersInSubstrings) {
 			StringCollection results = new StringCollection();
 			if(target == null || target.Length == 0)
+			{
 				return results;
+			}
 
 			int beforeMod = 0;
 			int afterMod = 0;
-			if(includeDelimitersInSubstrings) {//be sure to not exlude the delims
+			if(includeDelimitersInSubstrings) {
+				//be sure to not exlude the delims
 				beforeMod = beforeGroup.Length;
 				afterMod = afterGroup.Length;
 			}
@@ -105,7 +108,9 @@ namespace DNPreBuild.Core.Util
 			while((startIndex = target.IndexOf(beforeGroup,startIndex)) != -1) {
 				int endIndex = target.IndexOf(afterGroup,startIndex);//the index of the char after it
 				if(endIndex == -1)
+				{
 					break;
+				}
 				int length = endIndex - startIndex - beforeGroup.Length;//move to the first char in the string
 				string substring = substring = target.Substring(startIndex + beforeGroup.Length - beforeMod,
 					length - afterMod);
@@ -123,7 +128,8 @@ namespace DNPreBuild.Core.Util
 		public static string ReplaceGroups(string target, string beforeGroup, string afterGroup, StringLookup lookup) {
 			int targetLength = target.Length;
 			StringCollection strings = FindGroups(target,beforeGroup,afterGroup,false);
-			foreach(string substring in strings) {
+			foreach(string substring in strings) 
+			{
 				target = target.Replace(beforeGroup + substring + afterGroup, lookup(substring) );
 			}
 			return target;
@@ -134,7 +140,8 @@ namespace DNPreBuild.Core.Util
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		public static string InterpolateForVariables(string target, StringLookup lookup) {
+		public static string InterpolateForVariables(string target, StringLookup lookup) 
+		{
 			return ReplaceGroups(target, "${" , "}" , lookup);
 		}
 
@@ -143,7 +150,8 @@ namespace DNPreBuild.Core.Util
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		public static string InterpolateForEnvironmentVariables(string target) {
+		public static string InterpolateForEnvironmentVariables(string target) 
+		{
 			return InterpolateForVariables(target, new StringLookup(Environment.GetEnvironmentVariable));
 		}
 
@@ -152,17 +160,25 @@ namespace DNPreBuild.Core.Util
 		public static object TranslateValue(Type t, string val)
 		{
 			if(val == null)
+			{
 				return null;
+			}
 
 			try
 			{
 				string lowerVal = val.ToLower();
 				if(t == typeof(bool))
+				{
 					return (lowerVal == "true" || lowerVal == "1" || lowerVal == "y" || lowerVal == "yes" || lowerVal == "on");
+				}
 				else if(t == typeof(int))
+				{
 					return (Int32.Parse(val));
+				}
 				else
+				{
 					return val;
+				}
 			}
 			catch(FormatException)
 			{
@@ -183,17 +199,19 @@ namespace DNPreBuild.Core.Util
 			}
 
 			if(!File.Exists(resFile))
+			{
 				return false;
+			}
 
 			File.Delete(resFile);
 			return true;
 		}
 
 		// This little gem was taken from the NeL source, thanks guys!
-		public static string MakePathRelativeTo(string basePath, string relPath)
+		public static string MakePathRelativeTo(string basePath, string relativePath)
 		{
 			string tmp = NormalizePath(basePath, '/');
-			string src = NormalizePath(relPath, '/');
+			string src = NormalizePath(relativePath, '/');
 			string prefix = "";
 
 			while(true)
@@ -202,41 +220,53 @@ namespace DNPreBuild.Core.Util
 				{
 					int size = tmp.Length;
 					if(size == src.Length)
+					{
 						return "./";
+					}
 
-					string ret = prefix + relPath.Substring(size, relPath.Length - size);
+					string ret = prefix + relativePath.Substring(size, relativePath.Length - size);
 					ret = ret.Trim();
 					if(ret[0] == '/' || ret[0] == '\\')
+					{
 						ret = "." + ret;
+					}
 
 					return NormalizePath(ret);
 				}
 
 				if(tmp.Length < 2)
+				{
 					break;
+				}
 
 				int lastPos = tmp.LastIndexOf('/', tmp.Length - 2);
 				int prevPos = tmp.IndexOf('/');
 
 				if((lastPos == prevPos) || (lastPos == -1))
+				{
 					break;
+				}
 
 				tmp = tmp.Substring(0, lastPos + 1);
 				prefix += "../";
 			}
 
-			return relPath;
+			return relativePath;
 		}
 
 		public static string ResolvePath(string path)
 		{
 			string tmpPath = NormalizePath(path);
 			if(tmpPath.Length < 1)
+			{
 				tmpPath = ".";
+			}
             
 			tmpPath = Path.GetFullPath(tmpPath);
 			if(!File.Exists(tmpPath) && !Directory.Exists(tmpPath))
+			{
 				throw new ArgumentException("Path could not be resolved: " + tmpPath);
+			}
 
 			return tmpPath;
 		}
@@ -244,7 +274,9 @@ namespace DNPreBuild.Core.Util
 		public static string NormalizePath(string path, char sepChar)
 		{
 			if(path == null)
+			{
 				return "";
+			}
 
 			string tmpPath = path.Replace('\\', '/');
 			tmpPath = tmpPath.Replace('/', sepChar);
@@ -259,10 +291,14 @@ namespace DNPreBuild.Core.Util
 		public static string EndPath(string path, char sepChar)
 		{
 			if(path == null || path.Length < 1)
+			{
 				return "";
+			}
 
 			if(!path.EndsWith(sepChar.ToString()))
+			{
 				return (path + sepChar);
+			}
 
 			return path;
 		}
@@ -278,10 +314,14 @@ namespace DNPreBuild.Core.Util
             
 			ret += name;
 			if(!name.EndsWith("." + ext))
+			{
 				ret += "." + ext;
+			}
             
 			foreach(char c in Path.InvalidPathChars)
+			{
 				ret = ret.Replace(c, '_');
+			}
 
 			return ret;
 		}
@@ -289,22 +329,30 @@ namespace DNPreBuild.Core.Util
 		public static void SetCurrentDir(string path)
 		{
 			if(path.Length < 1)
+			{
 				return;
+			}
 
 			Environment.CurrentDirectory = path;
 		}
 
-		public static object CheckType(Type t, Type attr, Type inter)
+		public static object CheckType(Type typeToCheck, Type attr, Type inter)
 		{
-			if(t == null || attr == null)
+			if(typeToCheck == null || attr == null)
+			{
 				return null;
+			}
 
-			object[] attrs = t.GetCustomAttributes(attr, false);
+			object[] attrs = typeToCheck.GetCustomAttributes(attr, false);
 			if(attrs == null || attrs.Length < 1)
+			{
 				return null;
+			}
 
-			if(t.GetInterface(inter.FullName) == null)
+			if(typeToCheck.GetInterface(inter.FullName) == null)
+			{
 				return null;
+			}
 
 			return attrs[0];
 		}
@@ -341,18 +389,24 @@ namespace DNPreBuild.Core.Util
 		public static string AttributeValue(XmlNode node, string attr, string def)
 		{
 			if(node.Attributes[attr] == null)
+			{
 				return def;
+			}
 			string val = node.Attributes[attr].Value;
 			if(!CheckForOSVariables)
+			{
 				return val;
+			}
 
 			return InterpolateForEnvironmentVariables(val);
 		}
 
-		public static bool ParseBool(XmlNode node, string attr, bool defaultVal) {
+		public static bool ParseBoolean(XmlNode node, string attr, bool defaultValue) {
 			
 			if(node.Attributes[attr] == null)
-				return defaultVal;
+			{
+				return defaultValue;
+			}
 			return bool.Parse(node.Attributes[attr].Value);
 		}
 

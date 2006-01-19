@@ -46,7 +46,7 @@ using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
 using DNPreBuild.Core.Parse;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core 
 {
@@ -76,7 +76,7 @@ namespace DNPreBuild.Core
 		private string m_Revision = "";
 		private CommandLine m_CommandLine = null;
 		private Log m_Log = null;
-		private CurrentDirStack m_CWDStack = null;
+		private CurrentDirectoryStack m_CWDStack = null;
 		private XmlSchemaCollection m_Schemas = null;
         
 		private Hashtable m_Targets = null;
@@ -106,7 +106,10 @@ namespace DNPreBuild.Core
 
 		public bool PauseAfterFinish 
 		{
-			get{ return m_PauseAfterFinish; } 
+			get
+			{ 
+				return m_PauseAfterFinish; 
+			} 
 		}
 
 		public static Kernel Instance
@@ -149,7 +152,7 @@ namespace DNPreBuild.Core
 			}
 		}
 
-		public CurrentDirStack CWDStack
+		public CurrentDirectoryStack CWDStack
 		{
 			get
 			{
@@ -176,12 +179,15 @@ namespace DNPreBuild.Core
 				string simpleName = Path.GetFileName(dir);
 
 				if(Array.IndexOf(dirNames, simpleName) != -1) 
-				{//delete if the name matches one of the directory names to delete
+				{
+					//delete if the name matches one of the directory names to delete
 					string fullDirPath = Path.GetFullPath(dir);
 					Directory.Delete(fullDirPath,true);
 				} 
 				else//not a match, so check children
+				{
 					RemoveDirectories(dir,dirNames);//recurse, checking children for them
+				}
 			}
 		}
 
@@ -207,7 +213,9 @@ namespace DNPreBuild.Core
 				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
 				stream = assembly.GetManifestResourceStream(m_Schema);
 				if(stream == null)
+				{
 					throw new ApplicationException(string.Format("Could not find the scheme embeeded resource file '{0}'.", m_Schema));
+				}
 			}
 			XmlReader schema = new XmlTextReader(stream);
             
@@ -226,11 +234,15 @@ namespace DNPreBuild.Core
 			{
 				TargetAttribute ta = (TargetAttribute)Helper.CheckType(t, typeof(TargetAttribute), typeof(ITarget));
 				if(ta == null)
+				{
 					continue;
+				}
 
 				ITarget target = (ITarget)assm.CreateInstance(t.FullName);
 				if(target == null)
+				{
 					throw new OutOfMemoryException("Could not create ITarget instance");
+				}
 
 				m_Targets[ta.Name] = target;
 			}
@@ -242,7 +254,9 @@ namespace DNPreBuild.Core
 			{
 				DataNodeAttribute dna = (DataNodeAttribute)Helper.CheckType(t, typeof(DataNodeAttribute), typeof(IDataNode));
 				if(dna == null)
+				{
 					continue;
+				}
 
 				NodeEntry ne = new NodeEntry();
 				ne.Type = t;
@@ -309,7 +323,9 @@ namespace DNPreBuild.Core
 				{
 					string ppoFile = m_CommandLine["ppo"];
 					if(ppoFile == null || ppoFile.Trim().Length < 1)
+					{
 						ppoFile = "preprocessed.xml";
+					}
 
 					StreamWriter writer = null;
 					try
@@ -324,14 +340,16 @@ namespace DNPreBuild.Core
 					finally
 					{
 						if(writer != null)
+						{
 							writer.Close();
+						}
 					}
 					return;
 				}
 				//start reading the xml config file
 				XmlElement rootNode = doc.DocumentElement;
 				//string suggestedVersion = Helper.AttributeValue(rootNode,"version","1.0");
-				Helper.CheckForOSVariables = Helper.ParseBool(rootNode,"checkOsVars",false);
+				Helper.CheckForOSVariables = Helper.ParseBoolean(rootNode,"checkOsVars",false);
 
 				foreach(XmlNode node in rootNode.ChildNodes)//solutions or if pre-proc instructions
 				{
@@ -340,10 +358,14 @@ namespace DNPreBuild.Core
 					{
 						ProcessNode proc = (ProcessNode)dataNode;
 						if(proc.IsValid)
+						{
 							ProcessFile(proc.Path);
+						}
 					}
 					else if(dataNode is SolutionNode)
+					{
 						m_Solutions.Add(dataNode);
+					}
 				}
 			}
 			catch(XmlSchemaException xse)
@@ -383,7 +405,9 @@ namespace DNPreBuild.Core
 		public Type GetNodeType(XmlNode node)
 		{
 			if(!m_Nodes.ContainsKey(node.Name))
+			{
 				return null;
+			}
 
 			NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
 			return ne.Type;
@@ -415,7 +439,9 @@ namespace DNPreBuild.Core
 
 					dataNode = (IDataNode)type.Assembly.CreateInstance(type.FullName);
 					if(dataNode == null)
+					{
 						throw new OutOfMemoryException("Could not create new parser instance: " + type.FullName);
+					}
 				}
 				else
 					dataNode = preNode;
@@ -458,7 +484,9 @@ namespace DNPreBuild.Core
 				logFile = m_CommandLine["log"];
 
 				if(logFile == null || logFile == string.Empty)
+				{
 					logFile = "DNPreBuild.log";
+				}
 			}
 			else 
 			{
@@ -468,7 +496,7 @@ namespace DNPreBuild.Core
 			m_Log = new Log(target, logFile);
 			LogBanner();
 
-			m_CWDStack = new CurrentDirStack();
+			m_CWDStack = new CurrentDirectoryStack();
 
 			m_Target = m_CommandLine["target"];
 			m_Clean = m_CommandLine["clean"];
@@ -480,7 +508,9 @@ namespace DNPreBuild.Core
 
 			string flags = m_CommandLine["allowedgroups"];//allows filtering by specifying a pipe-delimited list of groups to include
 			if(flags != null && flags != string.Empty)
+			{
 				m_ProjectGroups = flags.Split('|');
+			}
 			m_PauseAfterFinish = m_CommandLine.WasPassed("pause");
 
 			LoadSchema();
@@ -514,40 +544,56 @@ namespace DNPreBuild.Core
 			else if(m_Target == null && m_Clean == null)
 			{
 				if(perfomedOtherTask) //finished
+				{
 					return;
+				}
 				m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a .NET pre-build file");
 				return;
 			}
 
 			string file = "./prebuild.xml";
 			if(m_CommandLine.WasPassed("file"))
+			{
 				file = m_CommandLine["file"];
+			}
 
 			ProcessFile(file);
 
 			string target = (m_Target != null ? m_Target.ToLower() : m_Clean.ToLower());
 			bool clean = (m_Target == null);
 			if(clean && target == string.Empty)
+			{
 				target = "all";
+			}
 			if(clean && target == "all")//default to all if no target was specified for clean
 			{
 				Console.WriteLine("WARNING: This operation will clean ALL project files for all targets, are you sure? (y/n):");
 				string ret = Console.ReadLine();
 				if(ret == null)
+				{
 					return;
+				}
 				ret = ret.Trim().ToLower();
 				if((ret.ToLower() != "y" && ret.ToLower() != "yes"))
+				{
 					return;
+				}
 			}
 			
 			if(target == "all")
+			{
 				target = "vs2002";//can be imported by all other tools
+			}
 			ITarget targ = (ITarget)m_Targets[target];
 			
 			if(clean)
+			{
 				targ.Clean(this);
+			}
 			else
+			{
 				targ.Write(this);
+			}
 
 			m_Log.Flush();
 		}

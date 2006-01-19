@@ -37,7 +37,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace DNPreBuild.Core.Util
+namespace DNPreBuild.Core.Utilities
 {    
 	/// <summary>
 	/// The CommandLine class parses and interprets the command-line arguments passed to
@@ -121,14 +121,18 @@ namespace DNPreBuild.Core.Util
 		/// </summary>
 		/// <remarks>Returns null if option was not specified,
 		/// null string if no parameter was specified, and the value if a parameter was specified</remarks>
-		public string this[string idx] 
+		public string this[string index] 
 		{
 			get 
 			{
-				if(m_Arguments.ContainsKey(idx))
-					return (string)(m_Arguments[idx]);
+				if(m_Arguments.ContainsKey(index))
+				{
+					return (string)(m_Arguments[index]);
+				}
 				else
+				{
 					return null;
+				}
 			}
 		}
 

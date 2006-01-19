@@ -41,7 +41,7 @@ using System.Text.RegularExpressions;
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Targets
 {
@@ -62,9 +62,13 @@ namespace DNPreBuild.Core.Targets
 			Regex regex = new Regex(@"(\w):/(\w+)");
 			Match match = regex.Match(tmpPath);
 			if(match.Success || tmpPath[0] == '.' || tmpPath[0] == '/')
+			{
 				tmpPath = Helper.NormalizePath(tmpPath);
+			}
 			else
+			{
 				tmpPath = Helper.NormalizePath("./" + tmpPath);
+			}
 
 			return tmpPath;
 		}
@@ -171,7 +175,9 @@ namespace DNPreBuild.Core.Targets
 
 				ss.WriteLine("\t<References>");
 				foreach(ReferenceNode refr in project.References)
+				{
 					ss.WriteLine("\t\t{0}", BuildReference(solution, refr));
+				}
 				ss.WriteLine("\t</References>");
 
 				int count = 0;
@@ -261,11 +267,15 @@ namespace DNPreBuild.Core.Targets
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
 					if(count == 0)
+					{
 						ss.WriteLine("\t<Configurations active=\"{0}\">", conf.Name);
+					}
 
 					ss.WriteLine("\t\t<Configuration name=\"{0}\">", conf.Name);
 					foreach(ProjectNode project in solution.Projects)
+					{
 						ss.WriteLine("\t\t\t<Entry name=\"{0}\" configurationname=\"{1}\" build=\"True\"/>", project.Name, conf.Name);
+					}
 					ss.WriteLine("\t\t</Configuration>");
 
 					count++;
@@ -292,7 +302,9 @@ namespace DNPreBuild.Core.Targets
 			Helper.DeleteIfExists(slnFile);
 
 			foreach(ProjectNode project in solution.Projects)
+			{
 				CleanProject(project);
+			}
             
 			m_Kernel.Log.Write("");
 		}
@@ -305,7 +317,9 @@ namespace DNPreBuild.Core.Targets
 		{
 			m_Kernel = kern;
 			foreach(SolutionNode solution in kern.Solutions)
+			{
 				WriteCombine(solution);
+			}
 			m_Kernel = null;
 		}
 
@@ -313,7 +327,9 @@ namespace DNPreBuild.Core.Targets
 		{
 			m_Kernel = kern;
 			foreach(SolutionNode sol in kern.Solutions)
+			{
 				CleanSolution(sol);
+			}
 			m_Kernel = null;
 		}
 

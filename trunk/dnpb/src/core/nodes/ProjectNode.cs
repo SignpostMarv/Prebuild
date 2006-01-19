@@ -39,7 +39,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -229,7 +229,9 @@ namespace DNPreBuild.Core.Nodes
 				{
 					SolutionNode parent = (SolutionNode)m_Parent;
 					foreach(ConfigurationNode conf in parent.Configurations)
+					{
 						m_Configurations[conf.Name] = conf.Clone();
+					}
 				}
 			}
 		}
@@ -262,7 +264,9 @@ namespace DNPreBuild.Core.Nodes
 				conf.CopyTo(parentConf);//update the config templates defines at the project level with the overrides
 			} 
 			else
+			{
 				m_Configurations[conf.Name] = conf;
+			}
 		}
 
 		#endregion
@@ -284,10 +288,14 @@ namespace DNPreBuild.Core.Nodes
 			m_Guid = Guid.NewGuid();
             
 			if(m_AssemblyName == null || m_AssemblyName.Length < 1)
+			{
 				m_AssemblyName = m_Name;
+			}
 
 			if(m_RootNamespace == null || m_RootNamespace.Length < 1)
+			{
 				m_RootNamespace = m_Name;
+			}
 
 			m_FullPath = m_Path;
 			try
@@ -308,13 +316,21 @@ namespace DNPreBuild.Core.Nodes
 				{
 					IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
 					if(dataNode is ConfigurationNode)
+					{
 						HandleConfiguration((ConfigurationNode)dataNode);
+					}
 					else if(dataNode is ReferencePathNode)
+					{
 						m_ReferencePaths.Add(dataNode);
+					}
 					else if(dataNode is ReferenceNode)
+					{
 						m_References.Add(dataNode);
+					}
 					else if(dataNode is FilesNode)
+					{
 						m_Files = (FilesNode)dataNode;
+					}
 				}
 			}
 			finally

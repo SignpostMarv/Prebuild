@@ -37,7 +37,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -75,7 +75,9 @@ namespace DNPreBuild.Core.Nodes
 				{
 					SolutionNode node = (SolutionNode)base.Parent;
 					if(node != null && node.Options != null)
+					{
 						node.Options.CopyTo(m_Options);
+					}
 				}
 			}
 		}
@@ -111,7 +113,9 @@ namespace DNPreBuild.Core.Nodes
 			{
 				IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
 				if(dataNode is OptionsNode)
+				{
 					((OptionsNode)dataNode).CopyTo(m_Options);
+				}
 			}
 		}
 

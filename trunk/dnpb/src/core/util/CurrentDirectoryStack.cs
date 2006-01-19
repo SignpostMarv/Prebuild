@@ -35,9 +35,9 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.Collections;
 
-namespace DNPreBuild.Core.Util
+namespace DNPreBuild.Core.Utilities
 {
-	public class CurrentDirStack
+	public class CurrentDirectoryStack
 	{
 		#region Fields
 
@@ -47,7 +47,7 @@ namespace DNPreBuild.Core.Util
 
 		#region Constructors
 
-		public CurrentDirStack()
+		public CurrentDirectoryStack()
 		{
 			m_Stack = new Stack();
 		}
@@ -64,7 +64,9 @@ namespace DNPreBuild.Core.Util
 		public void Pop()
 		{
 			if(m_Stack.Count < 1)
+			{
 				return;
+			}
             
 			string cwd = (string)m_Stack.Pop();
 			Helper.SetCurrentDir(cwd);
