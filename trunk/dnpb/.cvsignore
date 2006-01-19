@@ -1,3 +1,6 @@
 *.pdb
 *.sln
 *.suo
+cvs2cl.pl
+ChangeLog
+*.swp
