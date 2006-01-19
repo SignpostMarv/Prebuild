@@ -37,7 +37,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -84,7 +84,9 @@ namespace DNPreBuild.Core.Nodes
 			get
 			{
 				if( m_LocalCopy == null || m_LocalCopy == string.Empty)
+				{
 					return true;
+				}
 				return bool.Parse(m_LocalCopy);
 			}
 		}

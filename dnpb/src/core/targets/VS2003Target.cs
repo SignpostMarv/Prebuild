@@ -40,7 +40,7 @@ using System.IO;
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Targets
 {
@@ -110,9 +110,13 @@ namespace DNPreBuild.Core.Targets
 				{
 					string fullPath = Helper.ResolvePath(node.Path);
 					if(ret.Length < 1)
+					{
 						ret = fullPath;
+					}
 					else
+					{
 						ret += ";" + fullPath;
+					}
 				}
 				catch(ArgumentException)
 				{
@@ -126,7 +130,9 @@ namespace DNPreBuild.Core.Targets
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
 			if(!m_Tools.ContainsKey(project.Language))
+			{
 				throw new Exception("Unknown .NET language: " + project.Language);
+			}
 
 			ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
 			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
@@ -212,12 +218,16 @@ namespace DNPreBuild.Core.Targets
 					else
 					{
 						if(refr.Path != null)
+						{
 							ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
+						}
 
 					}
                     
 					if(refr.LocalCopySpecified)
+					{
 						ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"",refr.LocalCopy);
+					}
 
 					ps.WriteLine("\t\t\t\t/>");
 				}
@@ -274,7 +284,9 @@ namespace DNPreBuild.Core.Targets
 			}
 			string docFile = (string)conf.Options["XmlDocFile"];
 			if(docFile == null || docFile == string.Empty)//default to assembly name if not specified
+			{
 				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
+			}
 			return docFile;
 		}
 
@@ -304,7 +316,9 @@ namespace DNPreBuild.Core.Targets
 				foreach(ProjectNode project in solution.Projects)
 				{
 					if(!m_Tools.ContainsKey(project.Language))
+					{
 						throw new Exception("Unknown .NET language: " + project.Language);
+					}
 
 					ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
                 
@@ -323,7 +337,9 @@ namespace DNPreBuild.Core.Targets
 
 				ss.WriteLine("\tGlobalSection(SolutionConfiguration) = preSolution");
 				foreach(ConfigurationNode conf in solution.Configurations)
+				{
 					ss.WriteLine("\t\t{0} = {0}", conf.Name);
+				}
 				ss.WriteLine("\tEndGlobalSection");
 
 				ss.WriteLine("\tGlobalSection(ProjectDependencies) = postSolution");
@@ -365,7 +381,9 @@ namespace DNPreBuild.Core.Targets
 				{
 					ss.WriteLine("\tGlobalSection(SolutionItems) = postSolution");
 					foreach(string file in solution.Files)
+					{
 						ss.WriteLine("\t\t{0} = {0}", file);
+					}
 					ss.WriteLine("\tEndGlobalSection");
 				}
 
@@ -398,7 +416,9 @@ namespace DNPreBuild.Core.Targets
 			Helper.DeleteIfExists(suoFile);
 
 			foreach(ProjectNode project in solution.Projects)
+			{
 				CleanProject(project);
+			}
 
 			m_Kernel.Log.Write("");
 		}
@@ -411,7 +431,9 @@ namespace DNPreBuild.Core.Targets
 		{
 			m_Kernel = kern;
 			foreach(SolutionNode sol in m_Kernel.Solutions)
+			{
 				WriteSolution(sol);
+			}
 			m_Kernel = null;
 		}
 
@@ -419,7 +441,9 @@ namespace DNPreBuild.Core.Targets
 		{
 			m_Kernel = kern;
 			foreach(SolutionNode sol in m_Kernel.Solutions)
+			{
 				CleanSolution(sol);
+			}
 			m_Kernel = null;
 		}
 

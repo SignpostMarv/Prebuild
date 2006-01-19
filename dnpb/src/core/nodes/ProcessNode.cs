@@ -39,7 +39,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -79,7 +79,9 @@ namespace DNPreBuild.Core.Nodes
 		{
 			m_Path = Helper.InterpolateForEnvironmentVariables(node.InnerText);
 			if(m_Path == null)
+			{
 				m_Path = "";
+			}
 
 			try
 			{

@@ -41,7 +41,7 @@ using System.Runtime.InteropServices;
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
 using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Targets
 {
@@ -70,20 +70,6 @@ namespace DNPreBuild.Core.Targets
 			this.m_Tools["C#"] = new VS2005ExpressTarget.ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP");
 		}
 
-
-		//		// Methods
-		//		public VS2005ExpressTarget();
-		//		public virtual void Clean(Kernel kern);
-		//		private void CleanProject(ProjectNode project);
-		//		private void CleanSolution(SolutionNode solution);
-		//		private string MakeRefPath(ProjectNode project);
-		//		public virtual void Write(Kernel kern);
-		//		private void WriteProject(SolutionNode solution, ProjectNode project);
-		//		private void WriteSolution(SolutionNode solution);
-
-		//		// Properties
-		//		public virtual string Name { get; }
-
 		// Fields
 		private Kernel m_Kernel = null;
 		protected string m_ProductVersion = "8.0.40607.16";
@@ -92,19 +78,6 @@ namespace DNPreBuild.Core.Targets
 		private Hashtable m_Tools = new Hashtable();
 		protected VSVersion m_Version = VSVersion.VS80;
 		protected string m_VersionName = "Express 2005";
-
-
-
-		//		// Nested Types
-		//		[StructLayout(LayoutKind.Sequential)]
-		//			protected struct ToolInfo
-		//		{
-		//			public string Name;
-		//			public string Guid;
-		//			public string FileExtension;
-		//			public string XMLTag;
-		//			public ToolInfo(string name, string guid, string fileExt, string xml);
-		//		}
 
 		public virtual void Clean(Kernel kern)
 		{

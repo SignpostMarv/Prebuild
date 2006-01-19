@@ -37,11 +37,18 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Resources;
+
 
 // FxCop recommended attributes
 [assembly: ComVisible(false)]
 [assembly: FileIOPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
 [assembly: CLSCompliant(true)]
+#if NET
+[assembly: AssemblyKeyFile("..\\..\\Prebuild.snk")]
+#else
+[assembly: AssemblyKeyFile(@"Prebuild.snk")]
+#endif
 
 //
 // General Information about an assembly is controlled through the following 
@@ -51,11 +58,12 @@ using System.Security.Permissions;
 [assembly: AssemblyTitle(".NET Pre-Build")]
 [assembly: AssemblyDescription("A .NET project file build tool")]
 [assembly: AssemblyConfiguration(".NET CLR")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("The Prebuild Project")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Copyright © 2004-2005 Matthew Holmes, Dan Moorehead")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: NeutralResourcesLanguageAttribute("en-US")]
 
 //
 // Version information for an assembly consists of the following four values:
@@ -96,5 +104,4 @@ using System.Security.Permissions;
 //       documentation for more information on this.
 //
 [assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
 [assembly: AssemblyKeyName("")]

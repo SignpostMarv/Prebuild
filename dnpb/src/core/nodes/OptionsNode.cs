@@ -42,7 +42,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -116,7 +116,9 @@ namespace DNPreBuild.Core.Nodes
 			{
 				object[] attrs = f.GetCustomAttributes(typeof(OptionNodeAttribute), false);
 				if(attrs == null || attrs.Length < 1)
+				{
 					continue;
+				}
 
 				OptionNodeAttribute ona = (OptionNodeAttribute)attrs[0];
 				m_OptionFields[ona.NodeName] = f;
@@ -137,23 +139,25 @@ namespace DNPreBuild.Core.Nodes
 			get
 			{
 				if(!m_OptionFields.ContainsKey(idx))
+				{
 					return null;
+				}
 
 				FieldInfo f = (FieldInfo)m_OptionFields[idx];
 				return f.GetValue(this);
 			}
 		}
 		
-		public object this[string idx, object defaultVal]
+		public object this[string index, object defaultValue]
 		{
 			get
 			{
-				object val = this[idx];
-				if(val == null || val is string && string.Empty == (string)val) 
+				object valueObject = this[index];
+				if(valueObject == null || valueObject is string && string.Empty == (string)valueObject) 
 				{
-					return defaultVal;
+					return defaultValue;
 				}
-				return val;
+				return valueObject;
 			}
 		}
 
@@ -165,7 +169,9 @@ namespace DNPreBuild.Core.Nodes
 		private void FlagDefined(string name)
 		{
 			if(!m_FieldsDefined.Contains(name))
+			{
 				m_FieldsDefined.Add(name);
+			}
 		}
 
 		private void SetOption(string nodeName, string val)
@@ -173,7 +179,9 @@ namespace DNPreBuild.Core.Nodes
 			lock(m_OptionFields)
 			{
 				if(!m_OptionFields.ContainsKey(nodeName))
+				{
 					return;
+				}
 
 				FieldInfo f = (FieldInfo)m_OptionFields[nodeName];
 				f.SetValue(this, Helper.TranslateValue(f.FieldType, val));
@@ -188,13 +196,17 @@ namespace DNPreBuild.Core.Nodes
 		public override void Parse(XmlNode node)
 		{
 			foreach(XmlNode child in node.ChildNodes)
+			{
 				SetOption(child.Name, Helper.InterpolateForEnvironmentVariables(child.InnerText));
+			}
 		}
 
 		public void CopyTo(OptionsNode opt)
 		{
 			if(opt == null)
+			{
 				return;
+			}
 
 			foreach(FieldInfo f in m_OptionFields.Values)
 			{

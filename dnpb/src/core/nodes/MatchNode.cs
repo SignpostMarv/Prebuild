@@ -40,7 +40,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -86,7 +86,7 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Private Methods
 
-		public void RecurseDirs(string path, string pattern, bool recurse, bool useRegex)
+		public void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex)
 		{
 			try
 			{
@@ -96,9 +96,13 @@ namespace DNPreBuild.Core.Nodes
 				{
 					files = Directory.GetFiles(path, pattern);
 					if(files != null)
+					{
 						m_Files.AddRange(files);
+					}
 					else
+					{
 						return;
+					}
 				}
 				else
 				{
@@ -108,7 +112,9 @@ namespace DNPreBuild.Core.Nodes
 					{
 						match = m_Regex.Match(file);
 						if(match.Success)
+						{
 							m_Files.Add(file);
+						}
 					}
 				}
                 
@@ -118,7 +124,9 @@ namespace DNPreBuild.Core.Nodes
 					if(dirs != null && dirs.Length > 0)
 					{
 						foreach(string str in dirs)
-							RecurseDirs(Helper.NormalizePath(str), pattern, recurse, useRegex);
+						{
+							RecurseDirectories(Helper.NormalizePath(str), pattern, recurse, useRegex);
+						}
 					}
 				}
 			}
@@ -146,30 +154,39 @@ namespace DNPreBuild.Core.Nodes
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
 			if(path == null || path == string.Empty)
+			{
 				path = ".";//use current directory
+			}
 			//throw new WarningException("Match must have a 'path' attribute");
 
 			if(pattern == null)
+			{
 				throw new WarningException("Match must have a 'pattern' attribute");
+			}
 
 			path = Helper.NormalizePath(path);
 			if(!Directory.Exists(path))
+			{
 				throw new WarningException("Match path does not exist: {0}", path);
+			}
 
 			try
 			{
 				if(useRegex)
+				{
 					m_Regex = new Regex(pattern);
+				}
 			}
 			catch(ArgumentException ex)
 			{
 				throw new WarningException("Could not compile regex pattern: {0}", ex.Message);
 			}
 
-			RecurseDirs(path, pattern, recurse, useRegex);
+			RecurseDirectories(path, pattern, recurse, useRegex);
 			if(m_Files.Count < 1)
+			{
 				throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
-
+			}
 			m_Regex = null;
 		}
 

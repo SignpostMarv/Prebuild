@@ -39,7 +39,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 using DNPreBuild.Core;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild 
 {
@@ -69,7 +69,9 @@ namespace DNPreBuild
 				}
 
 				if(!exit)
+				{
 					kernel.Process();
+				}
 			}
 			catch(Exception	ex)	
 			{
@@ -119,7 +121,9 @@ namespace DNPreBuild
 				kern.Targets.Keys.CopyTo(targs,	0);
 				Array.Sort(targs);
 				foreach(string target in targs)
+				{
 					Console.WriteLine(target);
+				}
 			}
 			Console.WriteLine("");
 		}

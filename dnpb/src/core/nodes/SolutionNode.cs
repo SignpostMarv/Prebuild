@@ -40,7 +40,7 @@ using System.Xml;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Util;
+using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Nodes
 {
@@ -177,13 +177,21 @@ namespace DNPreBuild.Core.Nodes
 				{
 					IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
 					if(dataNode is OptionsNode)
+					{
 						m_Options = (OptionsNode)dataNode;
+					}
 					else if(dataNode is FilesNode)
+					{
 						m_Files = (FilesNode)dataNode;
+					}
 					else if(dataNode is ConfigurationNode)
+					{
 						m_Configurations[((ConfigurationNode)dataNode).Name] = dataNode;
+					}
 					else if(dataNode is ProjectNode)
+					{
 						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
+					}
 				}
 			}
 			finally

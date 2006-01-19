@@ -4,7 +4,7 @@
 		<Configuration name="Debug">
 			<Options>
 			    <?if OS = "Win32" ?>
-				<CompilerDefines>DEBUG;TRACE;WIN32</CompilerDefines>
+				<CompilerDefines>DEBUG;TRACE;WIN32;NET</CompilerDefines>
 				<?else ?>
 				<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
 				<?endif ?>
@@ -17,7 +17,7 @@
 		<Configuration name="Release">
 			<Options>
 			    <?if OS = "Win32" ?>
-				<CompilerDefines>TRACE;WIN32</CompilerDefines>
+				<CompilerDefines>TRACE;WIN32;NET</CompilerDefines>
 				<?else ?>
 				<CompilerDefines>TRACE;POSIX</CompilerDefines>
 				<?endif ?>

@@ -99,7 +99,9 @@ namespace DNPreBuild.Core.Parse
 		{
 			PlatformID platId = Environment.OSVersion.Platform;
 			if(platId == PlatformID.Win32NT || platId == PlatformID.Win32Windows)
+			{
 				return "Win32";
+			}
 
 			/*
 			 * .NET 1.x, under Mono, the UNIX code is 128. Under
@@ -108,10 +110,14 @@ namespace DNPreBuild.Core.Parse
 			if(Environment.Version.Major == 1)
 			{
 				if((int)platId == 128)
+				{
 					return "UNIX";
+				}
 			}
 			else if((int)platId == 4)
+			{
 				return "UNIX";
+			}
 
 			return "Unknown";
 		}
@@ -161,7 +167,9 @@ namespace DNPreBuild.Core.Parse
 		private char NextChar(int idx, string str)
 		{
 			if((idx + 1) >= str.Length)
+			{
 				return Char.MaxValue;
+			}
 
 			return str[idx + 1];
 		}
@@ -173,11 +181,15 @@ namespace DNPreBuild.Core.Parse
 		private bool ParseExpression(string exp)
 		{
 			if(exp == null)
+			{
 				throw new ArgumentException("Invalid expression, cannot be null");
+			}
 
 			exp = exp.Trim();
 			if(exp.Length < 1)
+			{
 				throw new ArgumentException("Invalid expression, cannot be 0 length");
+			}
 
 			string id = "";
 			string str = "";
@@ -189,25 +201,35 @@ namespace DNPreBuild.Core.Parse
 			{
 				c = exp[i];
 				if(Char.IsWhiteSpace(c))
+				{
 					continue;
+				}
 
 				if(Char.IsLetterOrDigit(c) || c == '_')
 				{
 					if(inStr)
+					{
 						str += c;
+					}
 					else
+					{
 						id += c;
+					}
 				}
 				else if(c == '\"')
 				{
 					inStr = !inStr;
 					if(inStr)
+					{
 						str = "";
+					}
 				}
 				else
 				{
 					if(inStr)
+					{
 						str += c;
+					}
 					else
 					{
 						switch(c)
@@ -218,23 +240,33 @@ namespace DNPreBuild.Core.Parse
 
 							case '!':
 								if(NextChar(i, exp) == '=')
+								{
 									oper = Operators.NotEqual;
+								}
                                 
 								break;
 
 							case '<':
 								if(NextChar(i, exp) == '=')
+								{
 									oper = Operators.LessThanEqual;
+								}
 								else
+								{
 									oper = Operators.LessThan;
+								}
                                 
 								break;
 
 							case '>':
 								if(NextChar(i, exp) == '=')
+								{
 									oper = Operators.GreaterThanEqual;
+								}
 								else
+								{
 									oper = Operators.GreaterThan;
+								}
 
 								break;
 						}
@@ -244,21 +276,31 @@ namespace DNPreBuild.Core.Parse
 
             
 			if(inStr)
+			{
 				throw new WarningException("Expected end of string in expression");
+			}
 
 			if(oper == Operators.None)
+			{
 				throw new WarningException("Expected operator in expression");
+			}
 			else if(id.Length < 1)
+			{
 				throw new WarningException("Expected identifier in expression");
+			}
 			else if(str.Length < 1)
+			{
 				throw new WarningException("Expected value in expression");
+			}
 
 			bool ret = false;
 			try
 			{
 				object val = m_Variables[id.ToLower()];
 				if(val == null)
+				{
 					throw new WarningException("Unknown identifier '{0}'", id);
+				}
 
 				int numVal, numVal2;
 				string strVal, strVal2;
@@ -289,12 +331,14 @@ namespace DNPreBuild.Core.Parse
 
 		#region Public Methods
 
-		public void RegisterVariable(string name, object val)
+		public void RegisterVariable(string name, object valueObject)
 		{
-			if(name == null || val == null)
+			if(name == null || valueObject == null)
+			{
 				return;
+			}
 
-			m_Variables[name.ToLower()] = val;
+			m_Variables[name.ToLower()] = valueObject;
 		}
 
 		/// <summary>
@@ -306,7 +350,9 @@ namespace DNPreBuild.Core.Parse
 		public string Process(XmlReader reader)
 		{
 			if(reader == null)
+			{
 				throw new ArgumentException("Invalid XML reader to pre-process");
+			}
 
 			IfContext context = new IfContext(true, true, IfState.None);
 			StringWriter xmlText = new StringWriter();
@@ -327,24 +373,36 @@ namespace DNPreBuild.Core.Parse
 
 						case "elseif":
 							if(m_IfStack.Count == 0)
+							{
 								throw new WarningException("Unexpected 'elseif' outside of 'if'");
+							}
 							else if(context.State != IfState.If && context.State != IfState.ElseIf)
+							{
 								throw new WarningException("Unexpected 'elseif' outside of 'if'");
+							}
 
 							context.State = IfState.ElseIf;
 							if(!context.EverKept)
+							{
 								context.Keep = ParseExpression(reader.Value);
+							}
 							else
+							{
 								context.Keep = false;
+							}
 
 							ignore = true;
 							break;
 
 						case "else":
 							if(m_IfStack.Count == 0)
+							{
 								throw new WarningException("Unexpected 'else' outside of 'if'");
+							}
 							else if(context.State != IfState.If && context.State != IfState.ElseIf)
+							{
 								throw new WarningException("Unexpected 'else' outside of 'if'");
+							}
 
 							context.State = IfState.Else;
 							context.Keep = !context.EverKept;
@@ -353,7 +411,9 @@ namespace DNPreBuild.Core.Parse
 
 						case "endif":
 							if(m_IfStack.Count == 0)
+							{
 								throw new WarningException("Unexpected 'endif' outside of 'if'");
+							}
 
 							context = (IfContext)m_IfStack.Pop();
 							ignore = true;
@@ -361,11 +421,15 @@ namespace DNPreBuild.Core.Parse
 					}
 
 					if(ignore)
+					{
 						continue;
+					}
 				}//end pre-proc instruction
 
 				if(!context.Active || !context.Keep)
+				{
 					continue;
+				}
 
 				switch(reader.NodeType)
 				{
@@ -374,10 +438,14 @@ namespace DNPreBuild.Core.Parse
 						writer.WriteStartElement(reader.Name);
 
 						while (reader.MoveToNextAttribute())
+						{
 							writer.WriteAttributeString(reader.Name, reader.Value);
+						}
 
 						if(empty)
+						{
 							writer.WriteEndElement();
+						}
                         
 						break;
 
@@ -399,7 +467,9 @@ namespace DNPreBuild.Core.Parse
 			}
 
 			if(m_IfStack.Count != 0)
+			{
 				throw new WarningException("Mismatched 'if', 'endif' pair");
+			}
             
 			return xmlText.ToString();
 		}

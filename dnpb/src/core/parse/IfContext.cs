@@ -95,7 +95,9 @@ namespace DNPreBuild.Core.Parse
 			{
 				m_Keep = value;
 				if(m_Keep)
+				{
 					m_EverKept = true;
+				}
 			}
 		}
 

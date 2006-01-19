@@ -79,7 +79,9 @@ namespace DNPreBuild.Core.Nodes
 		public BuildAction GetBuildAction(string file)
 		{
 			if(!m_BuildActions.ContainsKey(file))
+			{
 				return BuildAction.Compile;
+			}
 
 			return (BuildAction)m_BuildActions[file];
 		}

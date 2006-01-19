@@ -40,8 +40,8 @@ namespace DNPreBuild.Core
 	{
 		#region Constructors
 
-		public WarningException(string fmt, params object[] args)
-			: base(String.Format(fmt, args))
+		public WarningException(string format, params object[] args)
+			: base(String.Format(format, args))
 		{
 		}
 
@@ -52,8 +52,8 @@ namespace DNPreBuild.Core
 	{
 		#region Constructors
 
-		public FatalException(string fmt, params object[] args)
-			: base(String.Format(fmt, args))
+		public FatalException(string format, params object[] args)
+			: base(String.Format(format, args))
 		{
 		}
 
