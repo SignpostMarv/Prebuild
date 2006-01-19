@@ -191,18 +191,18 @@ namespace DNPreBuild.Core
 			}
 		}
 
-		private void RemoveDirectoryMatches(string rootDir, string dirPattern) 
-		{
-			foreach(string dir in Directory.GetDirectories(rootDir)) 
-			{
-				foreach(string match in Directory.GetDirectories(dir)) 
-				{//delete all child directories that match
-					Directory.Delete(Path.GetFullPath(match),true);
-				}
-				//recure through the rest checking for nested matches to delete
-				RemoveDirectoryMatches(dir,dirPattern);
-			}
-		}
+//		private void RemoveDirectoryMatches(string rootDir, string dirPattern) 
+//		{
+//			foreach(string dir in Directory.GetDirectories(rootDir)) 
+//			{
+//				foreach(string match in Directory.GetDirectories(dir)) 
+//				{//delete all child directories that match
+//					Directory.Delete(Path.GetFullPath(match),true);
+//				}
+//				//recure through the rest checking for nested matches to delete
+//				RemoveDirectoryMatches(dir,dirPattern);
+//			}
+//		}
 
 		private void LoadSchema()
 		{

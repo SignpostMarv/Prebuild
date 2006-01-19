@@ -47,8 +47,8 @@ namespace DNPreBuild.Core.Utilities
 	{
 		#region Fields
 
-		public static Stack m_DirStack = null;
-		public static Regex m_VarRegex = null;
+		private static Stack dirStack = null;
+		private static Regex varRegex = null;
 		public static bool CheckForOSVariables = false;
 
 		#endregion
@@ -57,7 +57,7 @@ namespace DNPreBuild.Core.Utilities
 
 		static Helper()
 		{
-			m_DirStack = new Stack();
+			dirStack = new Stack();
 			//m_VarRegex = new Regex(@"\${(?<var>[\w|_]+)}");
 		}
 
@@ -69,7 +69,15 @@ namespace DNPreBuild.Core.Utilities
 		{
 			get
 			{
-				return m_DirStack;
+				return dirStack;
+			}
+		}
+
+		public static Regex VarRegex
+		{
+			get
+			{
+				return varRegex;
 			}
 		}
 

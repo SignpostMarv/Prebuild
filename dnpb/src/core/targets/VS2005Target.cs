@@ -51,17 +51,65 @@ namespace DNPreBuild.Core.Targets
 
 		protected struct ToolInfo
 		{
-			public string Name;
-			public string Guid;
-			public string FileExtension;
-			public string XMLTag;
+			string name;
+			string guid;
+			string fileExtension;
+			string xmlTag;
 
-			public ToolInfo( string name, string guid, string fileExt, string xml )
+			public string Name
 			{
-				Name = name;
-				Guid = guid;
-				FileExtension = fileExt;
-				XMLTag = xml;
+				get
+				{
+					return name;
+				}
+				set
+				{
+					name = value;
+				}
+			}
+
+			public string Guid
+			{
+				get
+				{
+					return guid;
+				}
+				set
+				{
+					guid = value;
+				}
+			}
+
+			public string FileExtension
+			{
+				get
+				{
+					return fileExtension;
+				}
+				set
+				{
+					fileExtension = value;
+				}
+			}
+			public string XmlTag
+			{
+				get
+				{
+					return xmlTag;
+				}
+				set
+				{
+					xmlTag = value;
+				}
+			}
+
+
+			public ToolInfo(string name, string guid, string fileExtension, string xml)
+			{
+				this.name = name;
+				this.guid = guid;
+				this.fileExtension = fileExtension;
+				this.xmlTag = xml;
 			}
 		}
 
@@ -69,14 +117,70 @@ namespace DNPreBuild.Core.Targets
 
 		#region Fields
 
-		protected string m_SolutionVersion = "9.00";
-		protected string m_ProductVersion = "8.0.50727";
-		protected string m_SchemaVersion = "2.0";
-		protected string m_VersionName = "C# Express 2005";
-		protected VSVersion m_Version = VSVersion.VS80;
+		string solutionVersion = "9.00";
+		string productVersion = "8.0.50727";
+		string schemaVersion = "2.0";
+		string versionName = "C# Express 2005";
+		VSVersion version = VSVersion.VS80;
 
-		private Hashtable m_Tools = null;
-		private Kernel m_Kernel = null;
+		Hashtable tools = null;
+		Kernel kernel = null;
+
+		protected string SolutionVersion
+		{
+			get
+			{
+				return this.solutionVersion;
+			}
+			set
+			{
+				this.solutionVersion = value;
+			}
+		}
+		protected string ProductVersion
+		{
+			get
+			{
+				return this.productVersion;
+			}
+			set
+			{
+				this.productVersion = value;
+			}
+		}
+		protected string SchemaVersion
+		{
+			get
+			{
+				return this.schemaVersion;
+			}
+			set
+			{
+				this.schemaVersion = value;
+			}
+		}
+		protected string VersionName
+		{
+			get
+			{
+				return this.versionName;
+			}
+			set
+			{
+				this.versionName = value;
+			}
+		}
+		protected VSVersion Version
+		{
+			get
+			{
+				return this.version;
+			}
+			set
+			{
+				this.version = value;
+			}
+		}
 
 		#endregion
 
@@ -84,9 +188,9 @@ namespace DNPreBuild.Core.Targets
 
 		public VS2005Target()
 		{
-			m_Tools = new Hashtable();
+			this.tools = new Hashtable();
 
-			m_Tools[ "C#" ] = new ToolInfo( "C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP" );
+			this.tools[ "C#" ] = new ToolInfo( "C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP" );
 		}
 
 		#endregion
@@ -112,7 +216,7 @@ namespace DNPreBuild.Core.Targets
 				}
 				catch ( ArgumentException )
 				{
-					m_Kernel.Log.Write( LogType.Warning, "Could not resolve reference path: {0}", node.Path );
+					this.kernel.Log.Write( LogType.Warning, "Could not resolve reference path: {0}", node.Path );
 				}
 			}
 
@@ -121,16 +225,16 @@ namespace DNPreBuild.Core.Targets
 
 		private void WriteProject( SolutionNode solution, ProjectNode project )
 		{
-			if ( !m_Tools.ContainsKey( project.Language ) )
+			if ( !tools.ContainsKey( project.Language ) )
 			{
 				throw new Exception( "Unknown .NET language: " + project.Language );
 			}
 
-			ToolInfo toolInfo = (ToolInfo)m_Tools[ project.Language ];
+			ToolInfo toolInfo = (ToolInfo)tools[ project.Language ];
 			string projectFile = Helper.MakeFilePath( project.FullPath, project.Name, toolInfo.FileExtension );
 			StreamWriter ps = new StreamWriter( projectFile );
 
-			m_Kernel.CWDStack.Push();
+			kernel.CWDStack.Push();
 			Helper.SetCurrentDir( Path.GetDirectoryName( projectFile ) );
 
 			#region Project File
@@ -140,8 +244,8 @@ namespace DNPreBuild.Core.Targets
 				//ps.WriteLine("\t<{0}", toolInfo.XMLTag);
 				ps.WriteLine( "\t<PropertyGroup>" );
 				ps.WriteLine( "\t\t<ProjectType>Local</ProjectType>" );
-				ps.WriteLine( "\t\t<ProductVersion>{0}</ProductVersion>", m_ProductVersion );
-				ps.WriteLine( "\t\t<SchemaVersion>{0}</SchemaVersion>", m_SchemaVersion );
+				ps.WriteLine( "\t\t<ProductVersion>{0}</ProductVersion>", this.ProductVersion );
+				ps.WriteLine( "\t\t<SchemaVersion>{0}</SchemaVersion>", this.SchemaVersion );
 				ps.WriteLine( "\t\t<ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper() );
 
 				ps.WriteLine( "\t\t<Configuration Condition = \" '$(Configuration)' == '' \">Debug</Configuration>" );
@@ -285,7 +389,7 @@ namespace DNPreBuild.Core.Targets
 				ps.WriteLine( "\t\t<Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>" );
 				ps.WriteLine( "\t\t<Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>" );
 				ps.WriteLine( "\t\t<ReferencePath>{0}</ReferencePath>", MakeRefPath( project ) );
-				ps.WriteLine( "\t\t<LastOpenVersion>{0}</LastOpenVersion>", m_ProductVersion );
+				ps.WriteLine( "\t\t<LastOpenVersion>{0}</LastOpenVersion>", this.ProductVersion );
 				ps.WriteLine( "\t\t<ProjectView>ProjectFiles</ProjectView>" );
 				ps.WriteLine( "\t\t<ProjectTrust>0</ProjectTrust>" );
 				ps.WriteLine( "\t</PropertyGroup>" );
@@ -304,38 +408,38 @@ namespace DNPreBuild.Core.Targets
 			}
 			#endregion
 
-			m_Kernel.CWDStack.Pop();
+			kernel.CWDStack.Pop();
 		}
 
 		private void WriteSolution( SolutionNode solution )
 		{
-			m_Kernel.Log.Write( "Creating Visual {0} solution and project files", m_VersionName );
+			kernel.Log.Write( "Creating Visual {0} solution and project files", this.VersionName );
 
 			foreach ( ProjectNode project in solution.Projects )
 			{
-				m_Kernel.Log.Write( "...Creating project: {0}", project.Name );
+				kernel.Log.Write( "...Creating project: {0}", project.Name );
 				WriteProject( solution, project );
 			}
 
-			m_Kernel.Log.Write( "" );
+			kernel.Log.Write( "" );
 			string solutionFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "sln" );
 			StreamWriter ss = new StreamWriter( solutionFile );
 
-			m_Kernel.CWDStack.Push();
+			kernel.CWDStack.Push();
 			Helper.SetCurrentDir( Path.GetDirectoryName( solutionFile ) );
 
 			using ( ss )
 			{
-				ss.WriteLine( "Microsoft Visual Studio Solution File, Format Version {0}", m_SolutionVersion );
+				ss.WriteLine( "Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion );
 				ss.WriteLine( "# Visual C# Express 2005" );
 				foreach ( ProjectNode project in solution.Projects )
 				{
-					if ( !m_Tools.ContainsKey( project.Language ) )
+					if ( !tools.ContainsKey( project.Language ) )
 					{
 						throw new Exception( "Unknown .NET language: " + project.Language );
 					}
 
-					ToolInfo toolInfo = (ToolInfo)m_Tools[ project.Language ];
+					ToolInfo toolInfo = (ToolInfo)tools[ project.Language ];
 
 					string path = Helper.MakePathRelativeTo( solution.FullPath, project.FullPath );
 					ss.WriteLine( "Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"",
@@ -411,14 +515,14 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine( "EndGlobal" );
 			}
 
-			m_Kernel.CWDStack.Pop();
+			kernel.CWDStack.Pop();
 		}
 
 		private void CleanProject( ProjectNode project )
 		{
-			m_Kernel.Log.Write( "...Cleaning project: {0}", project.Name );
+			kernel.Log.Write( "...Cleaning project: {0}", project.Name );
 
-			ToolInfo toolInfo = (ToolInfo)m_Tools[ project.Language ];
+			ToolInfo toolInfo = (ToolInfo)tools[ project.Language ];
 			string projectFile = Helper.MakeFilePath( project.FullPath, project.Name, toolInfo.FileExtension );
 			string userFile = projectFile + ".user";
 
@@ -428,7 +532,7 @@ namespace DNPreBuild.Core.Targets
 
 		private void CleanSolution( SolutionNode solution )
 		{
-			m_Kernel.Log.Write( "Cleaning Visual {0} solution and project files", m_VersionName, solution.Name );
+			kernel.Log.Write( "Cleaning Visual {0} solution and project files", this.VersionName, solution.Name );
 
 			string slnFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "sln" );
 			string suoFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "suo" );
@@ -441,7 +545,7 @@ namespace DNPreBuild.Core.Targets
 				CleanProject( project );
 			}
 
-			m_Kernel.Log.Write( "" );
+			kernel.Log.Write( "" );
 		}
 
 		#endregion
@@ -454,12 +558,12 @@ namespace DNPreBuild.Core.Targets
 			{
 				throw new ArgumentNullException("kern");
 			}
-			m_Kernel = kern;
-			foreach ( SolutionNode sol in m_Kernel.Solutions )
+			kernel = kern;
+			foreach ( SolutionNode sol in kernel.Solutions )
 			{
 				WriteSolution( sol );
 			}
-			m_Kernel = null;
+			kernel = null;
 		}
 
 		public virtual void Clean( Kernel kern )
@@ -468,12 +572,12 @@ namespace DNPreBuild.Core.Targets
 			{
 				throw new ArgumentNullException("kern");
 			}
-			m_Kernel = kern;
-			foreach ( SolutionNode sol in m_Kernel.Solutions )
+			kernel = kern;
+			foreach ( SolutionNode sol in kernel.Solutions )
 			{
 				CleanSolution( sol );
 			}
-			m_Kernel = null;
+			kernel = null;
 		}
 
 		public virtual string Name

@@ -95,7 +95,7 @@ namespace DNPreBuild.Core.Parse
 		 * Parts of this code were taken from NAnt and is subject to the GPL
 		 * as per NAnt's license. Thanks to the NAnt guys for this little gem.
 		 */
-		private string GetOS()
+		private static string GetOS()
 		{
 			PlatformID platId = Environment.OSVersion.Platform;
 			if(platId == PlatformID.Win32NT || platId == PlatformID.Win32Windows)
@@ -122,7 +122,7 @@ namespace DNPreBuild.Core.Parse
 			return "Unknown";
 		}
 
-		private bool CompareNum(Operators oper, int val1, int val2)
+		private static bool CompareNum(Operators oper, int val1, int val2)
 		{
 			switch(oper)
 			{
@@ -143,7 +143,7 @@ namespace DNPreBuild.Core.Parse
 			throw new WarningException("Unknown operator type");
 		}
 
-		private bool CompareStr(Operators oper, string val1, string val2)
+		private static bool CompareStr(Operators oper, string val1, string val2)
 		{
 			switch(oper)
 			{
@@ -164,7 +164,7 @@ namespace DNPreBuild.Core.Parse
 			throw new WarningException("Unknown operator type");
 		}
 
-		private char NextChar(int idx, string str)
+		private static char NextChar(int idx, string str)
 		{
 			if((idx + 1) >= str.Length)
 			{

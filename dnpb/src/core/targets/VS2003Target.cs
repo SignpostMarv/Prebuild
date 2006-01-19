@@ -58,17 +58,65 @@ namespace DNPreBuild.Core.Targets
 
 		protected struct ToolInfo
 		{
-			public string Name;
-			public string Guid;
-			public string FileExtension;
-			public string XMLTag;
+			string name;
+			string guid;
+			string fileExtension;
+			string xmlTag;
 
-			public ToolInfo(string name, string guid, string fileExt, string xml)
+			public string Name
 			{
-				Name = name;
-				Guid = guid;
-				FileExtension = fileExt;
-				XMLTag = xml;
+				get
+				{
+					return name;
+				}
+				set
+				{
+					name = value;
+				}
+			}
+
+			public string Guid
+			{
+				get
+				{
+					return guid;
+				}
+				set
+				{
+					guid = value;
+				}
+			}
+
+			public string FileExtension
+			{
+				get
+				{
+					return fileExtension;
+				}
+				set
+				{
+					fileExtension = value;
+				}
+			}
+			public string XmlTag
+			{
+				get
+				{
+					return xmlTag;
+				}
+				set
+				{
+					xmlTag = value;
+				}
+			}
+
+
+			public ToolInfo(string name, string guid, string fileExtension, string xml)
+			{
+				this.name = name;
+				this.guid = guid;
+				this.fileExtension = fileExtension;
+				this.xmlTag = xml;
 			}
 		}
 
@@ -76,14 +124,70 @@ namespace DNPreBuild.Core.Targets
 
 		#region Fields
 
-		protected string m_SolutionVersion = "8.00";
-		protected string m_ProductVersion = "7.10.3077";
-		protected string m_SchemaVersion = "2.0";
-		protected string m_VersionName = "2003";
-		protected VSVersion m_Version = VSVersion.VS71;
+		string solutionVersion = "8.00";
+		string productVersion = "7.10.3077";
+		string schemaVersion = "2.0";
+		string versionName = "2003";
+		VSVersion version = VSVersion.VS71;
 
-		private Hashtable m_Tools = null;
-		private Kernel m_Kernel = null;
+		Hashtable m_Tools = null;
+		Kernel m_Kernel = null;
+
+		protected string SolutionVersion
+		{
+			get
+			{
+				return this.solutionVersion;
+			}
+			set
+			{
+				this.solutionVersion = value;
+			}
+		}
+		protected string ProductVersion
+		{
+			get
+			{
+				return this.productVersion;
+			}
+			set
+			{
+				this.productVersion = value;
+			}
+		}
+		protected string SchemaVersion
+		{
+			get
+			{
+				return this.schemaVersion;
+			}
+			set
+			{
+				this.schemaVersion = value;
+			}
+		}
+		protected string VersionName
+		{
+			get
+			{
+				return this.versionName;
+			}
+			set
+			{
+				this.versionName = value;
+			}
+		}
+		protected VSVersion Version
+		{
+			get
+			{
+				return this.version;
+			}
+			set
+			{
+				this.version = value;
+			}
+		}
 
 		#endregion
 
@@ -144,10 +248,10 @@ namespace DNPreBuild.Core.Targets
 			using(ps)
 			{
 				ps.WriteLine("<VisualStudioProject>");
-				ps.WriteLine("\t<{0}", toolInfo.XMLTag);
+				ps.WriteLine("\t<{0}", toolInfo.XmlTag);
 				ps.WriteLine("\t\tProjectType = \"Local\"");
-				ps.WriteLine("\t\tProductVersion = \"{0}\"", m_ProductVersion);
-				ps.WriteLine("\t\tSchemaVersion = \"{0}\"", m_SchemaVersion);
+				ps.WriteLine("\t\tProductVersion = \"{0}\"", this.ProductVersion);
+				ps.WriteLine("\t\tSchemaVersion = \"{0}\"", this.SchemaVersion);
 				ps.WriteLine("\t\tProjectGuid = \"{{{0}}}\"", project.Guid.ToString().ToUpper());
 				ps.WriteLine("\t>");
 
@@ -163,7 +267,7 @@ namespace DNPreBuild.Core.Targets
 				ps.WriteLine("\t\t\t\tDefaultTargetSchema = \"IE50\"");
 				ps.WriteLine("\t\t\t\tDelaySign = \"false\"");
 
-				if(m_Version == VSVersion.VS70)
+				if(this.Version == VSVersion.VS70)
 					ps.WriteLine("\t\t\t\tNoStandardLibraries = \"false\"");
 
 				ps.WriteLine("\t\t\t\tOutputType = \"{0}\"", project.Type.ToString());
@@ -185,7 +289,7 @@ namespace DNPreBuild.Core.Targets
 					ps.WriteLine("\t\t\t\t\tFileAlignment = \"{0}\"", conf.Options["FileAlignment"]);
 					ps.WriteLine("\t\t\t\t\tIncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
                     
-					if(m_Version == VSVersion.VS71)
+					if(this.Version == VSVersion.VS71)
 					{
 						ps.WriteLine("\t\t\t\t\tNoStdLib = \"{0}\"", conf.Options["NoStdLib"]);
 						ps.WriteLine("\t\t\t\t\tNoWarn = \"{0}\"", conf.Options["SupressWarnings"]);
@@ -248,7 +352,7 @@ namespace DNPreBuild.Core.Targets
 				ps.WriteLine("\t\t\t</Include>");
                 
 				ps.WriteLine("\t\t</Files>");
-				ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
+				ps.WriteLine("\t</{0}>", toolInfo.XmlTag);
 				ps.WriteLine("</VisualStudioProject>");
 			}
 
@@ -256,7 +360,7 @@ namespace DNPreBuild.Core.Targets
 			using(ps)
 			{
 				ps.WriteLine("<VisualStudioProject>");
-				ps.WriteLine("\t<{0}>", toolInfo.XMLTag);
+				ps.WriteLine("\t<{0}>", toolInfo.XmlTag);
 				ps.WriteLine("\t\t<Build>");
 
 				ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(project));
@@ -269,7 +373,7 @@ namespace DNPreBuild.Core.Targets
 				ps.WriteLine("\t\t\t</Settings>");
 
 				ps.WriteLine("\t\t</Build>");
-				ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
+				ps.WriteLine("\t</{0}>", toolInfo.XmlTag);
 				ps.WriteLine("</VisualStudioProject>");
 			}
 
@@ -300,7 +404,7 @@ namespace DNPreBuild.Core.Targets
 
 		private void WriteSolution(SolutionNode solution)
 		{
-			m_Kernel.Log.Write("Creating Visual Studio {0} solution and project files", m_VersionName);
+			m_Kernel.Log.Write("Creating Visual Studio {0} solution and project files", this.VersionName);
 
 			foreach(ProjectNode project in solution.Projects)
 			{
@@ -320,7 +424,7 @@ namespace DNPreBuild.Core.Targets
             
 			using(ss)
 			{
-				ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", m_SolutionVersion);
+				ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
 				foreach(ProjectNode project in solution.Projects)
 				{
 					if(!m_Tools.ContainsKey(project.Language))
@@ -415,7 +519,7 @@ namespace DNPreBuild.Core.Targets
 
 		private void CleanSolution(SolutionNode solution)
 		{
-			m_Kernel.Log.Write("Cleaning Visual Studio {0} solution and project files", m_VersionName, solution.Name);
+			m_Kernel.Log.Write("Cleaning Visual Studio {0} solution and project files", this.VersionName, solution.Name);
 
 			string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
 			string suoFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "suo");

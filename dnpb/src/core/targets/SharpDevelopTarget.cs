@@ -56,7 +56,7 @@ namespace DNPreBuild.Core.Targets
 
 		#region Private Methods
 
-		private string PrependPath(string path)
+		private static string PrependPath(string path)
 		{
 			string tmpPath = Helper.NormalizePath(path, '/');
 			Regex regex = new Regex(@"(\w):/(\w+)");
@@ -73,7 +73,7 @@ namespace DNPreBuild.Core.Targets
 			return tmpPath;
 		}
 
-		private string BuildReference(SolutionNode solution, ReferenceNode refr)
+		private static string BuildReference(SolutionNode solution, ReferenceNode refr)
 		{
 			string ret = "\t\t<Reference type=\"";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
@@ -105,7 +105,7 @@ namespace DNPreBuild.Core.Targets
 			return ret;
 		}
 
-		private string FindFileReference(string refName, ProjectNode project) 
+		private static string FindFileReference(string refName, ProjectNode project) 
 		{
 			foreach(ReferencePathNode refPath in project.ReferencePaths) 
 			{
