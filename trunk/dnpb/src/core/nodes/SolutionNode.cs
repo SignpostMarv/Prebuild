@@ -173,6 +173,11 @@ namespace DNPreBuild.Core.Nodes
 			{
 				Helper.SetCurrentDir(m_FullPath);
 
+				if( node == null )
+				{
+					throw new ArgumentNullException("node");
+				}
+
 				foreach(XmlNode child in node.ChildNodes)
 				{
 					IDataNode dataNode = Kernel.Instance.ParseNode(child, this);

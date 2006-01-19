@@ -450,6 +450,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Write( Kernel kern )
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach ( SolutionNode sol in m_Kernel.Solutions )
 			{
@@ -460,6 +464,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Clean( Kernel kern )
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach ( SolutionNode sol in m_Kernel.Solutions )
 			{

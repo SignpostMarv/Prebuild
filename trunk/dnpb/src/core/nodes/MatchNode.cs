@@ -153,7 +153,7 @@ namespace DNPreBuild.Core.Nodes
 			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
-			if(path == null || path == string.Empty)
+			if(path != null && path.Length == 0)
 			{
 				path = ".";//use current directory
 			}

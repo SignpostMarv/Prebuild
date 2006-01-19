@@ -315,6 +315,10 @@ namespace DNPreBuild.Core.Targets
 
 		public void Write(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach(SolutionNode solution in kern.Solutions)
 			{
@@ -325,6 +329,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Clean(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach(SolutionNode sol in kern.Solutions)
 			{

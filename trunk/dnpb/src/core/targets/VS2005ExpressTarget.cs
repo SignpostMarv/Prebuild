@@ -81,6 +81,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Clean(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			this.m_Kernel = kern;
 			foreach (SolutionNode node1 in this.m_Kernel.Solutions)
 			{
@@ -139,6 +143,10 @@ namespace DNPreBuild.Core.Targets
 		}
 		public virtual void Write(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			this.m_Kernel = kern;
 			foreach (SolutionNode node1 in this.m_Kernel.Solutions)
 			{

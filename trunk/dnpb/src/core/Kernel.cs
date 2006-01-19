@@ -387,7 +387,7 @@ namespace DNPreBuild.Core
 		{
 			if(m_ProjectGroups != null && m_ProjectGroups.Length > 0) 
 			{
-				if(projectGroupsFlags != null && projectGroupsFlags != string.Empty) 
+				if(projectGroupsFlags != null && projectGroupsFlags.Length == 0) 
 				{
 					foreach(string group in projectGroupsFlags.Split('|')) 
 					{
@@ -404,6 +404,10 @@ namespace DNPreBuild.Core
 
 		public Type GetNodeType(XmlNode node)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
 			if(!m_Nodes.ContainsKey(node.Name))
 			{
 				return null;
@@ -425,6 +429,10 @@ namespace DNPreBuild.Core
 
 			try
 			{
+				if( node == null )
+				{
+					throw new ArgumentNullException("node");
+				}
 				if(preNode == null)
 				{
 					if(!m_Nodes.ContainsKey(node.Name))
@@ -483,7 +491,7 @@ namespace DNPreBuild.Core
 			{
 				logFile = m_CommandLine["log"];
 
-				if(logFile == null || logFile == string.Empty)
+				if(logFile != null && logFile.Length == 0)
 				{
 					logFile = "DNPreBuild.log";
 				}
@@ -501,13 +509,13 @@ namespace DNPreBuild.Core
 			m_Target = m_CommandLine["target"];
 			m_Clean = m_CommandLine["clean"];
 			string removeDirs = m_CommandLine["removedir"];
-			if(removeDirs != null && removeDirs != string.Empty) 
+			if(removeDirs != null && removeDirs.Length == 0) 
 			{
 				m_RemoveDirectories = removeDirs.Split('|');
 			}
 
 			string flags = m_CommandLine["allowedgroups"];//allows filtering by specifying a pipe-delimited list of groups to include
-			if(flags != null && flags != string.Empty)
+			if(flags != null && flags.Length == 0)
 			{
 				m_ProjectGroups = flags.Split('|');
 			}
@@ -561,7 +569,7 @@ namespace DNPreBuild.Core
 
 			string target = (m_Target != null ? m_Target.ToLower() : m_Clean.ToLower());
 			bool clean = (m_Target == null);
-			if(clean && target == string.Empty)
+			if(clean && target != null && target.Length == 0)
 			{
 				target = "all";
 			}

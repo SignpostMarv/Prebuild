@@ -153,7 +153,7 @@ namespace DNPreBuild.Core.Nodes
 			get
 			{
 				object valueObject = this[index];
-				if(valueObject == null || valueObject is string && string.Empty == (string)valueObject) 
+				if(valueObject !=  null && valueObject is string && ((string)valueObject).Length == 0) 
 				{
 					return defaultValue;
 				}
@@ -195,6 +195,11 @@ namespace DNPreBuild.Core.Nodes
 
 		public override void Parse(XmlNode node)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
+
 			foreach(XmlNode child in node.ChildNodes)
 			{
 				SetOption(child.Name, Helper.InterpolateForEnvironmentVariables(child.InnerText));

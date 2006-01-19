@@ -44,7 +44,7 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		protected IDataNode m_Parent;
+		private IDataNode parent;
 
 		#endregion
 
@@ -54,11 +54,11 @@ namespace DNPreBuild.Core.Nodes
 		{
 			get
 			{
-				return m_Parent;
+				return parent;
 			}
 			set
 			{
-				m_Parent = value;
+				parent = value;
 			}
 		}
 

@@ -278,12 +278,20 @@ namespace DNPreBuild.Core.Targets
 
 		public static string GetXmlDocFile(ProjectNode project, ConfigurationNode conf) 
 		{
+			if( conf == null )
+			{
+				throw new ArgumentNullException("conf");
+			}
+			if( project == null )
+			{
+				throw new ArgumentNullException("project");
+			}
 			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
 			{
 				return string.Empty;
 			}
 			string docFile = (string)conf.Options["XmlDocFile"];
-			if(docFile == null || docFile == string.Empty)//default to assembly name if not specified
+			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
 			{
 				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
 			}
@@ -429,6 +437,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Write(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach(SolutionNode sol in m_Kernel.Solutions)
 			{
@@ -439,6 +451,10 @@ namespace DNPreBuild.Core.Targets
 
 		public virtual void Clean(Kernel kern)
 		{
+			if( kern == null )
+			{
+				throw new ArgumentNullException("kern");
+			}
 			m_Kernel = kern;
 			foreach(SolutionNode sol in m_Kernel.Solutions)
 			{
