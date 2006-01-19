@@ -90,7 +90,16 @@ namespace DNPreBuild.Core.Utilities
 		/// <param name="beforeGroup"></param>
 		/// <param name="afterGroup"></param>
 		/// <returns></returns>
-		public static StringCollection FindGroups(string target, string beforeGroup, string afterGroup, bool includeDelimitersInSubstrings) {
+		public static StringCollection FindGroups(string target, string beforeGroup, string afterGroup, bool includeDelimitersInSubstrings) 
+		{
+			if( beforeGroup == null )
+			{
+				throw new ArgumentNullException("beforeGroup");
+			}
+			if( afterGroup == null )
+			{
+				throw new ArgumentNullException("afterGroup");
+			}
 			StringCollection results = new StringCollection();
 			if(target == null || target.Length == 0)
 			{
@@ -99,7 +108,8 @@ namespace DNPreBuild.Core.Utilities
 
 			int beforeMod = 0;
 			int afterMod = 0;
-			if(includeDelimitersInSubstrings) {
+			if(includeDelimitersInSubstrings) 
+			{
 				//be sure to not exlude the delims
 				beforeMod = beforeGroup.Length;
 				afterMod = afterGroup.Length;
@@ -126,8 +136,16 @@ namespace DNPreBuild.Core.Utilities
 		}
 
 		public static string ReplaceGroups(string target, string beforeGroup, string afterGroup, StringLookup lookup) {
+			if( target == null )
+			{
+				throw new ArgumentNullException("target");
+			}
 			int targetLength = target.Length;
 			StringCollection strings = FindGroups(target,beforeGroup,afterGroup,false);
+			if( lookup == null )
+			{
+				throw new ArgumentNullException("lookup");
+			}
 			foreach(string substring in strings) 
 			{
 				target = target.Replace(beforeGroup + substring + afterGroup, lookup(substring) );
@@ -312,6 +330,11 @@ namespace DNPreBuild.Core.Utilities
 		{
 			string ret = EndPath(NormalizePath(path));
             
+			if( name == null )
+			{
+				throw new ArgumentNullException("name");
+			}
+
 			ret += name;
 			if(!name.EndsWith("." + ext))
 			{
@@ -328,6 +351,10 @@ namespace DNPreBuild.Core.Utilities
 
 		public static void SetCurrentDir(string path)
 		{
+			if( path == null )
+			{
+				throw new ArgumentNullException("path");
+			}
 			if(path.Length < 1)
 			{
 				return;
@@ -347,6 +374,10 @@ namespace DNPreBuild.Core.Utilities
 			if(attrs == null || attrs.Length < 1)
 			{
 				return null;
+			}
+			if( inter == null )
+			{
+				throw new ArgumentNullException("inter");
 			}
 
 			if(typeToCheck.GetInterface(inter.FullName) == null)
@@ -388,6 +419,10 @@ namespace DNPreBuild.Core.Utilities
 
 		public static string AttributeValue(XmlNode node, string attr, string def)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
 			if(node.Attributes[attr] == null)
 			{
 				return def;
@@ -401,8 +436,12 @@ namespace DNPreBuild.Core.Utilities
 			return InterpolateForEnvironmentVariables(val);
 		}
 
-		public static bool ParseBoolean(XmlNode node, string attr, bool defaultValue) {
-			
+		public static bool ParseBoolean(XmlNode node, string attr, bool defaultValue) 
+		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
 			if(node.Attributes[attr] == null)
 			{
 				return defaultValue;
@@ -412,6 +451,10 @@ namespace DNPreBuild.Core.Utilities
 
 		public static object EnumAttributeValue(XmlNode node, string attr, Type enumType, object def)
 		{
+			if( def == null )
+			{
+				throw new ArgumentNullException("def");
+			}
 			string val = AttributeValue(node, attr, def.ToString());
 			return Enum.Parse(enumType, val, true);
 		}

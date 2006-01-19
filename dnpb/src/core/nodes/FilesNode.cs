@@ -88,6 +88,10 @@ namespace DNPreBuild.Core.Nodes
 
 		public override void Parse(XmlNode node)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
 			foreach(XmlNode child in node.ChildNodes)
 			{
 				IDataNode dataNode = Kernel.Instance.ParseNode(child, this);

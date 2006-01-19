@@ -96,6 +96,11 @@ namespace DNPreBuild.Core.Nodes
 			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
+
 			m_Path = Helper.InterpolateForEnvironmentVariables(node.InnerText);
 			if(m_Path == null)
 			{

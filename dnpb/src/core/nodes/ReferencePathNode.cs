@@ -68,6 +68,11 @@ namespace DNPreBuild.Core.Nodes
 
 		public override void Parse(XmlNode node)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
+
 			m_Path = Helper.InterpolateForEnvironmentVariables(node.InnerText);
 			if(m_Path == null)
 			{

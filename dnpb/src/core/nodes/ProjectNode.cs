@@ -220,14 +220,14 @@ namespace DNPreBuild.Core.Nodes
 		{
 			get
 			{
-				return m_Parent;
+				return base.Parent;
 			}
 			set
 			{
-				m_Parent = value;
-				if(m_Parent is SolutionNode && m_Configurations.Count < 1)
+				base.Parent = value;
+				if(base.Parent is SolutionNode && m_Configurations.Count < 1)
 				{
-					SolutionNode parent = (SolutionNode)m_Parent;
+					SolutionNode parent = (SolutionNode)base.Parent;
 					foreach(ConfigurationNode conf in parent.Configurations)
 					{
 						m_Configurations[conf.Name] = conf.Clone();
@@ -311,6 +311,11 @@ namespace DNPreBuild.Core.Nodes
 			try
 			{
 				Helper.SetCurrentDir(m_FullPath);
+
+				if( node == null )
+				{
+					throw new ArgumentNullException("node");
+				}
 
 				foreach(XmlNode child in node.ChildNodes)
 				{
