@@ -45,11 +45,11 @@ namespace DNPreBuild.Core.Targets
 
 		private void SetVS2002()
 		{
-			m_SolutionVersion = "7.00";
-			m_ProductVersion = "7.0.9254";
-			m_SchemaVersion = "1.0";
-			m_VersionName = "2002";
-			m_Version = VSVersion.VS70;
+			this.SolutionVersion = "7.00";
+			this.ProductVersion = "7.0.9254";
+			this.SchemaVersion = "1.0";
+			this.VersionName = "2002";
+			this.Version = VSVersion.VS70;
 		}
 
 		#endregion
