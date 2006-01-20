@@ -50,7 +50,7 @@ namespace DNPreBuild.Core.Targets
 	{
 		#region Fields
 
-		private Kernel m_Kernel = null;
+		private Kernel m_Kernel;
 
 		#endregion
 
@@ -124,7 +124,7 @@ namespace DNPreBuild.Core.Targets
 		{
 			string csComp = "Csc";
 			string netRuntime = "MsNet";
-			if(project.Runtime == Runtime.Mono)
+			if(project.Runtime == ClrRuntime.Mono)
 			{
 				csComp = "Mcs";
 				netRuntime = "Mono";
@@ -133,7 +133,7 @@ namespace DNPreBuild.Core.Targets
 			string projFile = Helper.MakeFilePath(project.FullPath, project.Name, "prjx");
 			StreamWriter ss = new StreamWriter(projFile);
 
-			m_Kernel.CWDStack.Push();
+			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(projFile));
 
 			using(ss)
@@ -217,7 +217,7 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine("</Project>");
 			}
 
-			m_Kernel.CWDStack.Pop();
+			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		private void WriteCombine(SolutionNode solution)
@@ -236,7 +236,7 @@ namespace DNPreBuild.Core.Targets
 			string combFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "cmbx");
 			StreamWriter ss = new StreamWriter(combFile);
 
-			m_Kernel.CWDStack.Push();
+			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(combFile));
             
 			using(ss)
@@ -284,7 +284,7 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine("</Combine>");
 			}
 
-			m_Kernel.CWDStack.Pop();
+			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		private void CleanProject(ProjectNode project)

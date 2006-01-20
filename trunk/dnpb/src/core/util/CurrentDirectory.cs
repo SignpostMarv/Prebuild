@@ -37,17 +37,17 @@ using System.Collections;
 
 namespace DNPreBuild.Core.Utilities
 {
-	public class CurrentDirectoryStack
+	public class CurrentDirectory
 	{
 		#region Fields
 
-		private Stack m_Stack = null;
+		private Stack m_Stack;
 
 		#endregion
 
 		#region Constructors
 
-		public CurrentDirectoryStack()
+		public CurrentDirectory()
 		{
 			m_Stack = new Stack();
 		}

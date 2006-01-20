@@ -47,9 +47,24 @@ namespace DNPreBuild.Core.Utilities
 	{
 		#region Fields
 
-		private static Stack dirStack = null;
-		private static Regex varRegex = null;
-		public static bool CheckForOSVariables = false;
+		private static Stack dirStack;
+		private static Regex varRegex;
+		static bool checkForOSVariables;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public static bool CheckForOSVariables
+		{
+			get
+			{
+				return checkForOSVariables;
+			}
+			set
+			{
+				checkForOSVariables = value;
+			}
+		}
 
 		#endregion
 
@@ -148,7 +163,7 @@ namespace DNPreBuild.Core.Utilities
 			{
 				throw new ArgumentNullException("target");
 			}
-			int targetLength = target.Length;
+			//int targetLength = target.Length;
 			StringCollection strings = FindGroups(target,beforeGroup,afterGroup,false);
 			if( lookup == null )
 			{
@@ -183,27 +198,27 @@ namespace DNPreBuild.Core.Utilities
 
 		#endregion
 
-		public static object TranslateValue(Type t, string val)
+		public static object TranslateValue(Type translateType, string translationItem)
 		{
-			if(val == null)
+			if(translationItem == null)
 			{
 				return null;
 			}
 
 			try
 			{
-				string lowerVal = val.ToLower();
-				if(t == typeof(bool))
+				string lowerVal = translationItem.ToLower();
+				if(translateType == typeof(bool))
 				{
 					return (lowerVal == "true" || lowerVal == "1" || lowerVal == "y" || lowerVal == "yes" || lowerVal == "on");
 				}
-				else if(t == typeof(int))
+				else if(translateType == typeof(int))
 				{
-					return (Int32.Parse(val));
+					return (Int32.Parse(translationItem));
 				}
 				else
 				{
-					return val;
+					return translationItem;
 				}
 			}
 			catch(FormatException)
@@ -297,7 +312,13 @@ namespace DNPreBuild.Core.Utilities
 			return tmpPath;
 		}
 
-		public static string NormalizePath(string path, char sepChar)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="separatorCharacter"></param>
+		/// <returns></returns>
+		public static string NormalizePath(string path, char separatorCharacter)
 		{
 			if(path == null)
 			{
@@ -305,7 +326,7 @@ namespace DNPreBuild.Core.Utilities
 			}
 
 			string tmpPath = path.Replace('\\', '/');
-			tmpPath = tmpPath.Replace('/', sepChar);
+			tmpPath = tmpPath.Replace('/', separatorCharacter);
 			return tmpPath;
 		}
 
@@ -314,16 +335,16 @@ namespace DNPreBuild.Core.Utilities
 			return NormalizePath(path, Path.DirectorySeparatorChar);
 		}
         
-		public static string EndPath(string path, char sepChar)
+		public static string EndPath(string path, char separatorCharacter)
 		{
 			if(path == null || path.Length < 1)
 			{
 				return "";
 			}
 
-			if(!path.EndsWith(sepChar.ToString()))
+			if(!path.EndsWith(separatorCharacter.ToString()))
 			{
-				return (path + sepChar);
+				return (path + separatorCharacter);
 			}
 
 			return path;

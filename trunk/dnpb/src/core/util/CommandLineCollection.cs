@@ -43,15 +43,15 @@ namespace DNPreBuild.Core.Utilities
 	/// The CommandLine class parses and interprets the command-line arguments passed to
 	/// dnpb.
 	/// </summary>
-	public class CommandLine : IEnumerable 
+	public class CommandLineCollection : IEnumerable 
 	{
 		#region Fields
 
 		// The raw OS arguments
-		private string[] m_RawArgs = null;
+		private string[] m_RawArgs;
 
 		// Command-line argument storage
-		private Hashtable m_Arguments = null;
+		private Hashtable m_Arguments;
         
 		#endregion
         
@@ -60,7 +60,7 @@ namespace DNPreBuild.Core.Utilities
 		/// <summary>
 		/// Create a new CommandLine instance and set some internal variables.
 		/// </summary>
-		public CommandLine(string[] args) 
+		public CommandLineCollection(string[] args) 
 		{
 			m_RawArgs = args;
 			m_Arguments = new Hashtable();

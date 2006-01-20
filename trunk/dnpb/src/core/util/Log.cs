@@ -46,8 +46,9 @@ namespace DNPreBuild.Core.Utilities
 	}
 
 	[Flags]
-	public enum LogTarget
+	public enum LogTargets
 	{
+		None = 0,
 		Null = 1,
 		File = 2,
 		Console = 4
@@ -56,22 +57,23 @@ namespace DNPreBuild.Core.Utilities
 	/// <summary>
 	/// Summary description for Log.
 	/// </summary>
-	public sealed class Log
+	public class Log : IDisposable
 	{
 		#region Fields
 
-		private StreamWriter m_Writer = null;
-		private LogTarget m_Target = LogTarget.Null;
+		private StreamWriter m_Writer;
+		private LogTargets m_Target = LogTargets.Null;
+		bool disposed;
 
 		#endregion
 
 		#region Constructors
 
-		public Log(LogTarget target, string fileName)
+		public Log(LogTargets target, string fileName)
 		{
 			m_Target = target;
             
-			if((m_Target & LogTarget.File) != 0)
+			if((m_Target & LogTargets.File) != 0)
 			{
 				m_Writer = new StreamWriter(fileName, false);
 			}
@@ -88,16 +90,16 @@ namespace DNPreBuild.Core.Utilities
 
 		public void Write(string msg) 
 		{
-			if((m_Target & LogTarget.Null) != 0)
+			if((m_Target & LogTargets.Null) != 0)
 			{
 				return;
 			}
 
-			if((m_Target & LogTarget.Console) != 0)
+			if((m_Target & LogTargets.Console) != 0)
 			{
 				Console.WriteLine(msg);
 			}
-			if((m_Target & LogTarget.File) != 0 && m_Writer != null)
+			if((m_Target & LogTargets.File) != 0 && m_Writer != null)
 			{
 				m_Writer.WriteLine(msg);
 			}
@@ -110,7 +112,7 @@ namespace DNPreBuild.Core.Utilities
 
 		public void Write(LogType type, string format, params object[] args)
 		{
-			if((m_Target & LogTarget.Null) != 0)
+			if((m_Target & LogTargets.Null) != 0)
 			{
 				return;
 			}
@@ -151,6 +153,60 @@ namespace DNPreBuild.Core.Utilities
 			{
 				m_Writer.Flush();
 			}
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Dispose objects
+		/// </summary>
+		/// <param name="disposing">
+		/// If true, it will dispose close the handle
+		/// </param>
+		/// <remarks>
+		/// Will dispose managed and unmanaged resources.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!this.disposed)
+			{
+				if (disposing)
+				{
+					if (m_Writer != null)
+					{
+						m_Writer.Close();
+						m_Writer = null;
+					}
+				}
+			}
+			this.disposed = true;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		~Log()
+		{
+			this.Dispose(false);
+		}
+		
+		/// <summary>
+		/// Closes and destroys this object
+		/// </summary>
+		/// <remarks>
+		/// Same as Dispose(true)
+		/// </remarks>
+		public void Close() 
+		{
+			Dispose();
 		}
 
 		#endregion

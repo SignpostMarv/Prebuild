@@ -51,25 +51,25 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		private static Hashtable m_OptionFields = null;
+		private static Hashtable m_OptionFields;
 
 		[OptionNode("CompilerDefines")]
 		private string m_CompilerDefines = "";
         
 		[OptionNode("OptimizeCode")]
-		private bool m_OptimizeCode = false;
+		private bool m_OptimizeCode;
         
 		[OptionNode("CheckUnderflowOverflow")]
-		private bool m_CheckUnderflowOverflow = false;
+		private bool m_CheckUnderflowOverflow;
         
 		[OptionNode("AllowUnsafe")]
-		private bool m_AllowUnsafe = false;
+		private bool m_AllowUnsafe;
         
 		[OptionNode("WarningLevel")]
 		private int m_WarningLevel = 4;
         
 		[OptionNode("WarningsAsErrors")]
-		private bool m_WarningsAsErrors = false;
+		private bool m_WarningsAsErrors;
 
 		[OptionNode("SupressWarnings")]
 		private string m_SupressWarnings = "";
@@ -78,19 +78,19 @@ namespace DNPreBuild.Core.Nodes
 		private string m_OutputPath = "bin/";
 
 		[OptionNode("GenerateXmlDocFile")]
-		private bool m_GenerateXmlDocFile = false;
+		private bool m_GenerateXmlDocFile;
         
 		[OptionNode("XmlDocFile")]
 		private string m_XmlDocFile = "";
         
 		[OptionNode("DebugInformation")]
-		private bool m_DebugInformation = false;
+		private bool m_DebugInformation;
         
 		[OptionNode("RegisterCOMInterop")]
-		private bool m_RegisterCOMInterop = false;
+		private bool m_RegisterCOMInterop;
         
 		[OptionNode("IncrementalBuild")]
-		private bool m_IncrementalBuild = false;
+		private bool m_IncrementalBuild;
         
 		[OptionNode("BaseAddress")]
 		private string m_BaseAddress = "285212672";
@@ -99,9 +99,9 @@ namespace DNPreBuild.Core.Nodes
 		private int m_FileAlignment = 4096;
         
 		[OptionNode("NoStdLib")]
-		private bool m_NoStdLib = false;
+		private bool m_NoStdLib;
 
-		private StringCollection m_FieldsDefined = null;
+		private StringCollection m_FieldsDefined;
 
 		#endregion
 
@@ -134,16 +134,16 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Properties
 
-		public object this[string idx]
+		public object this[string index]
 		{
 			get
 			{
-				if(!m_OptionFields.ContainsKey(idx))
+				if(!m_OptionFields.ContainsKey(index))
 				{
 					return null;
 				}
 
-				FieldInfo f = (FieldInfo)m_OptionFields[idx];
+				FieldInfo f = (FieldInfo)m_OptionFields[index];
 				return f.GetValue(this);
 			}
 		}

@@ -47,8 +47,8 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		private StringCollection m_Files = null;
-		private Hashtable m_BuildActions = null;
+		private StringCollection m_Files;
+		private Hashtable m_BuildActions;
 
 		#endregion
 

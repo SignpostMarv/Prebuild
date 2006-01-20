@@ -54,10 +54,10 @@ namespace DNPreBuild.Core.Nodes
 		private string m_FullPath = "";
 		private string m_ActiveConfig = "Debug";
         
-		private OptionsNode m_Options = null;
-		private FilesNode m_Files = null;
-		private Hashtable m_Configurations = null;
-		private Hashtable m_Projects = null;
+		private OptionsNode m_Options;
+		private FilesNode m_Files;
+		private Hashtable m_Configurations;
+		private Hashtable m_Projects;
 
 		#endregion
 
@@ -168,7 +168,7 @@ namespace DNPreBuild.Core.Nodes
 				throw new WarningException("Could not resolve solution path: {0}", m_Path);
 			}
 
-			Kernel.Instance.CWDStack.Push();
+			Kernel.Instance.CurrentWorkingDirectory.Push();
 			try
 			{
 				Helper.SetCurrentDir(m_FullPath);
@@ -201,7 +201,7 @@ namespace DNPreBuild.Core.Nodes
 			}
 			finally
 			{
-				Kernel.Instance.CWDStack.Pop();
+				Kernel.Instance.CurrentWorkingDirectory.Pop();
 			}
 		}
 

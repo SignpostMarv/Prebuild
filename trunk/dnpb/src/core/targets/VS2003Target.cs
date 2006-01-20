@@ -54,73 +54,6 @@ namespace DNPreBuild.Core.Targets
 	[Target("vs2003")]
 	public class VS2003Target : ITarget
 	{
-		#region Inner Classes
-
-		protected struct ToolInfo
-		{
-			string name;
-			string guid;
-			string fileExtension;
-			string xmlTag;
-
-			public string Name
-			{
-				get
-				{
-					return name;
-				}
-				set
-				{
-					name = value;
-				}
-			}
-
-			public string Guid
-			{
-				get
-				{
-					return guid;
-				}
-				set
-				{
-					guid = value;
-				}
-			}
-
-			public string FileExtension
-			{
-				get
-				{
-					return fileExtension;
-				}
-				set
-				{
-					fileExtension = value;
-				}
-			}
-			public string XmlTag
-			{
-				get
-				{
-					return xmlTag;
-				}
-				set
-				{
-					xmlTag = value;
-				}
-			}
-
-
-			public ToolInfo(string name, string guid, string fileExtension, string xml)
-			{
-				this.name = name;
-				this.guid = guid;
-				this.fileExtension = fileExtension;
-				this.xmlTag = xml;
-			}
-		}
-
-		#endregion
 
 		#region Fields
 
@@ -130,8 +63,8 @@ namespace DNPreBuild.Core.Targets
 		string versionName = "2003";
 		VSVersion version = VSVersion.VS71;
 
-		Hashtable m_Tools = null;
-		Kernel m_Kernel = null;
+		Hashtable m_Tools;
+		Kernel m_Kernel;
 
 		protected string SolutionVersion
 		{
@@ -235,14 +168,14 @@ namespace DNPreBuild.Core.Targets
 		{
 			if(!m_Tools.ContainsKey(project.Language))
 			{
-				throw new Exception("Unknown .NET language: " + project.Language);
+				throw new UnknownLanguageException("Unknown .NET language: " + project.Language);
 			}
 
 			ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
 			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
 			StreamWriter ps = new StreamWriter(projectFile);
 
-			m_Kernel.CWDStack.Push();
+			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(projectFile));
 
 			using(ps)
@@ -377,7 +310,7 @@ namespace DNPreBuild.Core.Targets
 				ps.WriteLine("</VisualStudioProject>");
 			}
 
-			m_Kernel.CWDStack.Pop();
+			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		public static string GetXmlDocFile(ProjectNode project, ConfigurationNode conf) 
@@ -419,7 +352,7 @@ namespace DNPreBuild.Core.Targets
 			string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
 			StreamWriter ss = new StreamWriter(solutionFile);
 
-			m_Kernel.CWDStack.Push();
+			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
             
 			using(ss)
@@ -429,7 +362,7 @@ namespace DNPreBuild.Core.Targets
 				{
 					if(!m_Tools.ContainsKey(project.Language))
 					{
-						throw new Exception("Unknown .NET language: " + project.Language);
+						throw new UnknownLanguageException("Unknown .NET language: " + project.Language);
 					}
 
 					ToolInfo toolInfo = (ToolInfo)m_Tools[project.Language];
@@ -502,7 +435,7 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine("EndGlobal");
 			}
 
-			m_Kernel.CWDStack.Pop();
+			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		private void CleanProject(ProjectNode project)
