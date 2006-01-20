@@ -49,8 +49,8 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		private StringCollection m_Files = null;
-		private Regex m_Regex = null;
+		private StringCollection m_Files;
+		private Regex m_Regex;
 		private BuildAction m_BuildAction = BuildAction.Compile;
 
 		#endregion

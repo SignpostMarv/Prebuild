@@ -50,7 +50,7 @@ namespace DNPreBuild.Core.Nodes
 		Library
 	}
 
-	public enum Runtime
+	public enum ClrRuntime
 	{
 		Microsoft,
 		Mono
@@ -64,20 +64,20 @@ namespace DNPreBuild.Core.Nodes
 		private string m_Name = "unknown";
 		private string m_Path = "";
 		private string m_FullPath = "";
-		private string m_AssemblyName = null;
+		private string m_AssemblyName;
 		private string m_AppIcon = "";
 		private string m_Language = "C#";
 		private ProjectType m_Type = ProjectType.Exe;
-		private Runtime m_Runtime = Runtime.Microsoft;
+		private ClrRuntime m_Runtime = ClrRuntime.Microsoft;
 		private string m_StartupObject = "";
-		private string m_RootNamespace = null;
+		private string m_RootNamespace;
 		private string m_FilterGroups = "";
 		private Guid m_Guid;
 
-		private Hashtable m_Configurations = null;
-		private ArrayList m_ReferencePaths = null;
-		private ArrayList m_References = null;
-		private FilesNode m_Files = null;
+		private Hashtable m_Configurations;
+		private ArrayList m_ReferencePaths;
+		private ArrayList m_References;
+		private FilesNode m_Files;
 
 		#endregion
 
@@ -152,7 +152,7 @@ namespace DNPreBuild.Core.Nodes
 			}
 		}
 
-		public Runtime Runtime
+		public ClrRuntime Runtime
 		{
 			get
 			{
@@ -250,7 +250,7 @@ namespace DNPreBuild.Core.Nodes
 
 		private void HandleConfiguration(ConfigurationNode conf)
 		{
-			if(conf.Name.ToLower() == "all") //apply changes to all, this may not always be applied first,
+			if(String.Compare(conf.Name, "all", true) == 0) //apply changes to all, this may not always be applied first,
 				//so it *may* override changes to the same properties for configurations defines at the project level
 			{
 				foreach(ConfigurationNode confNode in this.m_Configurations.Values) 
@@ -282,7 +282,7 @@ namespace DNPreBuild.Core.Nodes
 			m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
 			m_Language = Helper.AttributeValue(node, "language", m_Language);
 			m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
-			m_Runtime = (Runtime)Helper.EnumAttributeValue(node, "runtime", typeof(Runtime), m_Runtime);
+			m_Runtime = (ClrRuntime)Helper.EnumAttributeValue(node, "runtime", typeof(ClrRuntime), m_Runtime);
 			m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 			m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
 			m_Guid = Guid.NewGuid();
@@ -307,7 +307,7 @@ namespace DNPreBuild.Core.Nodes
 				throw new WarningException("Could not resolve Solution path: {0}", m_Path);
 			}
 
-			Kernel.Instance.CWDStack.Push();
+			Kernel.Instance.CurrentWorkingDirectory.Push();
 			try
 			{
 				Helper.SetCurrentDir(m_FullPath);
@@ -340,7 +340,7 @@ namespace DNPreBuild.Core.Nodes
 			}
 			finally
 			{
-				Kernel.Instance.CWDStack.Pop();
+				Kernel.Instance.CurrentWorkingDirectory.Pop();
 			}
 		}
 

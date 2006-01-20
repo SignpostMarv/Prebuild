@@ -39,7 +39,7 @@ using System.Xml;
 
 namespace DNPreBuild.Core.Parse
 {
-	public enum Operators
+	public enum OperatorSymbol
 	{
 		None,
 		Equal,
@@ -54,9 +54,9 @@ namespace DNPreBuild.Core.Parse
 	{
 		#region Fields
 
-		XmlDocument m_OutDoc = null;
-		Stack m_IfStack = null;
-		Hashtable m_Variables = null;
+		XmlDocument m_OutDoc;
+		Stack m_IfStack;
+		Hashtable m_Variables;
 
 		#endregion
 
@@ -122,42 +122,42 @@ namespace DNPreBuild.Core.Parse
 			return "Unknown";
 		}
 
-		private static bool CompareNum(Operators oper, int val1, int val2)
+		private static bool CompareNum(OperatorSymbol oper, int val1, int val2)
 		{
 			switch(oper)
 			{
-				case Operators.Equal:
+				case OperatorSymbol.Equal:
 					return (val1 == val2);
-				case Operators.NotEqual:
+				case OperatorSymbol.NotEqual:
 					return (val1 != val2);
-				case Operators.LessThan:
+				case OperatorSymbol.LessThan:
 					return (val1 < val2);
-				case Operators.LessThanEqual:
+				case OperatorSymbol.LessThanEqual:
 					return (val1 <= val2);
-				case Operators.GreaterThan:
+				case OperatorSymbol.GreaterThan:
 					return (val1 > val2);
-				case Operators.GreaterThanEqual:
+				case OperatorSymbol.GreaterThanEqual:
 					return (val1 >= val2);
 			}
 
 			throw new WarningException("Unknown operator type");
 		}
 
-		private static bool CompareStr(Operators oper, string val1, string val2)
+		private static bool CompareStr(OperatorSymbol oper, string val1, string val2)
 		{
 			switch(oper)
 			{
-				case Operators.Equal:
+				case OperatorSymbol.Equal:
 					return (val1 == val2);
-				case Operators.NotEqual:
+				case OperatorSymbol.NotEqual:
 					return (val1 != val2);
-				case Operators.LessThan:
+				case OperatorSymbol.LessThan:
 					return (val1.CompareTo(val2) < 0);
-				case Operators.LessThanEqual:
+				case OperatorSymbol.LessThanEqual:
 					return (val1.CompareTo(val2) <= 0);
-				case Operators.GreaterThan:
+				case OperatorSymbol.GreaterThan:
 					return (val1.CompareTo(val2) > 0);
-				case Operators.GreaterThanEqual:
+				case OperatorSymbol.GreaterThanEqual:
 					return (val1.CompareTo(val2) >= 0);
 			}
 
@@ -193,7 +193,7 @@ namespace DNPreBuild.Core.Parse
 
 			string id = "";
 			string str = "";
-			Operators oper = Operators.None;
+			OperatorSymbol oper = OperatorSymbol.None;
 			bool inStr = false;
 			char c;
             
@@ -235,13 +235,13 @@ namespace DNPreBuild.Core.Parse
 						switch(c)
 						{
 							case '=':
-								oper = Operators.Equal;
+								oper = OperatorSymbol.Equal;
 								break;
 
 							case '!':
 								if(NextChar(i, exp) == '=')
 								{
-									oper = Operators.NotEqual;
+									oper = OperatorSymbol.NotEqual;
 								}
                                 
 								break;
@@ -249,11 +249,11 @@ namespace DNPreBuild.Core.Parse
 							case '<':
 								if(NextChar(i, exp) == '=')
 								{
-									oper = Operators.LessThanEqual;
+									oper = OperatorSymbol.LessThanEqual;
 								}
 								else
 								{
-									oper = Operators.LessThan;
+									oper = OperatorSymbol.LessThan;
 								}
                                 
 								break;
@@ -261,11 +261,11 @@ namespace DNPreBuild.Core.Parse
 							case '>':
 								if(NextChar(i, exp) == '=')
 								{
-									oper = Operators.GreaterThanEqual;
+									oper = OperatorSymbol.GreaterThanEqual;
 								}
 								else
 								{
-									oper = Operators.GreaterThan;
+									oper = OperatorSymbol.GreaterThan;
 								}
 
 								break;
@@ -280,7 +280,7 @@ namespace DNPreBuild.Core.Parse
 				throw new WarningException("Expected end of string in expression");
 			}
 
-			if(oper == Operators.None)
+			if(oper == OperatorSymbol.None)
 			{
 				throw new WarningException("Expected operator in expression");
 			}
@@ -331,14 +331,19 @@ namespace DNPreBuild.Core.Parse
 
 		#region Public Methods
 
-		public void RegisterVariable(string name, object valueObject)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="variableValue"></param>
+		public void RegisterVariable(string name, object variableValue)
 		{
-			if(name == null || valueObject == null)
+			if(name == null || variableValue == null)
 			{
 				return;
 			}
 
-			m_Variables[name.ToLower()] = valueObject;
+			m_Variables[name.ToLower()] = variableValue;
 		}
 
 		/// <summary>

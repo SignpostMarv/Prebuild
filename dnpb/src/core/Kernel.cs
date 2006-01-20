@@ -50,7 +50,7 @@ using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core 
 {
-	public sealed class Kernel
+	public class Kernel : IDisposable
 	{
 		#region Inner Classes
 
@@ -72,24 +72,25 @@ namespace DNPreBuild.Core
 		private static string m_SchemaVersion = "1.5";
 		private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
 		private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
-		private Version m_Version = null;
+		bool disposed;
+		private Version m_Version;
 		private string m_Revision = "";
-		private CommandLine m_CommandLine = null;
-		private Log m_Log = null;
-		private CurrentDirectoryStack m_CWDStack = null;
-		private XmlSchemaCollection m_Schemas = null;
+		private CommandLineCollection m_CommandLine;
+		private Log m_Log;
+		private CurrentDirectory m_CurrentWorkingDirectory;
+		private XmlSchemaCollection m_Schemas;
         
-		private Hashtable m_Targets = null;
-		private Hashtable m_Nodes = null;
+		private Hashtable m_Targets;
+		private Hashtable m_Nodes;
         
-		ArrayList m_Solutions = null;        
-		string m_Target = null;
-		string m_Clean = null;
-		string[] m_RemoveDirectories = null;
-		string m_CurrentFile = null;
-		bool m_PauseAfterFinish = false;
+		ArrayList m_Solutions;        
+		string m_Target;
+		string m_Clean;
+		string[] m_RemoveDirectories;
+		string m_CurrentFile;
+		bool m_PauseAfterFinish;
 		string[] m_ProjectGroups;
-		StringCollection m_Refs = null;
+		StringCollection m_Refs;
 
 		
 		#endregion
@@ -128,7 +129,7 @@ namespace DNPreBuild.Core
 			}
 		}
 
-		public CommandLine CommandLine
+		public CommandLineCollection CommandLine
 		{
 			get
 			{
@@ -152,11 +153,11 @@ namespace DNPreBuild.Core
 			}
 		}
 
-		public CurrentDirectoryStack CWDStack
+		public CurrentDirectory CurrentWorkingDirectory
 		{
 			get
 			{
-				return m_CWDStack;
+				return m_CurrentWorkingDirectory;
 			}
 		}
 
@@ -186,7 +187,8 @@ namespace DNPreBuild.Core
 				} 
 				else//not a match, so check children
 				{
-					RemoveDirectories(dir,dirNames);//recurse, checking children for them
+					RemoveDirectories(dir,dirNames);
+					//recurse, checking children for them
 				}
 			}
 		}
@@ -214,7 +216,7 @@ namespace DNPreBuild.Core
 				stream = assembly.GetManifestResourceStream(m_Schema);
 				if(stream == null)
 				{
-					throw new ApplicationException(string.Format("Could not find the scheme embeeded resource file '{0}'.", m_Schema));
+					throw new System.Reflection.TargetException(string.Format("Could not find the scheme embedded resource file '{0}'.", m_Schema));
 				}
 			}
 			XmlReader schema = new XmlTextReader(stream);
@@ -241,7 +243,7 @@ namespace DNPreBuild.Core
 				ITarget target = (ITarget)assm.CreateInstance(t.FullName);
 				if(target == null)
 				{
-					throw new OutOfMemoryException("Could not create ITarget instance");
+					throw new MissingMethodException("Could not create ITarget instance");
 				}
 
 				m_Targets[ta.Name] = target;
@@ -275,7 +277,7 @@ namespace DNPreBuild.Core
 
 		private void ProcessFile(string file)
 		{
-			m_CWDStack.Push();
+			m_CurrentWorkingDirectory.Push();
             
 			string path = file;
 			try
@@ -287,7 +289,7 @@ namespace DNPreBuild.Core
 				catch(ArgumentException)
 				{
 					m_Log.Write("Could not open .NET Pre-Build file: " + path);
-					m_CWDStack.Pop();
+					m_CurrentWorkingDirectory.Pop();
 					return;
 				}
 
@@ -313,9 +315,9 @@ namespace DNPreBuild.Core
 					}
 					doc.Load(validator);
 				} 
-				catch(Exception e) 
+				catch(XmlException e) 
 				{
-					throw new Exception(e.ToString());
+					throw new XmlException(e.ToString());
 				}
 
 				//is there a purpose to writing it?  An syntax/schema problem would have been found during pre.Process() and reported with details
@@ -333,7 +335,7 @@ namespace DNPreBuild.Core
 						writer = new StreamWriter(ppoFile);
 						writer.Write(xml);
 					}
-					catch(Exception ex)
+					catch(IOException ex)
 					{
 						Console.WriteLine("Could not write PPO file '{0}': {1}", ppoFile, ex.Message);
 					}
@@ -375,7 +377,7 @@ namespace DNPreBuild.Core
 			}
 			finally
 			{
-				m_CWDStack.Pop();
+				m_CurrentWorkingDirectory.Pop();
 			}
 		}
 
@@ -443,12 +445,12 @@ namespace DNPreBuild.Core
 
 					NodeEntry ne = (NodeEntry)m_Nodes[node.Name];
 					Type type = ne.Type;
-					DataNodeAttribute dna = ne.Attribute;
+					//DataNodeAttribute dna = ne.Attribute;
 
 					dataNode = (IDataNode)type.Assembly.CreateInstance(type.FullName);
 					if(dataNode == null)
 					{
-						throw new OutOfMemoryException("Could not create new parser instance: " + type.FullName);
+						throw new System.Reflection.TargetException("Could not create new parser instance: " + type.FullName);
 					}
 				}
 				else
@@ -476,7 +478,7 @@ namespace DNPreBuild.Core
 			return dataNode;
 		}
 
-		public void Initialize(LogTarget target, string[] args)
+		public void Initialize(LogTargets target, string[] args)
 		{
 			m_Targets = new Hashtable();
 			CacheTargets(this.GetType().Assembly);
@@ -484,7 +486,7 @@ namespace DNPreBuild.Core
 			CacheNodeTypes(this.GetType().Assembly);
 			CacheVersion();
 
-			m_CommandLine = new CommandLine(args);
+			m_CommandLine = new CommandLineCollection(args);
             
 			string logFile = null;
 			if(m_CommandLine.WasPassed("log")) 
@@ -498,13 +500,13 @@ namespace DNPreBuild.Core
 			}
 			else 
 			{
-				target = target & ~LogTarget.File;	//dont output to a file
+				target = target & ~LogTargets.File;	//dont output to a file
 			}
             
 			m_Log = new Log(target, logFile);
 			LogBanner();
 
-			m_CWDStack = new CurrentDirectoryStack();
+			m_CurrentWorkingDirectory = new CurrentDirectory();
 
 			m_Target = m_CommandLine["target"];
 			m_Clean = m_CommandLine["clean"];
@@ -536,7 +538,12 @@ namespace DNPreBuild.Core
 				{
 					RemoveDirectories(".",m_RemoveDirectories);
 				} 
-				catch(Exception e) 
+				catch(IOException e) 
+				{
+					m_Log.Write("Failed to remove directories named {0}",m_RemoveDirectories);
+					m_Log.WriteException(LogType.Error,e);
+				}
+				catch(UnauthorizedAccessException e) 
 				{
 					m_Log.Write("Failed to remove directories named {0}",m_RemoveDirectories);
 					m_Log.WriteException(LogType.Error,e);
@@ -607,5 +614,59 @@ namespace DNPreBuild.Core
 		}
 
 		#endregion        
+
+		#region IDisposable Members
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Dispose objects
+		/// </summary>
+		/// <param name="disposing">
+		/// If true, it will dispose close the handle
+		/// </param>
+		/// <remarks>
+		/// Will dispose managed and unmanaged resources.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!this.disposed)
+			{
+				if (disposing)
+				{
+					if (this.m_Log != null)
+					{
+						this.m_Log.Close();
+						this.m_Log = null;
+					}
+				}
+			}
+			this.disposed = true;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		~Kernel()
+		{
+			this.Dispose(false);
+		}
+		
+		/// <summary>
+		/// Closes and destroys this object
+		/// </summary>
+		/// <remarks>
+		/// Same as Dispose(true)
+		/// </remarks>
+		public void Close() 
+		{
+			Dispose();
+		}
+
+		#endregion
 	}
 }

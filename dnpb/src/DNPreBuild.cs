@@ -54,7 +54,7 @@ namespace DNPreBuild
 			try	
 			{
 				kernel = Kernel.Instance;
-				kernel.Initialize(LogTarget.File | LogTarget.Console, args);
+				kernel.Initialize(LogTargets.File | LogTargets.Console, args);
 				bool exit =	false;
 
 				if(kernel.CommandLine.WasPassed("usage")) 

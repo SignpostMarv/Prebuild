@@ -47,9 +47,9 @@ namespace DNPreBuild.Core.Nodes
 		#region Fields
 
 		private string m_Name = "unknown";
-		private string m_Path = null;
-		private string m_LocalCopy = null;
-		private string m_Version = null;
+		private string m_Path;
+		private string m_LocalCopy;
+		private string m_Version;
 
 		#endregion
 

@@ -55,9 +55,9 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		private string m_Path = null;
+		private string m_Path;
 		private BuildAction m_BuildAction = BuildAction.Compile;
-		private bool m_Valid = false;
+		private bool m_Valid;
 
 		#endregion
 

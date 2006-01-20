@@ -52,9 +52,9 @@ namespace DNPreBuild.Core.Parse
 	{
 		#region Properties
 
-		bool m_Active = false;
-		bool m_Keep = false;
-		bool m_EverKept = false;
+		bool m_Active;
+		bool m_Keep;
+		bool m_EverKept;
 		IfState m_State = IfState.None;
 
 		#endregion

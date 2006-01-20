@@ -44,74 +44,124 @@ using DNPreBuild.Core.Utilities;
 
 namespace DNPreBuild.Core.Targets
 {
+	public struct ToolInfo
+	{
+		string name;
+		string guid;
+		string fileExtension;
+		string xmlTag;
+
+		public string Name
+		{
+			get
+			{
+				return name;
+			}
+			set
+			{
+				name = value;
+			}
+		}
+
+		public string Guid
+		{
+			get
+			{
+				return guid;
+			}
+			set
+			{
+				guid = value;
+			}
+		}
+
+		public string FileExtension
+		{
+			get
+			{
+				return fileExtension;
+			}
+			set
+			{
+				fileExtension = value;
+			}
+		}
+		public string XmlTag
+		{
+			get
+			{
+				return xmlTag;
+			}
+			set
+			{
+				xmlTag = value;
+			}
+		}
+
+
+		public ToolInfo(string name, string guid, string fileExtension, string xml)
+		{
+			this.name = name;
+			this.guid = guid;
+			this.fileExtension = fileExtension;
+			this.xmlTag = xml;
+		}
+
+		/// <summary>
+		/// Equals operator
+		/// </summary>
+		/// <param name="obj">ToolInfo to compare</param>
+		/// <returns>true if toolInfos are equal</returns>
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+			{
+				throw new ArgumentNullException("obj");
+			}
+			if (obj.GetType() != typeof(ToolInfo))
+				return false;
+                
+			ToolInfo c = (ToolInfo)obj;   
+			return ((this.name == c.name) && (this.guid == c.guid) && (this.fileExtension == c.fileExtension) && (this.xmlTag == c.xmlTag));
+		}
+
+		/// <summary>
+		/// Equals operator
+		/// </summary>
+		/// <param name="c1">ToolInfo to compare</param>
+		/// <param name="c2">ToolInfo to compare</param>
+		/// <returns>True if toolInfos are equal</returns>
+		public static bool operator== (ToolInfo c1, ToolInfo c2)
+		{
+			return ((c1.name == c2.name) && (c1.guid == c2.guid) && (c1.fileExtension == c2.fileExtension) && (c1.xmlTag == c2.xmlTag));
+		}
+
+		/// <summary>
+		/// Not equals operator
+		/// </summary>
+		/// <param name="c1">ToolInfo to compare</param>
+		/// <param name="c2">ToolInfo to compare</param>
+		/// <returns>True if toolInfos are not equal</returns>
+		public static bool operator!= (ToolInfo c1, ToolInfo c2)
+		{
+			return !(c1 == c2);
+		}
+
+		/// <summary>
+		/// Hash Code
+		/// </summary>
+		/// <returns>Hash code</returns>
+		public override int GetHashCode()
+		{
+			return name.GetHashCode() ^ guid.GetHashCode() ^ this.fileExtension.GetHashCode() ^ this.xmlTag.GetHashCode();
+
+		}
+	}
+
 	[Target( "vs2005" )]
 	public class VS2005Target : ITarget
 	{
 		#region Inner Classes
-
-		protected struct ToolInfo
-		{
-			string name;
-			string guid;
-			string fileExtension;
-			string xmlTag;
-
-			public string Name
-			{
-				get
-				{
-					return name;
-				}
-				set
-				{
-					name = value;
-				}
-			}
-
-			public string Guid
-			{
-				get
-				{
-					return guid;
-				}
-				set
-				{
-					guid = value;
-				}
-			}
-
-			public string FileExtension
-			{
-				get
-				{
-					return fileExtension;
-				}
-				set
-				{
-					fileExtension = value;
-				}
-			}
-			public string XmlTag
-			{
-				get
-				{
-					return xmlTag;
-				}
-				set
-				{
-					xmlTag = value;
-				}
-			}
-
-
-			public ToolInfo(string name, string guid, string fileExtension, string xml)
-			{
-				this.name = name;
-				this.guid = guid;
-				this.fileExtension = fileExtension;
-				this.xmlTag = xml;
-			}
-		}
 
 		#endregion
 
@@ -123,8 +173,8 @@ namespace DNPreBuild.Core.Targets
 		string versionName = "C# Express 2005";
 		VSVersion version = VSVersion.VS80;
 
-		Hashtable tools = null;
-		Kernel kernel = null;
+		Hashtable tools;
+		Kernel kernel;
 
 		protected string SolutionVersion
 		{
@@ -227,14 +277,14 @@ namespace DNPreBuild.Core.Targets
 		{
 			if ( !tools.ContainsKey( project.Language ) )
 			{
-				throw new Exception( "Unknown .NET language: " + project.Language );
+				throw new UnknownLanguageException( "Unknown .NET language: " + project.Language );
 			}
 
 			ToolInfo toolInfo = (ToolInfo)tools[ project.Language ];
 			string projectFile = Helper.MakeFilePath( project.FullPath, project.Name, toolInfo.FileExtension );
 			StreamWriter ps = new StreamWriter( projectFile );
 
-			kernel.CWDStack.Push();
+			kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir( Path.GetDirectoryName( projectFile ) );
 
 			#region Project File
@@ -408,7 +458,7 @@ namespace DNPreBuild.Core.Targets
 			}
 			#endregion
 
-			kernel.CWDStack.Pop();
+			kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		private void WriteSolution( SolutionNode solution )
@@ -425,7 +475,7 @@ namespace DNPreBuild.Core.Targets
 			string solutionFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "sln" );
 			StreamWriter ss = new StreamWriter( solutionFile );
 
-			kernel.CWDStack.Push();
+			kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir( Path.GetDirectoryName( solutionFile ) );
 
 			using ( ss )
@@ -436,7 +486,7 @@ namespace DNPreBuild.Core.Targets
 				{
 					if ( !tools.ContainsKey( project.Language ) )
 					{
-						throw new Exception( "Unknown .NET language: " + project.Language );
+						throw new UnknownLanguageException( "Unknown .NET language: " + project.Language );
 					}
 
 					ToolInfo toolInfo = (ToolInfo)tools[ project.Language ];
@@ -515,7 +565,7 @@ namespace DNPreBuild.Core.Targets
 				ss.WriteLine( "EndGlobal" );
 			}
 
-			kernel.CWDStack.Pop();
+			kernel.CurrentWorkingDirectory.Pop();
 		}
 
 		private void CleanProject( ProjectNode project )

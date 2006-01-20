@@ -47,7 +47,7 @@ namespace DNPreBuild.Core.Nodes
 		#region Fields
 
 		private string m_Name = "unknown";
-		private OptionsNode m_Options = null;
+		private OptionsNode m_Options;
 
 		#endregion
 

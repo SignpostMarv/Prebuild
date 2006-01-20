@@ -48,77 +48,14 @@ namespace DNPreBuild.Core.Targets
 	[Target("vs2005express")]
 	public class VS2005ExpressTarget : ITarget
 	{
-		protected struct ToolInfo
-		{
-			string name;
-			string guid;
-			string fileExtension;
-			string xmlTag;
-
-			public string Name
-			{
-				get
-				{
-					return name;
-				}
-				set
-				{
-					name = value;
-				}
-			}
-
-			public string Guid
-			{
-				get
-				{
-					return guid;
-				}
-				set
-				{
-					guid = value;
-				}
-			}
-
-			public string FileExtension
-			{
-				get
-				{
-					return fileExtension;
-				}
-				set
-				{
-					fileExtension = value;
-				}
-			}
-			public string XmlTag
-			{
-				get
-				{
-					return xmlTag;
-				}
-				set
-				{
-					xmlTag = value;
-				}
-			}
-
-
-			public ToolInfo(string name, string guid, string fileExtension, string xml)
-			{
-				this.name = name;
-				this.guid = guid;
-				this.fileExtension = fileExtension;
-				this.xmlTag = xml;
-			}
-		}
 
 		public VS2005ExpressTarget()
 		{
-			this.tools["C#"] = new VS2005ExpressTarget.ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP");
+			this.tools["C#"] = new ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP");
 		}
 
 		// Fields
-		private Kernel kernel = null;
+		private Kernel kernel;
 		string productVersion = "8.0.40607.16";
 		string schemaVersion = "2.0";
 		string solutionVersion = "9.00";
@@ -199,7 +136,7 @@ namespace DNPreBuild.Core.Targets
 		{
 			object[] objArray1 = new object[] { project.Name } ;
 			this.kernel.Log.Write("...Cleaning project: {0}", objArray1);
-			VS2005ExpressTarget.ToolInfo info1 = (VS2005ExpressTarget.ToolInfo) this.tools[project.Language];
+			ToolInfo info1 = (ToolInfo) this.tools[project.Language];
 			string text1 = Helper.MakeFilePath(project.FullPath, project.Name, info1.FileExtension);
 			string text2 = text1 + ".user";
 			Helper.DeleteIfExists(text1);
@@ -261,12 +198,12 @@ namespace DNPreBuild.Core.Targets
 		{
 			if (!this.tools.ContainsKey(project.Language))
 			{
-				throw new Exception("Unknown .NET language: " + project.Language);
+				throw new UnknownLanguageException("Unknown .NET language: " + project.Language);
 			}
-			VS2005ExpressTarget.ToolInfo info1 = (VS2005ExpressTarget.ToolInfo) this.tools[project.Language];
+			ToolInfo info1 = (ToolInfo) this.tools[project.Language];
 			string text1 = Helper.MakeFilePath(project.FullPath, project.Name, info1.FileExtension);
 			StreamWriter writer1 = new StreamWriter(text1);
-			this.kernel.CWDStack.Push();
+			this.kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(text1));
 			using (StreamWriter writer2 = writer1)
 			{
@@ -358,7 +295,7 @@ namespace DNPreBuild.Core.Targets
 				}
 				writer1.WriteLine("</Project>");
 			}
-			this.kernel.CWDStack.Pop();
+			this.kernel.CurrentWorkingDirectory.Pop();
 		}
 		private void WriteSolution(SolutionNode solution)
 		{
@@ -376,7 +313,7 @@ namespace DNPreBuild.Core.Targets
 			this.kernel.Log.Write("");
 			string text1 = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
 			StreamWriter writer1 = new StreamWriter(text1);
-			this.kernel.CWDStack.Push();
+			this.kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(text1));
 			using (StreamWriter writer2 = writer1)
 			{
@@ -386,9 +323,9 @@ namespace DNPreBuild.Core.Targets
 				{
 					if (!this.tools.ContainsKey(node2.Language))
 					{
-						throw new Exception("Unknown .NET language: " + node2.Language);
+						throw new UnknownLanguageException("Unknown .NET language: " + node2.Language);
 					}
-					VS2005ExpressTarget.ToolInfo info1 = (VS2005ExpressTarget.ToolInfo) this.tools[node2.Language];
+					ToolInfo info1 = (ToolInfo) this.tools[node2.Language];
 					string text2 = Helper.MakePathRelativeTo(solution.FullPath, node2.FullPath);
 					object[] objArray3 = new object[] { info1.Guid, node2.Name, Helper.MakeFilePath(text2, node2.Name, info1.FileExtension), node2.Guid.ToString().ToUpper() } ;
 					writer1.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"", objArray3);
@@ -436,7 +373,7 @@ namespace DNPreBuild.Core.Targets
 				writer1.WriteLine("\tEndGlobalSection");
 				writer1.WriteLine("EndGlobal");
 			}
-			this.kernel.CWDStack.Pop();
+			this.kernel.CurrentWorkingDirectory.Pop();
 		}
 		public virtual string Name
 		{

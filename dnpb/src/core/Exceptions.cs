@@ -33,27 +33,91 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 
 namespace DNPreBuild.Core
 {
+	[Serializable()]
 	public class WarningException : Exception
 	{
 		#region Constructors
+
+		public WarningException()
+		{
+		}
 
 		public WarningException(string format, params object[] args)
 			: base(String.Format(format, args))
 		{
 		}
 
+		/// <summary>
+		/// Exception with specified string
+		/// </summary>
+		/// <param name="message">Exception message</param>
+		public WarningException(string message): base(message)
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="exception"></param>
+		public WarningException(string message, Exception exception) : base(message, exception)
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected WarningException(SerializationInfo info, StreamingContext context) : base( info, context )
+		{
+		}
+
 		#endregion
 	}
 
+	[Serializable()]
 	public class FatalException : Exception
 	{
 		#region Constructors
 
+		
+		public FatalException()
+		{
+		}
+
 		public FatalException(string format, params object[] args)
 			: base(String.Format(format, args))
+		{
+		}
+
+		/// <summary>
+		/// Exception with specified string
+		/// </summary>
+		/// <param name="message">Exception message</param>
+		public FatalException(string message): base(message)
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="exception"></param>
+		public FatalException(string message, Exception exception) : base(message, exception)
+		{
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		protected FatalException(SerializationInfo info, StreamingContext context) : base( info, context )
 		{
 		}
 

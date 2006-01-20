@@ -48,7 +48,7 @@ namespace DNPreBuild.Core.Nodes
 	{
 		#region Fields
 
-		private string m_Path = null;
+		private string m_Path;
 
 		#endregion
 
