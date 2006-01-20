@@ -83,7 +83,7 @@ namespace DNPreBuild.Core.Nodes
 		{
 			get
 			{
-				if( m_LocalCopy != null && m_LocalCopy.Length == 0)
+				if( m_LocalCopy == null)
 				{
 					return true;
 				}
