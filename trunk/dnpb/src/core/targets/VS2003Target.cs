@@ -278,7 +278,26 @@ namespace DNPreBuild.Core.Targets
 				{
 					ps.WriteLine("\t\t\t\t<File");
 					ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file.Replace(".\\", ""));
-					ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
+//					string delimiter = ".";
+//					string [] split = file.Split(delimiter.ToCharArray());
+////					foreach (string s in split) 
+////					{
+////						
+////						Console.WriteLine("-{0}-", s);
+////					}
+//					Console.WriteLine(file.ToString());
+//					Console.WriteLine("Split: " + split[split.Length-2]+".resx");
+//					split[split.Length-1] = ".resx";
+					
+					//if (File.Exists(split[split.Length-2]+".resx"))
+//					if (File.Exists(split.ToString()))
+//					{
+//						ps.WriteLine("\t\t\t\t\tSubType = \"Form\"");
+//					}
+//					else
+//					{
+						ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
+					//}
 					ps.WriteLine("\t\t\t\t\tBuildAction = \"{0}\"", project.Files.GetBuildAction(file));
 					ps.WriteLine("\t\t\t\t/>");
 				}

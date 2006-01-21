@@ -270,7 +270,7 @@ namespace DNPreBuild.Core
 		private void LogBanner()
 		{
 			m_Log.Write(".NET Pre-Build v" + this.Version);
-			m_Log.Write("Copyright (c) Matthew Holmes and Dan Moorehead");
+			m_Log.Write("Copyright (c) Matthew Holmes, Dan Moorehead and David Hudson");
 			m_Log.Write("See 'dnpb /usage' for help");
 			m_Log.Write();
 		}
