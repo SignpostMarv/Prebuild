@@ -186,7 +186,7 @@ namespace DNPreBuild.Core.Targets
 
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ss.WriteLine("\t\t<Configuration name=\"{0}\">", conf.Name);
+					ss.WriteLine("\t\t<Configuration ctype=\"DotNetProjectConfiguration\" name=\"{0}\">", conf.Name);
 					ss.WriteLine("\t\t\t<CodeGeneration");
 					ss.WriteLine("\t\t\t\truntime=\"{0}\"", netRuntime);
 					ss.WriteLine("\t\t\t\tcompiler=\"{0}\"", csComp);
@@ -200,6 +200,7 @@ namespace DNPreBuild.Core.Targets
 					ss.WriteLine("\t\t\t\ttarget=\"{0}\"", project.Type);
 					ss.WriteLine("\t\t\t\tdefinesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
 					ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
+					ss.WriteLine("\t\t\t\tctype=\"CSharpCompilerParameters\"");
 					ss.WriteLine("\t\t\t/>");
 
 					ss.WriteLine("\t\t\t<Output");
@@ -271,7 +272,7 @@ namespace DNPreBuild.Core.Targets
 						ss.WriteLine("\t<Configurations active=\"{0}\">", conf.Name);
 					}
 
-					ss.WriteLine("\t\t<Configuration name=\"{0}\">", conf.Name);
+					ss.WriteLine("\t\t<Configuration name=\"{0}\" ctype=\"CombineConfiguration\">", conf.Name);
 					foreach(ProjectNode project in solution.Projects)
 					{
 						ss.WriteLine("\t\t\t<Entry name=\"{0}\" configurationname=\"{1}\" build=\"True\"/>", project.Name, conf.Name);
