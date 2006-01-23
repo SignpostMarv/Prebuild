@@ -9,7 +9,7 @@
 				<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
 				<?endif ?>
 				<OptimizeCode>false</OptimizeCode>
-				<OutputPath>.\bin\Debug</OutputPath>
+				<OutputPath>bin\Debug</OutputPath>
 				<DebugInformation>true</DebugInformation>
 			</Options>
 		</Configuration>
@@ -21,7 +21,7 @@
 				<?else ?>
 				<CompilerDefines>TRACE;POSIX</CompilerDefines>
 				<?endif ?>
-				<OutputPath>.\bin\Release</OutputPath>
+				<OutputPath>bin\Release</OutputPath>
 				<OptimizeCode>true</OptimizeCode>
 				<DebugInformation>false</DebugInformation>
 			</Options>
@@ -32,9 +32,9 @@
 			<Match path="doc\" pattern="*.txt"/>
 		</Files>
 		
-		<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+		<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+			<Reference name="System.Xml" />
 			<Reference name="System" />
-			<Reference name="System.XML" />
 			<Files>
 				<Match path="data" pattern="dnpb-1.5.xsd" buildAction="EmbeddedResource"/>
 				<Match pattern="*.cs" recurse="true"/>				
