@@ -122,12 +122,12 @@ namespace DNPreBuild.Core.Targets
 
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
-			string csComp = "Csc";
-			string netRuntime = "MsNet";
-			if(project.Runtime == ClrRuntime.Mono)
+			string csComp = "Mcs";
+			string netRuntime = "Mono";
+			if(project.Runtime == ClrRuntime.Microsoft)
 			{
-				csComp = "Mcs";
-				netRuntime = "Mono";
+				csComp = "Csc";
+				netRuntime = "MsNet";
 			}
 
 			string projFile = Helper.MakeFilePath(project.FullPath, project.Name, "mdp");

@@ -4,3 +4,4 @@ bin
 *.csproj
 *.swp
 Prebuild.prjx
+*.mdp

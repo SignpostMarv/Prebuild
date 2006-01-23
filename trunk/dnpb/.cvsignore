@@ -6,3 +6,4 @@ ChangeLog
 *.swp
 Prebuild.FxCop
 Prebuild.cmbx
+*.mds
