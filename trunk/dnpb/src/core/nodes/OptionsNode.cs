@@ -88,6 +88,9 @@ namespace DNPreBuild.Core.Nodes
         
 		[OptionNode("RegisterCOMInterop")]
 		private bool m_RegisterCOMInterop;
+
+		[OptionNode("RemoveIntegerChecks")]
+		private bool m_RemoveIntegerChecks;
         
 		[OptionNode("IncrementalBuild")]
 		private bool m_IncrementalBuild;
