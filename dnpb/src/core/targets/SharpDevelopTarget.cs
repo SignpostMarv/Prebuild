@@ -180,6 +180,12 @@ namespace DNPreBuild.Core.Targets
 				}
 				ss.WriteLine("  </References>");
 
+				ss.Write("  <DeploymentInformation");
+				ss.Write(" target=\"\"");
+				ss.Write(" script=\"\"");
+				ss.Write(" strategy=\"File\"");
+				ss.WriteLine(" />");
+
 				int count = 0;
 				
 				ss.WriteLine("  <Configurations active=\"{0}\">", solution.ActiveConfig);

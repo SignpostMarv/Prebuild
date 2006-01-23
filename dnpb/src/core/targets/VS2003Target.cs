@@ -181,103 +181,107 @@ namespace DNPreBuild.Core.Targets
 			using(ps)
 			{
 				ps.WriteLine("<VisualStudioProject>");
-				ps.WriteLine("\t<{0}", toolInfo.XmlTag);
-				ps.WriteLine("\t\tProjectType = \"Local\"");
-				ps.WriteLine("\t\tProductVersion = \"{0}\"", this.ProductVersion);
-				ps.WriteLine("\t\tSchemaVersion = \"{0}\"", this.SchemaVersion);
-				ps.WriteLine("\t\tProjectGuid = \"{{{0}}}\"", project.Guid.ToString().ToUpper());
-				ps.WriteLine("\t>");
+				ps.WriteLine("    <{0}", toolInfo.XmlTag);
+				ps.WriteLine("        ProjectType = \"Local\"");
+				ps.WriteLine("        ProductVersion = \"{0}\"", this.ProductVersion);
+				ps.WriteLine("        SchemaVersion = \"{0}\"", this.SchemaVersion);
+				ps.WriteLine("        ProjectGuid = \"{{{0}}}\"", project.Guid.ToString().ToUpper());
+				ps.WriteLine("    >");
 
-				ps.WriteLine("\t\t<Build>");
+				ps.WriteLine("        <Build>");
                 
-				ps.WriteLine("\t\t\t<Settings");
-				ps.WriteLine("\t\t\t\tApplicationIcon = \"{0}\"",project.AppIcon);
-				ps.WriteLine("\t\t\t\tAssemblyKeyContainerName = \"\"");
-				ps.WriteLine("\t\t\t\tAssemblyName = \"{0}\"", project.AssemblyName);
-				ps.WriteLine("\t\t\t\tAssemblyOriginatorKeyFile = \"\"");
-				ps.WriteLine("\t\t\t\tDefaultClientScript = \"JScript\"");
-				ps.WriteLine("\t\t\t\tDefaultHTMLPageLayout = \"Grid\"");
-				ps.WriteLine("\t\t\t\tDefaultTargetSchema = \"IE50\"");
-				ps.WriteLine("\t\t\t\tDelaySign = \"false\"");
+				ps.WriteLine("            <Settings");
+				ps.WriteLine("                ApplicationIcon = \"{0}\"",project.AppIcon);
+				ps.WriteLine("                AssemblyKeyContainerName = \"\"");
+				ps.WriteLine("                AssemblyName = \"{0}\"", project.AssemblyName);
+				ps.WriteLine("                AssemblyOriginatorKeyFile = \"\"");
+				ps.WriteLine("                DefaultClientScript = \"JScript\"");
+				ps.WriteLine("                DefaultHTMLPageLayout = \"Grid\"");
+				ps.WriteLine("                DefaultTargetSchema = \"IE50\"");
+				ps.WriteLine("                DelaySign = \"false\"");
 
 				if(this.Version == VSVersion.VS70)
-					ps.WriteLine("\t\t\t\tNoStandardLibraries = \"false\"");
+					ps.WriteLine("                NoStandardLibraries = \"false\"");
 
-				ps.WriteLine("\t\t\t\tOutputType = \"{0}\"", project.Type.ToString());
-				ps.WriteLine("\t\t\t\tRootNamespace = \"{0}\"", project.RootNamespace);
-				ps.WriteLine("\t\t\t\tStartupObject = \"{0}\"", project.StartupObject);
-				ps.WriteLine("\t\t\t>");
+				ps.WriteLine("                OutputType = \"{0}\"", project.Type.ToString());
+				ps.WriteLine("                PreBuildEvent = \"\"");
+				ps.WriteLine("                PostBuildEvent = \"\"");
+				ps.WriteLine("                RootNamespace = \"{0}\"", project.RootNamespace);
+				ps.WriteLine("                RunPostBuildEvent = \"{0}\"", "OnBuildSuccess");
+				ps.WriteLine("                StartupObject = \"{0}\"", project.StartupObject);
+				ps.WriteLine("            >");
 
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ps.WriteLine("\t\t\t\t<Config");
-					ps.WriteLine("\t\t\t\t\tName = \"{0}\"", conf.Name);
-					ps.WriteLine("\t\t\t\t\tAllowUnsafeBlocks = \"{0}\"", conf.Options["AllowUnsafe"]);
-					ps.WriteLine("\t\t\t\t\tBaseAddress = \"{0}\"", conf.Options["BaseAddress"]);
-					ps.WriteLine("\t\t\t\t\tCheckForOverflowUnderflow = \"{0}\"", conf.Options["CheckUnderflowOverflow"]);
-					ps.WriteLine("\t\t\t\t\tConfigurationOverrideFile = \"\"");
-					ps.WriteLine("\t\t\t\t\tDefineConstants = \"{0}\"", conf.Options["CompilerDefines"]);
-					ps.WriteLine("\t\t\t\t\tDocumentationFile = \"{0}\"", GetXmlDocFile(project, conf));//default to the assembly name
-					ps.WriteLine("\t\t\t\t\tDebugSymbols = \"{0}\"", conf.Options["DebugInformation"]);
-					ps.WriteLine("\t\t\t\t\tFileAlignment = \"{0}\"", conf.Options["FileAlignment"]);
-					ps.WriteLine("\t\t\t\t\tIncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
+					ps.WriteLine("                <Config");
+					ps.WriteLine("                    Name = \"{0}\"", conf.Name);
+					ps.WriteLine("                    AllowUnsafeBlocks = \"{0}\"", conf.Options["AllowUnsafe"].ToString().ToLower());
+					ps.WriteLine("                    BaseAddress = \"{0}\"", conf.Options["BaseAddress"]);
+					ps.WriteLine("                    CheckForOverflowUnderflow = \"{0}\"", conf.Options["CheckUnderflowOverflow"].ToString().ToLower());
+					ps.WriteLine("                    ConfigurationOverrideFile = \"\"");
+					ps.WriteLine("                    DefineConstants = \"{0}\"", conf.Options["CompilerDefines"]);
+					ps.WriteLine("                    DocumentationFile = \"{0}\"", GetXmlDocFile(project, conf));//default to the assembly name
+					ps.WriteLine("                    DebugSymbols = \"{0}\"", conf.Options["DebugInformation"].ToString().ToLower());
+					ps.WriteLine("                    FileAlignment = \"{0}\"", conf.Options["FileAlignment"]);
+					ps.WriteLine("                    IncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"].ToString().ToLower());
                     
 					if(this.Version == VSVersion.VS71)
 					{
-						ps.WriteLine("\t\t\t\t\tNoStdLib = \"{0}\"", conf.Options["NoStdLib"]);
-						ps.WriteLine("\t\t\t\t\tNoWarn = \"{0}\"", conf.Options["SupressWarnings"]);
+						ps.WriteLine("                    NoStdLib = \"{0}\"", conf.Options["NoStdLib"].ToString().ToLower());
+						ps.WriteLine("                    NoWarn = \"{0}\"", conf.Options["SupressWarnings"].ToString().ToLower());
 					}
 
-					ps.WriteLine("\t\t\t\t\tOptimize = \"{0}\"", conf.Options["OptimizeCode"]);                    
-					ps.WriteLine("\t\t\t\t\tOutputPath = \"{0}\"", 
+					ps.WriteLine("                    Optimize = \"{0}\"", conf.Options["OptimizeCode"].ToString().ToLower());                    
+					ps.WriteLine("                    OutputPath = \"{0}\"", 
 						Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
-					ps.WriteLine("\t\t\t\t\tRegisterForComInterop = \"{0}\"", conf.Options["RegisterCOMInterop"]);
-					ps.WriteLine("\t\t\t\t\tRemoveIntegerChecks = \"{0}\"", conf.Options["RemoveIntegerChecks"]);
-					ps.WriteLine("\t\t\t\t\tTreatWarningsAsErrors = \"{0}\"", conf.Options["WarningsAsErrors"]);
-					ps.WriteLine("\t\t\t\t\tWarningLevel = \"{0}\"", conf.Options["WarningLevel"]);
-					ps.WriteLine("\t\t\t\t/>");
+					ps.WriteLine("                    RegisterForComInterop = \"{0}\"", conf.Options["RegisterCOMInterop"].ToString().ToLower());
+					ps.WriteLine("                    RemoveIntegerChecks = \"{0}\"", conf.Options["RemoveIntegerChecks"].ToString().ToLower());
+					ps.WriteLine("                    TreatWarningsAsErrors = \"{0}\"", conf.Options["WarningsAsErrors"].ToString().ToLower());
+					ps.WriteLine("                    WarningLevel = \"{0}\"", conf.Options["WarningLevel"]);
+					ps.WriteLine("                />");
 				}
 
-				ps.WriteLine("\t\t\t</Settings>");
+				ps.WriteLine("            </Settings>");
 
-				ps.WriteLine("\t\t\t<References>");
+				ps.WriteLine("            <References>");
 				foreach(ReferenceNode refr in project.References)
 				{
-					ps.WriteLine("\t\t\t\t<Reference");
-					ps.WriteLine("\t\t\t\t\tName = \"{0}\"", refr.Name);
+					ps.WriteLine("                <Reference");
+					ps.WriteLine("                    Name = \"{0}\"", refr.Name);
+					ps.WriteLine("                    AssemblyName = \"{0}\"", refr.Name);
 
 					if(solution.ProjectsTable.ContainsKey(refr.Name))
 					{
 						ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
-						ps.WriteLine("\t\t\t\t\tProject = \"{{{0}}}\"", refProject.Guid.ToString().ToUpper());
-						ps.WriteLine("\t\t\t\t\tPackage = \"{0}\"", toolInfo.Guid.ToString().ToUpper());
+						ps.WriteLine("                    Project = \"{{{0}}}\"", refProject.Guid.ToString().ToUpper());
+						ps.WriteLine("                    Package = \"{0}\"", toolInfo.Guid.ToString().ToUpper());
 					}
 					else
 					{
 						if(refr.Path != null)
 						{
-							ps.WriteLine("\t\t\t\t\tHintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
+							ps.WriteLine("                    HintPath = \"{0}\"", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
 						}
 
 					}
                     
 					if(refr.LocalCopySpecified)
 					{
-						ps.WriteLine("\t\t\t\t\tPrivate = \"{0}\"",refr.LocalCopy);
+						ps.WriteLine("                    Private = \"{0}\"",refr.LocalCopy);
 					}
 
-					ps.WriteLine("\t\t\t\t/>");
+					ps.WriteLine("                />");
 				}
-				ps.WriteLine("\t\t\t</References>");
+				ps.WriteLine("            </References>");
 
-				ps.WriteLine("\t\t</Build>");
-				ps.WriteLine("\t\t<Files>");
+				ps.WriteLine("        </Build>");
+				ps.WriteLine("        <Files>");
                 
-				ps.WriteLine("\t\t\t<Include>");
+				ps.WriteLine("            <Include>");
 				foreach(string file in project.Files)
 				{
-					ps.WriteLine("\t\t\t\t<File");
-					ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file.Replace(".\\", ""));
+					ps.WriteLine("                <File");
+					ps.WriteLine("                    RelPath = \"{0}\"", file.Replace(".\\", ""));
 //					string delimiter = ".";
 //					string [] split = file.Split(delimiter.ToCharArray());
 ////					foreach (string s in split) 
@@ -292,19 +296,19 @@ namespace DNPreBuild.Core.Targets
 					//if (File.Exists(split[split.Length-2]+".resx"))
 //					if (File.Exists(split.ToString()))
 //					{
-//						ps.WriteLine("\t\t\t\t\tSubType = \"Form\"");
+//						ps.WriteLine("                    SubType = \"Form\"");
 //					}
 //					else
 //					{
-						ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
+						ps.WriteLine("                    SubType = \"Code\"");
 					//}
-					ps.WriteLine("\t\t\t\t\tBuildAction = \"{0}\"", project.Files.GetBuildAction(file));
-					ps.WriteLine("\t\t\t\t/>");
+					ps.WriteLine("                    BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
+					ps.WriteLine("                />");
 				}
-				ps.WriteLine("\t\t\t</Include>");
+				ps.WriteLine("            </Include>");
                 
-				ps.WriteLine("\t\t</Files>");
-				ps.WriteLine("\t</{0}>", toolInfo.XmlTag);
+				ps.WriteLine("        </Files>");
+				ps.WriteLine("    </{0}>", toolInfo.XmlTag);
 				ps.WriteLine("</VisualStudioProject>");
 			}
 
@@ -312,20 +316,20 @@ namespace DNPreBuild.Core.Targets
 			using(ps)
 			{
 				ps.WriteLine("<VisualStudioProject>");
-				ps.WriteLine("\t<{0}>", toolInfo.XmlTag);
-				ps.WriteLine("\t\t<Build>");
+				ps.WriteLine("    <{0}>", toolInfo.XmlTag);
+				ps.WriteLine("        <Build>");
 
-				ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(project));
+				ps.WriteLine("            <Settings ReferencePath=\"{0}\">", MakeRefPath(project));
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ps.WriteLine("\t\t\t\t<Config");
-					ps.WriteLine("\t\t\t\t\tName = \"{0}\"", conf.Name);
-					ps.WriteLine("\t\t\t\t/>");
+					ps.WriteLine("                <Config");
+					ps.WriteLine("                    Name = \"{0}\"", conf.Name);
+					ps.WriteLine("                />");
 				}
-				ps.WriteLine("\t\t\t</Settings>");
+				ps.WriteLine("            </Settings>");
 
-				ps.WriteLine("\t\t</Build>");
-				ps.WriteLine("\t</{0}>", toolInfo.XmlTag);
+				ps.WriteLine("        </Build>");
+				ps.WriteLine("    </{0}>", toolInfo.XmlTag);
 				ps.WriteLine("</VisualStudioProject>");
 			}
 
@@ -391,22 +395,22 @@ namespace DNPreBuild.Core.Targets
 						toolInfo.Guid, project.Name, Helper.MakeFilePath(path, project.Name,
 						toolInfo.FileExtension), project.Guid.ToString().ToUpper());
 
-					ss.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
-					ss.WriteLine("\tEndProjectSection");
+					ss.WriteLine("    ProjectSection(ProjectDependencies) = postProject");
+					ss.WriteLine("    EndProjectSection");
 
 					ss.WriteLine("EndProject");
 				}
 
 				ss.WriteLine("Global");
 
-				ss.WriteLine("\tGlobalSection(SolutionConfiguration) = preSolution");
+				ss.WriteLine("    GlobalSection(SolutionConfiguration) = preSolution");
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
-					ss.WriteLine("\t\t{0} = {0}", conf.Name);
+					ss.WriteLine("        {0} = {0}", conf.Name);
 				}
-				ss.WriteLine("\tEndGlobalSection");
+				ss.WriteLine("    EndGlobalSection");
 
-				ss.WriteLine("\tGlobalSection(ProjectDependencies) = postSolution");
+				ss.WriteLine("    GlobalSection(ProjectDependencies) = postSolution");
 				foreach(ProjectNode project in solution.Projects)
 				{
 					for(int i = 0; i < project.References.Count; i++)
@@ -415,7 +419,7 @@ namespace DNPreBuild.Core.Targets
 						if(solution.ProjectsTable.ContainsKey(refr.Name))
 						{
 							ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
-							ss.WriteLine("\t\t({{{0}}}).{1} = ({{{2}}})", 
+							ss.WriteLine("        ({{{0}}}).{1} = ({{{2}}})", 
 								project.Guid.ToString().ToUpper()
 								, i, 
 								refProject.Guid.ToString().ToUpper()
@@ -423,32 +427,32 @@ namespace DNPreBuild.Core.Targets
 						}
 					}
 				}
-				ss.WriteLine("\tEndGlobalSection");
+				ss.WriteLine("    EndGlobalSection");
 
-				ss.WriteLine("\tGlobalSection(ProjectConfiguration) = postSolution");
+				ss.WriteLine("    GlobalSection(ProjectConfiguration) = postSolution");
 				foreach(ProjectNode project in solution.Projects)
 				{
 					foreach(ConfigurationNode conf in solution.Configurations)
 					{
-						ss.WriteLine("\t\t{{{0}}}.{1}.ActiveCfg = {1}|.NET",
+						ss.WriteLine("        {{{0}}}.{1}.ActiveCfg = {1}|.NET",
 							project.Guid.ToString().ToUpper(),
 							conf.Name);
 
-						ss.WriteLine("\t\t{{{0}}}.{1}.Build.0 = {1}|.NET",
+						ss.WriteLine("        {{{0}}}.{1}.Build.0 = {1}|.NET",
 							project.Guid.ToString().ToUpper(),
 							conf.Name);
 					}
 				}
-				ss.WriteLine("\tEndGlobalSection");
+				ss.WriteLine("    EndGlobalSection");
 
 				if(solution.Files != null)
 				{
-					ss.WriteLine("\tGlobalSection(SolutionItems) = postSolution");
+					ss.WriteLine("    GlobalSection(SolutionItems) = postSolution");
 					foreach(string file in solution.Files)
 					{
-						ss.WriteLine("\t\t{0} = {0}", file);
+						ss.WriteLine("        {0} = {0}", file);
 					}
-					ss.WriteLine("\tEndGlobalSection");
+					ss.WriteLine("    EndGlobalSection");
 				}
 
 				ss.WriteLine("EndGlobal");
