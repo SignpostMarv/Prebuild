@@ -79,7 +79,7 @@ namespace DNPreBuild.Core.Targets
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
 				ret += "Project\"";
-				ret += "\" localcopy=\"" + refr.LocalCopy.ToString() +  " refto=\"" + refr.Name + "\" />";
+				ret += " localcopy=\"" + refr.LocalCopy.ToString() +  "\" refto=\"" + refr.Name + "\" />";
 			}
 			else
 			{
