@@ -45,7 +45,7 @@ using System.Resources;
 [assembly: FileIOPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
 [assembly: CLSCompliant(true)]
 #if NET
-[assembly: AssemblyKeyFile("..\\..\\Prebuild.snk")]
+[assembly: AssemblyKeyFile(@"../../Prebuild.snk")]
 #else
 [assembly: AssemblyKeyFile(@"Prebuild.snk")]
 #endif
@@ -60,7 +60,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration(".NET CLR")]
 [assembly: AssemblyCompany("The Prebuild Project")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © 2004-2005 Matthew Holmes, Dan Moorehead and David Hudson")]
+[assembly: AssemblyCopyright("Copyright  2004-2005 Matthew Holmes, Dan Moorehead and David Hudson")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
