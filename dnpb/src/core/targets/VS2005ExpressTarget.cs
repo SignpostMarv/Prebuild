@@ -242,7 +242,7 @@ namespace DNPreBuild.Core.Targets
 					writer1.WriteLine("\t\t<FileAlignment>{0}</FileAlignment>", node1.Options["FileAlignment"]);
 					writer1.WriteLine("\t\t<Optimize>{0}</Optimize>", node1.Options["OptimizeCode"]);
 					writer1.WriteLine("\t\t<OutputPath>{0}</OutputPath>", Helper.EndPath(Helper.NormalizePath(node1.Options["OutputPath"].ToString())));
-					writer1.WriteLine("\t\t<RegisterForComInterop>{0}</RegisterForComInterop>", node1.Options["RegisterCOMInterop"]);
+					writer1.WriteLine("\t\t<RegisterForComInterop>{0}</RegisterForComInterop>", node1.Options["RegisterComInterop"]);
 					writer1.WriteLine("\t\t<RemoveIntegerChecks>{0}</RemoveIntegerChecks>", node1.Options["RemoveIntegerChecks"]);
 					writer1.WriteLine("\t\t<TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", node1.Options["WarningsAsErrors"]);
 					writer1.WriteLine("\t\t<WarningLevel>{0}</WarningLevel>", node1.Options["WarningLevel"]);

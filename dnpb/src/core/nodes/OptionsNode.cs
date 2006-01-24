@@ -55,54 +55,309 @@ namespace DNPreBuild.Core.Nodes
 
 		[OptionNode("CompilerDefines")]
 		private string m_CompilerDefines = "";
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string CompilerDefines
+		{
+			get
+			{
+				return m_CompilerDefines;
+			}
+			set
+			{
+				m_CompilerDefines = value;
+			}
+		}
         
 		[OptionNode("OptimizeCode")]
 		private bool m_OptimizeCode;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool OptimizeCode
+		{
+			get
+			{
+				return m_OptimizeCode;
+			}
+			set
+			{
+				m_OptimizeCode = value;
+			}
+		}
         
 		[OptionNode("CheckUnderflowOverflow")]
 		private bool m_CheckUnderflowOverflow;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool CheckUnderflowOverflow
+		{
+			get
+			{
+				return m_CheckUnderflowOverflow;
+			}
+			set
+			{
+				m_CheckUnderflowOverflow = value;
+			}
+		}
         
 		[OptionNode("AllowUnsafe")]
 		private bool m_AllowUnsafe;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool AllowUnsafe
+		{
+			get
+			{
+				return m_AllowUnsafe;
+			}
+			set
+			{
+				m_AllowUnsafe = value;
+			}
+		}
         
 		[OptionNode("WarningLevel")]
 		private int m_WarningLevel = 4;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int WarningLevel
+		{
+			get
+			{
+				return m_WarningLevel;
+			}
+			set
+			{
+				m_WarningLevel = value;
+			}
+		}
         
 		[OptionNode("WarningsAsErrors")]
 		private bool m_WarningsAsErrors;
 
-		[OptionNode("SupressWarnings")]
-		private string m_SupressWarnings = "";
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool WarningsAsErrors
+		{
+			get
+			{
+				return m_WarningsAsErrors;
+			}
+			set
+			{
+				m_WarningsAsErrors = value;
+			}
+		}
+
+		[OptionNode("SuppressWarnings")]
+		private string m_SuppressWarnings = "";
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string SuppressWarnings
+		{
+			get
+			{
+				return m_SuppressWarnings;
+			}
+			set
+			{
+				m_SuppressWarnings = value;
+			}
+		}
         
 		[OptionNode("OutputPath")]
 		private string m_OutputPath = "bin/";
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public string OutputPath
+		{
+			get
+			{
+				return m_OutputPath;
+			}
+			set
+			{
+				m_OutputPath = value;
+			}
+		}
+
 		[OptionNode("GenerateXmlDocFile")]
 		private bool m_GenerateXmlDocFile;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool GenerateXmlDocFile
+		{
+			get
+			{
+				return m_GenerateXmlDocFile;
+			}
+			set
+			{
+				m_GenerateXmlDocFile = value;
+			}
+		}
         
 		[OptionNode("XmlDocFile")]
 		private string m_XmlDocFile = "";
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string XmlDocFile
+		{
+			get
+			{
+				return m_XmlDocFile;
+			}
+			set
+			{
+				m_XmlDocFile = value;
+			}
+		}
         
 		[OptionNode("DebugInformation")]
 		private bool m_DebugInformation;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool DebugInformation
+		{
+			get
+			{
+				return m_DebugInformation;
+			}
+			set
+			{
+				m_DebugInformation = value;
+			}
+		}
         
-		[OptionNode("RegisterCOMInterop")]
-		private bool m_RegisterCOMInterop;
+		[OptionNode("RegisterComInterop")]
+		private bool m_RegisterComInterop;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool RegisterComInterop
+		{
+			get
+			{
+				return m_RegisterComInterop;
+			}
+			set
+			{
+				m_RegisterComInterop = value;
+			}
+		}
 
 		[OptionNode("RemoveIntegerChecks")]
 		private bool m_RemoveIntegerChecks;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool RemoveIntegerChecks
+		{
+			get
+			{
+				return m_RemoveIntegerChecks;
+			}
+			set
+			{
+				m_RemoveIntegerChecks = value;
+			}
+		}
         
 		[OptionNode("IncrementalBuild")]
 		private bool m_IncrementalBuild;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IncrementalBuild
+		{
+			get
+			{
+				return m_IncrementalBuild;
+			}
+			set
+			{
+				m_IncrementalBuild = value;
+			}
+		}
         
 		[OptionNode("BaseAddress")]
 		private string m_BaseAddress = "285212672";
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string BaseAddress
+		{
+			get
+			{
+				return m_BaseAddress;
+			}
+			set
+			{
+				m_BaseAddress = value;
+			}
+		}
         
 		[OptionNode("FileAlignment")]
 		private int m_FileAlignment = 4096;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int FileAlignment
+		{
+			get
+			{
+				return m_FileAlignment;
+			}
+			set
+			{
+				m_FileAlignment = value;
+			}
+		}
         
 		[OptionNode("NoStdLib")]
 		private bool m_NoStdLib;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool NoStdLib
+		{
+			get
+			{
+				return m_NoStdLib;
+			}
+			set
+			{
+				m_NoStdLib = value;
+			}
+		}
 
 		private StringCollection m_FieldsDefined;
 

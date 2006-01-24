@@ -201,7 +201,7 @@ namespace DNPreBuild.Core.Targets
 					ss.Write(" compiler=\"{0}\"", csComp);
 					ss.Write(" compilerversion=\"\"");
 					ss.Write(" warninglevel=\"{0}\"", conf.Options["WarningLevel"]);
-					ss.Write(" nowarn=\"{0}\"", conf.Options["SupressWarnings"]);
+					ss.Write(" nowarn=\"{0}\"", conf.Options["SuppressWarnings"]);
 					ss.Write(" includedebuginformation=\"{0}\"", conf.Options["DebugInformation"]);
 					ss.Write(" optimize=\"{0}\"", conf.Options["OptimizeCode"]);
 					ss.Write(" unsafecodeallowed=\"{0}\"", conf.Options["AllowUnsafe"]);
