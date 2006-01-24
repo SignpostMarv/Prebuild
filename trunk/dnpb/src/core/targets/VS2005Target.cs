@@ -340,13 +340,13 @@ namespace DNPreBuild.Core.Targets
 					//                    if(m_Version == VSVersion.VS71)
 					//                    {
 					//                        ps.WriteLine("\t\t\t\t\tNoStdLib = \"{0}\"", conf.Options["NoStdLib"]);
-					//                        ps.WriteLine("\t\t\t\t\tNoWarn = \"{0}\"", conf.Options["SupressWarnings"]);
+					//                        ps.WriteLine("\t\t\t\t\tNoWarn = \"{0}\"", conf.Options["SuppressWarnings"]);
 					//                    }
 
 					ps.WriteLine( "\t\t<Optimize>{0}</Optimize>", conf.Options[ "OptimizeCode" ] );
 					ps.WriteLine( "\t\t<OutputPath>{0}</OutputPath>",
 						Helper.EndPath( Helper.NormalizePath( conf.Options[ "OutputPath" ].ToString() ) ) );
-					ps.WriteLine( "\t\t<RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options[ "RegisterCOMInterop" ] );
+					ps.WriteLine( "\t\t<RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options[ "RegisterComInterop" ] );
 					ps.WriteLine( "\t\t<RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options[ "RemoveIntegerChecks" ] );
 					ps.WriteLine( "\t\t<TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options[ "WarningsAsErrors" ] );
 					ps.WriteLine( "\t\t<WarningLevel>{0}</WarningLevel>", conf.Options[ "WarningLevel" ] );

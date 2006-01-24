@@ -80,6 +80,9 @@ namespace DNPreBuild.Core.Utilities
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public static Stack DirStack
 		{
 			get
@@ -88,11 +91,18 @@ namespace DNPreBuild.Core.Utilities
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public static Regex VarRegex
 		{
 			get
 			{
 				return varRegex;
+			}
+			set
+			{
+				varRegex = value;
 			}
 		}
 
