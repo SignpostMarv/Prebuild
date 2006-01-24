@@ -161,7 +161,14 @@ namespace DNPreBuild.Core.Targets
 					
 					ss.Write("      <Build");
 					ss.Write(" debugmode=\"True\"");
-					ss.Write(" target=\"{0}\"", project.Type);
+					if (project.Type == ProjectType.WinExe)
+					{
+						ss.Write(" target=\"{0}\"", ProjectType.Exe.ToString());
+					}
+					else
+					{
+						ss.Write(" target=\"{0}\"", project.Type);
+					}
 					ss.WriteLine(" />");
 					
 					ss.Write("      <Execution");
