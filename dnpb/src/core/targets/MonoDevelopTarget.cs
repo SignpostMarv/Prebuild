@@ -75,11 +75,11 @@ namespace DNPreBuild.Core.Targets
 
 		private static string BuildReference(SolutionNode solution, ReferenceNode refr)
 		{
-			string ret = "\t\t<Reference type=\"";
+			string ret = "<ProjectReference type=\"";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
-				ret += "Project\" refto=\"" + refr.Name;
-				ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+				ret += "Project\"";
+				ret += "\" localcopy=\"" + refr.LocalCopy.ToString() +  " refto=\"" + refr.Name + "\" />";
 			}
 			else
 			{
@@ -97,9 +97,9 @@ namespace DNPreBuild.Core.Targets
 					return ret;
 				}
 
-				ret += "Gac\" refto=\"";
-				ret += refr.Name;
-				ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+				ret += "Gac\"";
+				ret += " localcopy=\"" + refr.LocalCopy.ToString() + "\"";
+				ret += " refto=\"" + refr.Name + "\" />";
 			}
 
 			return ret;
@@ -143,8 +143,62 @@ namespace DNPreBuild.Core.Targets
 					project.Name,
 					project.RootNamespace
 					);
+				
+								int count = 0;
+				
+				ss.WriteLine("  <Configurations active=\"{0}\">", solution.ActiveConfig);
 
-				ss.WriteLine("\t<Contents>");
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					ss.WriteLine("    <Configuration name=\"{0}\" ctype=\"DotNetProjectConfiguration\">", conf.Name);
+					ss.Write("      <Output");
+					ss.Write(" directory=\"{0}\"", Helper.EndPath(Helper.NormalizePath(".\\" + conf.Options["OutputPath"].ToString())));
+					ss.Write(" assembly=\"{0}\"", project.AssemblyName);
+					ss.Write(" executeScript=\"\"");
+					ss.Write(" executeBeforeBuild=\"\"");
+					ss.Write(" executeAfterBuild=\"\"");
+					ss.WriteLine(" />");
+					
+					ss.Write("      <Build");
+					ss.Write(" debugmode=\"True\"");
+					ss.Write(" target=\"{0}\"", project.Type);
+					ss.WriteLine(" />");
+					
+					ss.Write("      <Execution");
+					ss.Write(" runwithwarnings=\"True\"");
+					ss.Write(" consolepause=\"True\"");
+					ss.Write(" runtime=\"{0}\"", netRuntime);
+					ss.WriteLine(" />");
+					
+					ss.Write("      <CodeGeneration");
+					ss.Write(" compiler=\"{0}\"", csComp);
+					ss.Write(" warninglevel=\"{0}\"", conf.Options["WarningLevel"]);
+					ss.Write(" nowarn=\"{0}\"", conf.Options["SupressWarnings"]);
+					ss.Write(" includedebuginformation=\"{0}\"", conf.Options["DebugInformation"]);
+					ss.Write(" optimize=\"{0}\"", conf.Options["OptimizeCode"]);
+					ss.Write(" unsafecodeallowed=\"{0}\"", conf.Options["AllowUnsafe"]);
+					ss.Write(" generateoverflowchecks=\"{0}\"", conf.Options["CheckUnderflowOverflow"]);
+					ss.Write(" mainclass=\"{0}\"", project.StartupObject);
+					ss.Write(" target=\"{0}\"", project.Type);
+					ss.Write(" definesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
+					ss.Write(" generatexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
+					ss.Write(" ctype=\"CSharpCompilerParameters\"");
+					ss.WriteLine(" />");
+					ss.WriteLine("    </Configuration>");
+
+					count++;
+				}                
+				ss.WriteLine("  </Configurations>");
+
+				ss.Write("  <DeploymentInformation");
+				ss.Write(" target=\"\"");
+				ss.Write(" script=\"\"");
+				ss.Write(" strategy=\"File\"");
+				ss.WriteLine(">");
+				ss.WriteLine("    <excludeFiles />");
+				ss.WriteLine("  </DeploymentInformation>");
+				
+				ss.WriteLine("  <Contents>");
 				foreach(string file in project.Files)
 				{
 					string buildAction = "Compile";
@@ -169,52 +223,18 @@ namespace DNPreBuild.Core.Targets
 
 					// Sort of a hack, we try and resolve the path and make it relative, if we can.
 					string filePath = PrependPath(file);
-					ss.WriteLine("\t\t<File name=\"{0}\" subtype=\"Code\" buildaction=\"{1}\" dependson=\"\" data=\"\" />", filePath, buildAction);
+					ss.WriteLine("    <File name=\"{0}\" subtype=\"Code\" buildaction=\"{1}\" dependson=\"\" data=\"\" />", filePath, buildAction);
 				}
-				ss.WriteLine("\t</Contents>");
+				ss.WriteLine("  </Contents>");
 
-				ss.WriteLine("\t<References>");
+				ss.WriteLine("  <References>");
 				foreach(ReferenceNode refr in project.References)
 				{
-					ss.WriteLine("\t\t{0}", BuildReference(solution, refr));
+					ss.WriteLine("    {0}", BuildReference(solution, refr));
 				}
-				ss.WriteLine("\t</References>");
+				ss.WriteLine("  </References>");
 
-				int count = 0;
-				
-				ss.WriteLine("\t<Configurations active=\"{0}\">", solution.ActiveConfig);
 
-				foreach(ConfigurationNode conf in project.Configurations)
-				{
-					ss.WriteLine("\t\t<Configuration ctype=\"DotNetProjectConfiguration\" name=\"{0}\">", conf.Name);
-					ss.WriteLine("\t\t\t<CodeGeneration");
-					ss.WriteLine("\t\t\t\truntime=\"{0}\"", netRuntime);
-					ss.WriteLine("\t\t\t\tcompiler=\"{0}\"", csComp);
-					ss.WriteLine("\t\t\t\twarninglevel=\"{0}\"", conf.Options["WarningLevel"]);
-					ss.WriteLine("\t\t\t\tnowarn=\"{0}\"", conf.Options["SupressWarnings"]);
-					ss.WriteLine("\t\t\t\tincludedebuginformation=\"{0}\"", conf.Options["DebugInformation"]);
-					ss.WriteLine("\t\t\t\toptimize=\"{0}\"", conf.Options["OptimizeCode"]);
-					ss.WriteLine("\t\t\t\tunsafecodeallowed=\"{0}\"", conf.Options["AllowUnsafe"]);
-					ss.WriteLine("\t\t\t\tgenerateoverflowchecks=\"{0}\"", conf.Options["CheckUnderflowOverflow"]);
-					ss.WriteLine("\t\t\t\tmainclass=\"{0}\"", project.StartupObject);
-					ss.WriteLine("\t\t\t\ttarget=\"{0}\"", project.Type);
-					ss.WriteLine("\t\t\t\tdefinesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
-					ss.WriteLine("\t\t\t\tgeneratexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
-					ss.WriteLine("\t\t\t\tctype=\"CSharpCompilerParameters\"");
-					ss.WriteLine("\t\t\t/>");
-
-					ss.WriteLine("\t\t\t<Output");
-					ss.WriteLine("\t\t\t\tdirectory=\".\\{0}\"", Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
-					ss.WriteLine("\t\t\t\tassembly=\"{0}\"", project.AssemblyName);
-					ss.WriteLine("\t\t\t\texecuteScript=\"\"");
-					ss.WriteLine("\t\t\t\texecuteBeforeBuild=\"\"");
-					ss.WriteLine("\t\t\t\texecuteAfterBuild=\"\"");
-					ss.WriteLine("\t\t\t/>");
-					ss.WriteLine("\t\t</Configuration>");
-
-					count++;
-				}                
-				ss.WriteLine("\t</Configurations>");
 				ss.WriteLine("</Project>");
 			}
 
@@ -240,48 +260,52 @@ namespace DNPreBuild.Core.Targets
 			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(combFile));
             
+            int count = 0;
+            
 			using(ss)
 			{
-				ss.WriteLine("<Combine fileversion=\"2.0\" name=\"{0}\" description=\"\">", solution.Name);
-                
-				int count = 0;
-				foreach(ProjectNode project in solution.Projects)
-				{                    
-					if(count == 0)
-						ss.WriteLine("\t<StartMode startupentry=\"{0}\" single=\"True\">", project.Name);
-
-					ss.WriteLine("\t\t<Execute entry=\"{0}\" type=\"None\" />", project.Name);
-					count++;
-				}
-				ss.WriteLine("\t</StartMode>");
-                
-				ss.WriteLine("\t<Entries>");
-				foreach(ProjectNode project in solution.Projects)
-				{
-					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
-					ss.WriteLine("\t\t<Entry filename=\"{0}\" />",
-						Helper.MakeFilePath(path, project.Name, "mdp"));
-				}
-				ss.WriteLine("\t</Entries>");
+				ss.WriteLine("<Combine name=\"{0}\" fileversion=\"2.0\" description=\"\">", solution.Name);
 
 				count = 0;
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
 					if(count == 0)
 					{
-						ss.WriteLine("\t<Configurations active=\"{0}\">", conf.Name);
+						ss.WriteLine("  <Configurations active=\"{0}\">", conf.Name);
 					}
 
-					ss.WriteLine("\t\t<Configuration name=\"{0}\" ctype=\"CombineConfiguration\">", conf.Name);
+					ss.WriteLine("    <Configuration name=\"{0}\" ctype=\"CombineConfiguration\">", conf.Name);
 					foreach(ProjectNode project in solution.Projects)
 					{
-						ss.WriteLine("\t\t\t<Entry name=\"{0}\" configurationname=\"{1}\" build=\"True\"/>", project.Name, conf.Name);
+						ss.WriteLine("      <Entry configuration=\"{1}\" build=\"True\" name=\"{0}\" />", project.Name, conf.Name);
 					}
-					ss.WriteLine("\t\t</Configuration>");
+					ss.WriteLine("    </Configuration>");
 
 					count++;
 				}
-				ss.WriteLine("\t</Configurations>");
+				ss.WriteLine("  </Configurations>");
+				
+				count = 0;
+				
+				foreach(ProjectNode project in solution.Projects)
+				{                    
+					if(count == 0)
+						ss.WriteLine("  <StartMode startupentry=\"{0}\" single=\"True\">", project.Name);
+
+					ss.WriteLine("    <Execute type=\"None\" entry=\"{0}\" />", project.Name);
+					count++;
+				}
+				ss.WriteLine("  </StartMode>");
+				
+				ss.WriteLine("  <Entries>");
+				foreach(ProjectNode project in solution.Projects)
+				{
+					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
+					ss.WriteLine("    <Entry filename=\"{0}\" />",
+						Helper.MakeFilePath(path, project.Name, "mdp"));
+				}
+				ss.WriteLine("  </Entries>");
+				
 				ss.WriteLine("</Combine>");
 			}
 
