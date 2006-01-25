@@ -201,6 +201,7 @@ namespace DNPreBuild.Core.Targets
 					ss.Write(" target=\"{0}\"", project.Type);
 					ss.Write(" definesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
 					ss.Write(" generatexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
+					ss.Write(" win32Icon=\"{0}\"", project.AppIcon);
 					ss.Write(" ctype=\"CSharpCompilerParameters\"");
 					ss.WriteLine(" />");
 					ss.WriteLine("    </Configuration>");
