@@ -37,6 +37,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 using DNPreBuild.Core.Attributes;
 using DNPreBuild.Core.Interfaces;
@@ -98,7 +99,16 @@ namespace DNPreBuild.Core.Targets
 				}
 
 				ret += "Gac\" refto=\"";
-				ret += refr.Name;
+				try
+				{
+					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					ret += assem.FullName;
+				}
+				catch (System.NullReferenceException e)
+				{
+					e.ToString();
+					ret += refr.Name;
+				}
 				ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
 			}
 
