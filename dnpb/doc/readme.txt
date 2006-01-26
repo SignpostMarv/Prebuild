@@ -18,8 +18,7 @@ SharpDevelop (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 MonoDevelop (MonoDevelop.sh) - http://www.monodevelop.com/
 
 Notes:
-MonoDevelop uses the same project files as SharpDevelop as it is a Unix port for it using the open-source implementation of the .NET Framework, Mono.
-A Unix Shell script is provided for it though, as this is far more appropriate then a windows batch file.
+A Unix Shell script is provided for MonoDevelop, as this is far more appropriate then a windows batch file.
 Visual Studio .NET 2005 and the Visual Express IDE's can import solutions from older versions of Visual Studio .NET.
 NAnt and Makefiles are not currently supported as NAnt allows for VS.NET solutions to be executed directly.
 
@@ -27,7 +26,7 @@ ________________________________________________________________________________
 Command Line Syntax:
  
 Example:
->dnpb /target vs2003
+>Prebuild /target vs2003
 
 This will generate the project files for Visual Studio.NET 2003 and place the redirect the log to a file named PrebuildLog.txt in the parent directory
 
@@ -109,8 +108,8 @@ It can be viewed using Tigris.org's WebSVN (http://realmforge.tigris.org/source/
 _________________________________
 
 <?xml version="1.0" encoding="utf-8"?>
-    <!--The version of the XML schema specified in the version and xmlns attributes should match the one for which the version of dnpb.exe used was compiled for.  In this example it is the version 1.3 schema, you can find the XSD schema file at the url specified in the xmlns attribute. -->
-<DNPreBuild version="1.5" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.3.xsd">
+    <!--The version of the XML schema specified in the version and xmlns attributes should match the one for which the version of Prebuild.exe used was compiled for.  In this example it is the version 1.3 schema, you can find the XSD schema file at the url specified in the xmlns attribute. -->
+<DNPreBuild version="1.5" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
 	<Solution name="RealmForge"> <!--The title and file name for the solution, combine, workspace, or project group (depending on what development tool you are using)-->
                        <!--Configurations found as children of Solution are used as templates for the configurations found in the project, this allows you to avoid writing the same options in each project (and maintaining each of these).  You can provide defaults and then override them in the configurations defined for each project. All options are optional.-->
 		<Configuration name="Debug">
