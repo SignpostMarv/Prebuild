@@ -7,3 +7,4 @@ ChangeLog
 Prebuild.FxCop
 Prebuild.cmbx
 *.mds
+*.build
