@@ -1,44 +1,42 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.3.xsd" version="1.3">
-	<Solution name="dnpb">
-		<Configuration name="Debug">
-			<Options>
-			    <?if OS = "Win32" ?>
-				<CompilerDefines>DEBUG;TRACE;WIN32</CompilerDefines>
-				<?else ?>
-				<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
-				<?endif ?>
-				<OptimizeCode>false</OptimizeCode>
-				<OutputPath>..\</OutputPath>
-				<DebugInformation>true</DebugInformation>
-			</Options>
-		</Configuration>
-		
-		<Configuration name="Release">
-			<Options>
-			    <?if OS = "Win32" ?>
-				<CompilerDefines>TRACE;WIN32</CompilerDefines>
-				<?else ?>
-				<CompilerDefines>TRACE;POSIX</CompilerDefines>
-				<?endif ?>
-				<OutputPath>..\</OutputPath>
-				<OptimizeCode>true</OptimizeCode>
-				<DebugInformation>false</DebugInformation>
-			</Options>
-		</Configuration>
-		
-		<Files>
-			<File>prebuild.xml</File>
-			<Match path="doc\" pattern="*.txt"/>
-		</Files>
-		
-		<Project name="dnpb" path="src\" language="C#" icon="..\dnpb.ico" type="Exe" rootNamespace="DNPreBuild">
-			<Reference name="System" />
-			<Reference name="System.XML" />
-			<Files>
-				<Match path="data" pattern="dnpb-1.3.xsd" buildAction="EmbeddedResource"/>
-				<Match pattern="*.cs" recurse="true"/>				
-			</Files>
-		</Project>
-	</Solution>
+<DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
+    <Solution name="Prebuild">
+	<Configuration name="Debug">
+	    <Options>
+		<?if OS = "Win32" ?>
+		<CompilerDefines>DEBUG;TRACE;WIN32;NET</CompilerDefines>
+		<?else ?>
+		<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
+		<?endif ?>
+		<OptimizeCode>false</OptimizeCode>
+		<OutputPath>bin\Debug</OutputPath>
+		<DebugInformation>true</DebugInformation>
+	    </Options>
+	</Configuration>
+
+	<Configuration name="Release">
+	    <Options>
+		<?if OS = "Win32" ?>
+		<CompilerDefines>TRACE;WIN32;NET</CompilerDefines>
+		<?else ?>
+		<CompilerDefines>TRACE;POSIX</CompilerDefines>
+		<?endif ?>
+		<OutputPath>bin\Release</OutputPath>
+		<OptimizeCode>true</OptimizeCode>
+		<DebugInformation>false</DebugInformation>
+	    </Options>
+	</Configuration>
+	<Files>
+	    <File>prebuild.xml</File>
+	    <Match path="doc\" pattern="*.txt"/>
+	</Files>
+	<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+	    <Reference name="System.Xml" />
+	    <Reference name="System" />
+	    <Files>
+		<Match path="data" pattern="dnpb-1.6.xsd" buildAction="EmbeddedResource"/>
+		<Match pattern="*.cs" recurse="true"/>				
+	    </Files>
+	</Project>
+    </Solution>
 </DNPreBuild>
