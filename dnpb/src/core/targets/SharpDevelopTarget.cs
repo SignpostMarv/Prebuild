@@ -39,12 +39,12 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Nodes;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core.Targets
+namespace Prebuild.Core.Targets
 {
 	[Target("sharpdev")]
 	public class SharpDevelopTarget : ITarget

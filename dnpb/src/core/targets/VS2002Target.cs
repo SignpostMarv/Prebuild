@@ -34,9 +34,9 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 
-using DNPreBuild.Core.Attributes;
+using Prebuild.Core.Attributes;
 
-namespace DNPreBuild.Core.Targets
+namespace Prebuild.Core.Targets
 {
 	[Target("vs2002")]
 	public class VS2002Target : VS2003Target

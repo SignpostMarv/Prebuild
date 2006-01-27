@@ -35,10 +35,10 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.Xml;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
 
-namespace DNPreBuild.Core.Nodes
+namespace Prebuild.Core.Nodes
 {
 	public class DataNode : IDataNode
 	{

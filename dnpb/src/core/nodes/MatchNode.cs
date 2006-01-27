@@ -38,12 +38,15 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core.Nodes
+namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Match")]
 	public class MatchNode : DataNode
 	{
@@ -52,11 +55,15 @@ namespace DNPreBuild.Core.Nodes
 		private StringCollection m_Files;
 		private Regex m_Regex;
 		private BuildAction m_BuildAction = BuildAction.Compile;
+		private SubType m_SubType = SubType.Code;
 
 		#endregion
 
 		#region Constructors
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public MatchNode()
 		{
 			m_Files = new StringCollection();
@@ -66,6 +73,9 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public StringCollection Files
 		{
 			get
@@ -74,6 +84,9 @@ namespace DNPreBuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public BuildAction BuildAction
 		{
 			get
@@ -81,6 +94,18 @@ namespace DNPreBuild.Core.Nodes
 				return m_BuildAction;
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public SubType SubType
+		{
+			get
+			{
+				return m_SubType;
+			}
+		}
+
 
 		#endregion
 
@@ -144,6 +169,10 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
 			string path = Helper.AttributeValue(node, "path", ".");
@@ -152,6 +181,8 @@ namespace DNPreBuild.Core.Nodes
 			bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
 			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
+				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 
 			if(path != null && path.Length == 0)
 			{

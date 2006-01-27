@@ -35,7 +35,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.Runtime.Serialization;
 
-namespace DNPreBuild.Core
+namespace Prebuild.Core
 {
 	[Serializable()]
 	public class FatalException : Exception

@@ -35,7 +35,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.Collections.Specialized;
 
-namespace DNPreBuild.Core.Attributes
+namespace Prebuild.Core.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
 	public sealed class DataNodeAttribute : Attribute

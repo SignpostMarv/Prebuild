@@ -35,7 +35,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.IO;
 
-namespace DNPreBuild.Core.Utilities
+namespace Prebuild.Core.Utilities
 {
 	public enum LogType
 	{

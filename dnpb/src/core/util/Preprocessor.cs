@@ -34,7 +34,7 @@ using System;
  */
 #endregion
 
-namespace DNPreBuild.Core.Utilities
+namespace Prebuild.Core.Utilities
 {
 	public class Preprocessor
 	{

@@ -41,7 +41,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Xml;
 
-namespace DNPreBuild.Core.Utilities
+namespace Prebuild.Core.Utilities
 {
 	public class Helper
 	{

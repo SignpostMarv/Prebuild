@@ -36,20 +36,61 @@ using System;
 using System.IO;
 using System.Xml;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core.Nodes
+namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum BuildAction
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		None,
+		/// <summary>
+		/// 
+		/// </summary>
 		Compile,
+		/// <summary>
+		/// 
+		/// </summary>
 		Content,
+		/// <summary>
+		/// 
+		/// </summary>
 		EmbeddedResource
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	public enum SubType
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		Code,
+		/// <summary>
+		/// 
+		/// </summary>
+		Component,
+		/// <summary>
+		/// 
+		/// </summary>
+		Form,
+		/// <summary>
+		/// 
+		/// </summary>
+		UserControl
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("File")]
 	public class FileNode : DataNode
 	{
@@ -58,11 +99,15 @@ namespace DNPreBuild.Core.Nodes
 		private string m_Path;
 		private BuildAction m_BuildAction = BuildAction.Compile;
 		private bool m_Valid;
+		private SubType m_SubType = SubType.Code;
 
 		#endregion
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public string Path
 		{
 			get
@@ -71,6 +116,9 @@ namespace DNPreBuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public BuildAction BuildAction
 		{
 			get
@@ -79,6 +127,20 @@ namespace DNPreBuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		public SubType SubType
+		{
+			get
+			{
+				return m_SubType;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public bool IsValid
 		{
 			get
@@ -91,10 +153,16 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
 			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
+				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 
 			if( node == null )
 			{
