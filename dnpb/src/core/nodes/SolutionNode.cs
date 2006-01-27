@@ -44,6 +44,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Solution")]
 	public class SolutionNode : DataNode
 	{
@@ -63,6 +66,9 @@ namespace Prebuild.Core.Nodes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SolutionNode"/> class.
+		/// </summary>
 		public SolutionNode()
 		{
 			m_Configurations = new Hashtable();
@@ -73,8 +79,26 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
-		public string ActiveConfig { get { return m_ActiveConfig; } set { m_ActiveConfig = value; } }
+		/// <summary>
+		/// Gets or sets the active config.
+		/// </summary>
+		/// <value>The active config.</value>
+		public string ActiveConfig 
+		{ 
+			get 
+			{ 
+				return m_ActiveConfig; 
+			} 
+			set 
+			{ 
+				m_ActiveConfig = value; 
+			} 
+		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name 
 		{
 			get 
@@ -83,7 +107,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-
+		/// <summary>
+		/// Gets the path.
+		/// </summary>
+		/// <value>The path.</value>
 		public string Path 
 		{
 			get 
@@ -92,6 +119,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the full path.
+		/// </summary>
+		/// <value>The full path.</value>
 		public string FullPath
 		{
 			get
@@ -100,6 +131,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the options.
+		/// </summary>
+		/// <value>The options.</value>
 		public OptionsNode Options
 		{
 			get
@@ -108,6 +143,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the files.
+		/// </summary>
+		/// <value>The files.</value>
 		public FilesNode Files
 		{
 			get
@@ -116,6 +155,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the configurations.
+		/// </summary>
+		/// <value>The configurations.</value>
 		public ICollection Configurations
 		{
 			get
@@ -124,6 +167,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the configurations table.
+		/// </summary>
+		/// <value>The configurations table.</value>
 		public Hashtable ConfigurationsTable
 		{
 			get
@@ -132,6 +179,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
         
+		/// <summary>
+		/// Gets the projects.
+		/// </summary>
+		/// <value>The projects.</value>
 		public ICollection Projects
 		{
 			get
@@ -140,6 +191,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the projects table.
+		/// </summary>
+		/// <value>The projects table.</value>
 		public Hashtable ProjectsTable
 		{
 			get
@@ -152,6 +207,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);

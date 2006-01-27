@@ -6,3 +6,4 @@ bin
 Prebuild.prjx
 *.mdp
 *.build
+Prebuild.xml

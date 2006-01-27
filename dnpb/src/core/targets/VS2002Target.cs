@@ -38,6 +38,9 @@ using Prebuild.Core.Attributes;
 
 namespace Prebuild.Core.Targets
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Target("vs2002")]
 	public class VS2002Target : VS2003Target
 	{
@@ -56,18 +59,30 @@ namespace Prebuild.Core.Targets
 
 		#region Public Methods
 
+		/// <summary>
+		/// Writes the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public override void Write(Kernel kern)
 		{
 			SetVS2002();
 			base.Write(kern);
 		}
 
+		/// <summary>
+		/// Cleans the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public override void Clean(Kernel kern)
 		{
 			SetVS2002();
 			base.Clean(kern);
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public override string Name
 		{
 			get

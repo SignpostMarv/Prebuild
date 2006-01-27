@@ -36,10 +36,25 @@ using System;
 
 namespace Prebuild.Core.Interfaces 
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public interface ITarget 
 	{
+		/// <summary>
+		/// Writes the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		void Write(Kernel kern);
+		/// <summary>
+		/// Cleans the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		void Clean(Kernel kern);
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		string Name { get; }
 	}
 }

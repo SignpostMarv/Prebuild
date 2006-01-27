@@ -44,6 +44,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public struct ToolInfo
 	{
 		string name;
@@ -51,6 +54,10 @@ namespace Prebuild.Core.Targets
 		string fileExtension;
 		string xmlTag;
 
+		/// <summary>
+		/// Gets or sets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get
@@ -63,6 +70,10 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the GUID.
+		/// </summary>
+		/// <value>The GUID.</value>
 		public string Guid
 		{
 			get
@@ -75,6 +86,10 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the file extension.
+		/// </summary>
+		/// <value>The file extension.</value>
 		public string FileExtension
 		{
 			get
@@ -86,6 +101,10 @@ namespace Prebuild.Core.Targets
 				fileExtension = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the XML tag.
+		/// </summary>
+		/// <value>The XML tag.</value>
 		public string XmlTag
 		{
 			get
@@ -98,7 +117,13 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ToolInfo"/> class.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="guid">The GUID.</param>
+		/// <param name="fileExtension">The file extension.</param>
+		/// <param name="xml">The XML.</param>
 		public ToolInfo(string name, string guid, string fileExtension, string xml)
 		{
 			this.name = name;
@@ -158,6 +183,9 @@ namespace Prebuild.Core.Targets
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	[Target( "vs2005" )]
 	public class VS2005Target : ITarget
 	{
@@ -176,6 +204,10 @@ namespace Prebuild.Core.Targets
 		Hashtable tools;
 		Kernel kernel;
 
+		/// <summary>
+		/// Gets or sets the solution version.
+		/// </summary>
+		/// <value>The solution version.</value>
 		protected string SolutionVersion
 		{
 			get
@@ -187,6 +219,10 @@ namespace Prebuild.Core.Targets
 				this.solutionVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the product version.
+		/// </summary>
+		/// <value>The product version.</value>
 		protected string ProductVersion
 		{
 			get
@@ -198,6 +234,10 @@ namespace Prebuild.Core.Targets
 				this.productVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the schema version.
+		/// </summary>
+		/// <value>The schema version.</value>
 		protected string SchemaVersion
 		{
 			get
@@ -209,6 +249,10 @@ namespace Prebuild.Core.Targets
 				this.schemaVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the name of the version.
+		/// </summary>
+		/// <value>The name of the version.</value>
 		protected string VersionName
 		{
 			get
@@ -220,6 +264,10 @@ namespace Prebuild.Core.Targets
 				this.versionName = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the version.
+		/// </summary>
+		/// <value>The version.</value>
 		protected VSVersion Version
 		{
 			get
@@ -236,6 +284,9 @@ namespace Prebuild.Core.Targets
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VS2005Target"/> class.
+		/// </summary>
 		public VS2005Target()
 		{
 			this.tools = new Hashtable();
@@ -602,6 +653,10 @@ namespace Prebuild.Core.Targets
 
 		#region ITarget Members
 
+		/// <summary>
+		/// Writes the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public virtual void Write( Kernel kern )
 		{
 			if( kern == null )
@@ -616,6 +671,10 @@ namespace Prebuild.Core.Targets
 			kernel = null;
 		}
 
+		/// <summary>
+		/// Cleans the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public virtual void Clean( Kernel kern )
 		{
 			if( kern == null )
@@ -630,6 +689,10 @@ namespace Prebuild.Core.Targets
 			kernel = null;
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public virtual string Name
 		{
 			get

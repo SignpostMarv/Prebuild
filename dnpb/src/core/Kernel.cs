@@ -50,6 +50,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core 
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Kernel : IDisposable
 	{
 		#region Inner Classes
@@ -105,6 +108,10 @@ namespace Prebuild.Core
 
 		#region Properties
 
+		/// <summary>
+		/// Gets a value indicating whether [pause after finish].
+		/// </summary>
+		/// <value><c>true</c> if [pause after finish]; otherwise, <c>false</c>.</value>
 		public bool PauseAfterFinish 
 		{
 			get
@@ -113,6 +120,10 @@ namespace Prebuild.Core
 			} 
 		}
 
+		/// <summary>
+		/// Gets the instance.
+		/// </summary>
+		/// <value>The instance.</value>
 		public static Kernel Instance
 		{
 			get
@@ -121,6 +132,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the version.
+		/// </summary>
+		/// <value>The version.</value>
 		public string Version
 		{
 			get
@@ -129,6 +144,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the command line.
+		/// </summary>
+		/// <value>The command line.</value>
 		public CommandLineCollection CommandLine
 		{
 			get
@@ -137,6 +156,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the targets.
+		/// </summary>
+		/// <value>The targets.</value>
 		public Hashtable Targets
 		{
 			get
@@ -145,6 +168,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the log.
+		/// </summary>
+		/// <value>The log.</value>
 		public Log Log
 		{
 			get
@@ -153,6 +180,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the current working directory.
+		/// </summary>
+		/// <value>The current working directory.</value>
 		public CurrentDirectory CurrentWorkingDirectory
 		{
 			get
@@ -161,6 +192,10 @@ namespace Prebuild.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the solutions.
+		/// </summary>
+		/// <value>The solutions.</value>
 		public ArrayList Solutions
 		{
 			get
@@ -385,6 +420,11 @@ namespace Prebuild.Core
 
 		#region Public Methods
 
+		/// <summary>
+		/// Allows the project.
+		/// </summary>
+		/// <param name="projectGroupsFlags">The project groups flags.</param>
+		/// <returns></returns>
 		public bool AllowProject(string projectGroupsFlags) 
 		{
 			if(m_ProjectGroups != null && m_ProjectGroups.Length > 0) 
@@ -404,6 +444,11 @@ namespace Prebuild.Core
 			return true;//no filter specified in the command line args
 		}
 
+		/// <summary>
+		/// Gets the type of the node.
+		/// </summary>
+		/// <param name="node">The node.</param>
+		/// <returns></returns>
 		public Type GetNodeType(XmlNode node)
 		{
 			if( node == null )
@@ -419,12 +464,25 @@ namespace Prebuild.Core
 			return ne.Type;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="parent"></param>
+		/// <returns></returns>
 		public IDataNode ParseNode(XmlNode node, IDataNode parent)
 		{
 			return ParseNode(node, parent, null);
 		}
 
 		//Create an instance of the data node type that is mapped to the name of the xml DOM node
+		/// <summary>
+		/// Parses the node.
+		/// </summary>
+		/// <param name="node">The node.</param>
+		/// <param name="parent">The parent.</param>
+		/// <param name="preNode">The pre node.</param>
+		/// <returns></returns>
 		public IDataNode ParseNode(XmlNode node, IDataNode parent, IDataNode preNode)
 		{
 			IDataNode dataNode = null;
@@ -478,6 +536,11 @@ namespace Prebuild.Core
 			return dataNode;
 		}
 
+		/// <summary>
+		/// Initializes the specified target.
+		/// </summary>
+		/// <param name="target">The target.</param>
+		/// <param name="args">The args.</param>
 		public void Initialize(LogTargets target, string[] args)
 		{
 			m_Targets = new Hashtable();
@@ -529,6 +592,9 @@ namespace Prebuild.Core
 			m_Refs = new StringCollection();
 		}
 
+		/// <summary>
+		/// Processes this instance.
+		/// </summary>
 		public void Process()
 		{
 			bool perfomedOtherTask = false;
@@ -617,6 +683,9 @@ namespace Prebuild.Core
 
 		#region IDisposable Members
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public void Dispose()
 		{
 			Dispose(true);

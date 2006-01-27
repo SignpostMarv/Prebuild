@@ -46,6 +46,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Target("monodev")]
 	public class MonoDevelopTarget : ITarget
 	{
@@ -358,6 +361,10 @@ namespace Prebuild.Core.Targets
 
 		#region ITarget Members
 
+		/// <summary>
+		/// Writes the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public void Write(Kernel kern)
 		{
 			if( kern == null )
@@ -372,6 +379,10 @@ namespace Prebuild.Core.Targets
 			m_Kernel = null;
 		}
 
+		/// <summary>
+		/// Cleans the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public virtual void Clean(Kernel kern)
 		{
 			if( kern == null )
@@ -386,6 +397,10 @@ namespace Prebuild.Core.Targets
 			m_Kernel = null;
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get

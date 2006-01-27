@@ -39,17 +39,44 @@ using System.Xml;
 
 namespace Prebuild.Core.Parse
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum OperatorSymbol
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		None,
+		/// <summary>
+		/// 
+		/// </summary>
 		Equal,
+		/// <summary>
+		/// 
+		/// </summary>
 		NotEqual,
+		/// <summary>
+		/// 
+		/// </summary>
 		LessThan,
+		/// <summary>
+		/// 
+		/// </summary>
 		GreaterThan,
+		/// <summary>
+		/// 
+		/// </summary>
 		LessThanEqual,
+		/// <summary>
+		/// 
+		/// </summary>
 		GreaterThanEqual
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Preprocessor
 	{
 		#region Fields
@@ -62,6 +89,9 @@ namespace Prebuild.Core.Parse
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Preprocessor"/> class.
+		/// </summary>
 		public Preprocessor()
 		{
 			m_OutDoc = new XmlDocument();
@@ -79,6 +109,10 @@ namespace Prebuild.Core.Parse
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the processed doc.
+		/// </summary>
+		/// <value>The processed doc.</value>
 		public XmlDocument ProcessedDoc
 		{
 			get
@@ -349,7 +383,7 @@ namespace Prebuild.Core.Parse
 		/// <summary>
 		/// Performs validation on the xml source as well as evaluates conditional and flow expresions
 		/// </summary>
-		/// <exception cref=".">For invalid use of conditional expressions or for invalid XML syntax.  If a XmlValidatingReader is passed, then will also throw exceptions for non-schema-conforming xml</exception>
+		/// <exception cref="ArgumentException">For invalid use of conditional expressions or for invalid XML syntax.  If a XmlValidatingReader is passed, then will also throw exceptions for non-schema-conforming xml</exception>
 		/// <param name="reader"></param>
 		/// <returns>the output xml </returns>
 		public string Process(XmlReader reader)

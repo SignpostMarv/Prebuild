@@ -37,6 +37,9 @@ using System.Collections;
 
 namespace Prebuild.Core.Utilities
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class CurrentDirectory
 	{
 		#region Fields
@@ -47,6 +50,9 @@ namespace Prebuild.Core.Utilities
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CurrentDirectory"/> class.
+		/// </summary>
 		public CurrentDirectory()
 		{
 			m_Stack = new Stack();
@@ -56,11 +62,17 @@ namespace Prebuild.Core.Utilities
 
 		#region Public Methods
 
+		/// <summary>
+		/// Pushes this instance.
+		/// </summary>
 		public void Push()
 		{
 			m_Stack.Push(Environment.CurrentDirectory);
 		}
 
+		/// <summary>
+		/// Pops this instance.
+		/// </summary>
 		public void Pop()
 		{
 			if(m_Stack.Count < 1)

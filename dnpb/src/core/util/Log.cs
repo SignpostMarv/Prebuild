@@ -37,20 +37,50 @@ using System.IO;
 
 namespace Prebuild.Core.Utilities
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum LogType
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		None,
+		/// <summary>
+		/// 
+		/// </summary>
 		Info,
+		/// <summary>
+		/// 
+		/// </summary>
 		Warning,
+		/// <summary>
+		/// 
+		/// </summary>
 		Error
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	[Flags]
 	public enum LogTargets
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		None = 0,
+		/// <summary>
+		/// 
+		/// </summary>
 		Null = 1,
+		/// <summary>
+		/// 
+		/// </summary>
 		File = 2,
+		/// <summary>
+		/// 
+		/// </summary>
 		Console = 4
 	}
 
@@ -69,6 +99,11 @@ namespace Prebuild.Core.Utilities
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Log"/> class.
+		/// </summary>
+		/// <param name="target">The target.</param>
+		/// <param name="fileName">Name of the file.</param>
 		public Log(LogTargets target, string fileName)
 		{
 			m_Target = target;
@@ -83,11 +118,18 @@ namespace Prebuild.Core.Utilities
 
 		#region Public Methods
 
+		/// <summary>
+		/// Writes this instance.
+		/// </summary>
 		public void Write() 
 		{
 			Write(string.Empty);
 		}
 
+		/// <summary>
+		/// Writes the specified MSG.
+		/// </summary>
+		/// <param name="msg">The MSG.</param>
 		public void Write(string msg) 
 		{
 			if((m_Target & LogTargets.Null) != 0)
@@ -105,11 +147,22 @@ namespace Prebuild.Core.Utilities
 			}
 		}
 
+		/// <summary>
+		/// Writes the specified format.
+		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="args">The args.</param>
 		public void Write(string format, params object[] args)
 		{
 			Write(string.Format(format,args));
 		}
 
+		/// <summary>
+		/// Writes the specified type.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <param name="format">The format.</param>
+		/// <param name="args">The args.</param>
 		public void Write(LogType type, string format, params object[] args)
 		{
 			if((m_Target & LogTargets.Null) != 0)
@@ -134,6 +187,11 @@ namespace Prebuild.Core.Utilities
 			Write(str + format,args);
 		}
 
+		/// <summary>
+		/// Writes the exception.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <param name="ex">The ex.</param>
 		public void WriteException(LogType type, Exception ex)
 		{
 			if(ex != null)
@@ -147,6 +205,9 @@ namespace Prebuild.Core.Utilities
 			}
 		}
 
+		/// <summary>
+		/// Flushes this instance.
+		/// </summary>
 		public void Flush()
 		{
 			if(m_Writer != null)
@@ -159,6 +220,10 @@ namespace Prebuild.Core.Utilities
 
 		#region IDisposable Members
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or
+		/// resetting unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			Dispose(true);

@@ -36,10 +36,16 @@ using System;
 
 namespace Prebuild.Core.Utilities
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Preprocessor
 	{
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Preprocessor"/> class.
+		/// </summary>
 		public Preprocessor()
 		{
 		}
