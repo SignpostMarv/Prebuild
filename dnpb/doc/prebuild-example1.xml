@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DNPreBuild version="1.3" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.3.xsd">
+<DNPreBuild version="1.6" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
 	<Solution name="RealmForge">
 		<Configuration name="Debug">
 			<Options>
