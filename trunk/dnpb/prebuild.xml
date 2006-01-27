@@ -30,10 +30,11 @@
 	    <File>prebuild.xml</File>
 	    <Match path="doc\" pattern="*.txt"/>
 	</Files>
-	<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\\Prebuild.ico" type="Exe" rootNamespace="Prebuild">
+	<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="App.ico" type="Exe" rootNamespace="Prebuild">
 	    <Reference name="System.Xml" />
 	    <Reference name="System" />
 	    <Files>
+		<Match pattern="App.ico" buildAction="EmbeddedResource"/>
 		<Match path="data" pattern="dnpb-1.6.xsd" buildAction="EmbeddedResource"/>
 		<Match pattern="*.cs" recurse="true"/>			
 	    </Files>
