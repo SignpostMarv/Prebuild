@@ -37,7 +37,7 @@ using System.Collections;
 using System.IO;
 using System.Xml;
 
-namespace DNPreBuild.Core.Parse
+namespace Prebuild.Core.Parse
 {
 	public enum OperatorSymbol
 	{

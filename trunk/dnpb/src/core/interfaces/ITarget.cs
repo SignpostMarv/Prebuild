@@ -34,7 +34,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 
-namespace DNPreBuild.Core.Interfaces 
+namespace Prebuild.Core.Interfaces 
 {
 	public interface ITarget 
 	{

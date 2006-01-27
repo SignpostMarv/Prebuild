@@ -55,7 +55,7 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle(".NET Pre-Build")]
+[assembly: AssemblyTitle(".NET Prebuild")]
 [assembly: AssemblyDescription("A .NET project file build tool")]
 [assembly: AssemblyConfiguration(".NET CLR")]
 [assembly: AssemblyCompany("The Prebuild Project")]

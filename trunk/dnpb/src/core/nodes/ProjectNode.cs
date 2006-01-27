@@ -37,11 +37,11 @@ using System.Collections;
 using System.IO;
 using System.Xml;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core.Nodes
+namespace Prebuild.Core.Nodes
 {
 	public enum ProjectType
 	{

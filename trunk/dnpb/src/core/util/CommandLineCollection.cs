@@ -37,7 +37,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace DNPreBuild.Core.Utilities
+namespace Prebuild.Core.Utilities
 {    
 	/// <summary>
 	/// The CommandLine class parses and interprets the command-line arguments passed to

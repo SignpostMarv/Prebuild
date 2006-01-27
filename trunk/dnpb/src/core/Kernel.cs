@@ -42,13 +42,13 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Text;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Parse;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Nodes;
+using Prebuild.Core.Parse;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core 
+namespace Prebuild.Core 
 {
 	public class Kernel : IDisposable
 	{
@@ -209,7 +209,7 @@ namespace DNPreBuild.Core
 		private void LoadSchema()
 		{
 			Assembly assembly = this.GetType().Assembly;
-			Stream stream = assembly.GetManifestResourceStream("DNPreBuild.data." + m_Schema);
+			Stream stream = assembly.GetManifestResourceStream("Prebuild.data." + m_Schema);
 			if(stream == null) 
 			{
 				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
@@ -269,7 +269,7 @@ namespace DNPreBuild.Core
 
 		private void LogBanner()
 		{
-			m_Log.Write(".NET Pre-Build v" + this.Version);
+			m_Log.Write("Prebuild v" + this.Version);
 			m_Log.Write("Copyright (c) Matthew Holmes, Dan Moorehead and David Hudson");
 			m_Log.Write("See 'dnpb /usage' for help");
 			m_Log.Write();
@@ -288,7 +288,7 @@ namespace DNPreBuild.Core
 				}
 				catch(ArgumentException)
 				{
-					m_Log.Write("Could not open .NET Pre-Build file: " + path);
+					m_Log.Write("Could not open Prebuild file: " + path);
 					m_CurrentWorkingDirectory.Pop();
 					return;
 				}
@@ -495,7 +495,7 @@ namespace DNPreBuild.Core
 
 				if(logFile != null && logFile.Length == 0)
 				{
-					logFile = "DNPreBuild.log";
+					logFile = "Prebuild.log";
 				}
 			}
 			else 
@@ -562,7 +562,7 @@ namespace DNPreBuild.Core
 				{
 					return;
 				}
-				m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a .NET pre-build file");
+				m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a Prebuild file");
 				return;
 			}
 

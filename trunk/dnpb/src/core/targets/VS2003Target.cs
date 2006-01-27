@@ -37,12 +37,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Nodes;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Nodes;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild.Core.Targets
+namespace Prebuild.Core.Targets
 {
 	public enum VSVersion
 	{
@@ -281,26 +281,7 @@ namespace DNPreBuild.Core.Targets
 				{
 					ps.WriteLine("                <File");
 					ps.WriteLine("                    RelPath = \"{0}\"", file.Replace(".\\", ""));
-//					string delimiter = ".";
-//					string [] split = file.Split(delimiter.ToCharArray());
-////					foreach (string s in split) 
-////					{
-////						
-////						Console.WriteLine("-{0}-", s);
-////					}
-//					Console.WriteLine(file.ToString());
-//					Console.WriteLine("Split: " + split[split.Length-2]+".resx");
-//					split[split.Length-1] = ".resx";
-					
-					//if (File.Exists(split[split.Length-2]+".resx"))
-//					if (File.Exists(split.ToString()))
-//					{
-//						ps.WriteLine("                    SubType = \"Form\"");
-//					}
-//					else
-//					{
-						ps.WriteLine("                    SubType = \"Code\"");
-					//}
+					ps.WriteLine("                    SubType = \"{0}\"", project.Files.GetSubType(file));
 					ps.WriteLine("                    BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
 					ps.WriteLine("                />");
 				}

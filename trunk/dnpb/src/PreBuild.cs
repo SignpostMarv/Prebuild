@@ -38,12 +38,12 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-using DNPreBuild.Core;
-using DNPreBuild.Core.Utilities;
+using Prebuild.Core;
+using Prebuild.Core.Utilities;
 
-namespace DNPreBuild 
+namespace Prebuild 
 {
-	class DNPreBuild
+	class Prebuild
 	{
 		#region	Main
 
@@ -99,7 +99,7 @@ namespace DNPreBuild
 			Console.WriteLine("Usage: dnpb /target <target>	[options]");
 			Console.WriteLine("Available command-line switches:");
 			Console.WriteLine();
-			Console.WriteLine("/target			Target for .NET	Pre-Build");
+			Console.WriteLine("/target			Target for Prebuild");
 			Console.WriteLine("/clean			Clean the build	files for the given	target");
 			Console.WriteLine("/file			XML	file to	process");
 			Console.WriteLine("/log				Log	file to	write to");
@@ -113,7 +113,7 @@ namespace DNPreBuild
 
 		private	static void	OutputTargets(Kernel kern)
 		{
-			Console.WriteLine("Targets available in	.NET Pre-build:");
+			Console.WriteLine("Targets available in	Prebuild:");
 			Console.WriteLine("");
 			if(kern.Targets.Keys.Count > 0)
 			{

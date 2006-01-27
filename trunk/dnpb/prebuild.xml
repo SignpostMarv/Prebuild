@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<DNPreBuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
+<Prebuild xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
     <Solution name="Prebuild">
 	<Configuration name="Debug">
 	    <Options>
@@ -30,13 +30,13 @@
 	    <File>prebuild.xml</File>
 	    <Match path="doc\" pattern="*.txt"/>
 	</Files>
-	<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\\Prebuild.ico" type="Exe" rootNamespace="DNPreBuild">
+	<Project name="Prebuild" path="src\" language="C#" assemblyName="Prebuild" icon="..\\Prebuild.ico" type="Exe" rootNamespace="Prebuild">
 	    <Reference name="System.Xml" />
 	    <Reference name="System" />
 	    <Files>
 		<Match path="data" pattern="dnpb-1.6.xsd" buildAction="EmbeddedResource"/>
-		<Match pattern="*.cs" recurse="true"/>				
+		<Match pattern="*.cs" recurse="true"/>			
 	    </Files>
 	</Project>
     </Solution>
-</DNPreBuild>
+</Prebuild>

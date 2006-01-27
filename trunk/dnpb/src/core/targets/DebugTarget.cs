@@ -34,12 +34,12 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,	EVEN IF	ADVISED	OF THE POSSIBILITY O
 
 using System;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
-using DNPreBuild.Core.Nodes;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
+using Prebuild.Core.Nodes;
 
 #if	(DEBUG && _DEBUG_TARGET)
-namespace DNPreBuild.Core.Targets
+namespace Prebuild.Core.Targets
 {
 	[Target("debug")]
 	public class DebugTarget : ITarget

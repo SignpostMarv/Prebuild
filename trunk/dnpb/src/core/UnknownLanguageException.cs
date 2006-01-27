@@ -20,7 +20,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace DNPreBuild.Core 
+namespace Prebuild.Core 
 {
 	/// <summary>
 	/// </summary>

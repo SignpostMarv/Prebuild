@@ -37,11 +37,14 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Xml;
 
-using DNPreBuild.Core.Attributes;
-using DNPreBuild.Core.Interfaces;
+using Prebuild.Core.Attributes;
+using Prebuild.Core.Interfaces;
 
-namespace DNPreBuild.Core.Nodes
+namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Files")]
 	public class FilesNode : DataNode
 	{
@@ -49,21 +52,29 @@ namespace DNPreBuild.Core.Nodes
 
 		private StringCollection m_Files;
 		private Hashtable m_BuildActions;
+		private Hashtable m_SubTypes;
 
 		#endregion
 
 		#region Constructors
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public FilesNode()
 		{
 			m_Files = new StringCollection();
 			m_BuildActions = new Hashtable();
+			m_SubTypes = new Hashtable();
 		}
 
 		#endregion
 
 		#region Properties
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public int Count
 		{
 			get
@@ -76,6 +87,11 @@ namespace DNPreBuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
 		public BuildAction GetBuildAction(string file)
 		{
 			if(!m_BuildActions.ContainsKey(file))
@@ -86,6 +102,25 @@ namespace DNPreBuild.Core.Nodes
 			return (BuildAction)m_BuildActions[file];
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public SubType GetSubType(string file)
+		{
+			if(!m_SubTypes.ContainsKey(file))
+			{
+				return SubType.Code;
+			}
+
+			return (SubType)m_SubTypes[file];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
 			if( node == null )
@@ -102,6 +137,7 @@ namespace DNPreBuild.Core.Nodes
 					{
 						m_Files.Add(fileNode.Path);
 						m_BuildActions[fileNode.Path] = fileNode.BuildAction;
+						m_SubTypes[fileNode.Path] = fileNode.SubType;
 					}
 				}
 				else if(dataNode is MatchNode)
@@ -110,6 +146,7 @@ namespace DNPreBuild.Core.Nodes
 					{
 						m_Files.Add(file);
 						m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
+						m_SubTypes[file] = ((MatchNode)dataNode).SubType;
 					}
 				}
 			}
@@ -117,6 +154,10 @@ namespace DNPreBuild.Core.Nodes
 
 		// TODO: Check in to why StringCollection's enumerator doesn't implement
 		// IEnumerator?
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public StringEnumerator GetEnumerator()
 		{
 			return m_Files.GetEnumerator();
