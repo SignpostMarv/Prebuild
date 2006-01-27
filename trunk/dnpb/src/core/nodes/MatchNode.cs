@@ -111,6 +111,13 @@ namespace Prebuild.Core.Nodes
 
 		#region Private Methods
 
+		/// <summary>
+		/// Recurses the directories.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="pattern">The pattern.</param>
+		/// <param name="recurse">if set to <c>true</c> [recurse].</param>
+		/// <param name="useRegex">if set to <c>true</c> [use regex].</param>
 		public void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex)
 		{
 			try

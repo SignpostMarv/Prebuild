@@ -43,6 +43,9 @@ using System.Xml;
 
 namespace Prebuild.Core.Utilities
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class Helper
 	{
 		#region Fields
@@ -70,6 +73,9 @@ namespace Prebuild.Core.Utilities
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes the <see cref="Helper"/> class.
+		/// </summary>
 		static Helper()
 		{
 			dirStack = new Stack();
@@ -112,6 +118,9 @@ namespace Prebuild.Core.Utilities
 
 		#region String Parsing
 		#region Inner Classes and Delegates
+		/// <summary>
+		/// 
+		/// </summary>
 		public delegate string StringLookup(string key);
 		
 		#endregion
@@ -119,9 +128,10 @@ namespace Prebuild.Core.Utilities
 		/// <summary>
 		/// Gets a collection of StringLocationPair objects that represent the matches
 		/// </summary>
-		/// <param name="target"></param>
-		/// <param name="beforeGroup"></param>
-		/// <param name="afterGroup"></param>
+		/// <param name="target">The target.</param>
+		/// <param name="beforeGroup">The before group.</param>
+		/// <param name="afterGroup">The after group.</param>
+		/// <param name="includeDelimitersInSubstrings">if set to <c>true</c> [include delimiters in substrings].</param>
 		/// <returns></returns>
 		public static StringCollection FindGroups(string target, string beforeGroup, string afterGroup, bool includeDelimitersInSubstrings) 
 		{
@@ -168,6 +178,14 @@ namespace Prebuild.Core.Utilities
 			return results;
 		}
 
+		/// <summary>
+		/// Replaces the groups.
+		/// </summary>
+		/// <param name="target">The target.</param>
+		/// <param name="beforeGroup">The before group.</param>
+		/// <param name="afterGroup">The after group.</param>
+		/// <param name="lookup">The lookup.</param>
+		/// <returns></returns>
 		public static string ReplaceGroups(string target, string beforeGroup, string afterGroup, StringLookup lookup) {
 			if( target == null )
 			{
@@ -189,7 +207,8 @@ namespace Prebuild.Core.Utilities
 		/// <summary>
 		/// Replaces ${var} statements in a string with the corresonding values as detirmined by the lookup delegate
 		/// </summary>
-		/// <param name="target"></param>
+		/// <param name="target">The target.</param>
+		/// <param name="lookup">The lookup.</param>
 		/// <returns></returns>
 		public static string InterpolateForVariables(string target, StringLookup lookup) 
 		{
@@ -208,6 +227,12 @@ namespace Prebuild.Core.Utilities
 
 		#endregion
 
+		/// <summary>
+		/// Translates the value.
+		/// </summary>
+		/// <param name="translateType">Type of the translate.</param>
+		/// <param name="translationItem">The translation item.</param>
+		/// <returns></returns>
 		public static object TranslateValue(Type translateType, string translationItem)
 		{
 			if(translationItem == null)
@@ -237,6 +262,11 @@ namespace Prebuild.Core.Utilities
 			}
 		}
 
+		/// <summary>
+		/// Deletes if exists.
+		/// </summary>
+		/// <param name="file">The file.</param>
+		/// <returns></returns>
 		public static bool DeleteIfExists(string file)
 		{
 			string resFile = null;
@@ -259,6 +289,12 @@ namespace Prebuild.Core.Utilities
 		}
 
 		// This little gem was taken from the NeL source, thanks guys!
+		/// <summary>
+		/// Makes the path relative to.
+		/// </summary>
+		/// <param name="basePath">The base path.</param>
+		/// <param name="relativePath">The relative path.</param>
+		/// <returns></returns>
 		public static string MakePathRelativeTo(string basePath, string relativePath)
 		{
 			string tmp = NormalizePath(basePath, '/');
@@ -305,6 +341,11 @@ namespace Prebuild.Core.Utilities
 			return relativePath;
 		}
 
+		/// <summary>
+		/// Resolves the path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
 		public static string ResolvePath(string path)
 		{
 			string tmpPath = NormalizePath(path);
@@ -323,10 +364,10 @@ namespace Prebuild.Core.Utilities
 		}
 
 		/// <summary>
-		/// 
+		/// Normalizes the path.
 		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="separatorCharacter"></param>
+		/// <param name="path">The path.</param>
+		/// <param name="separatorCharacter">The separator character.</param>
 		/// <returns></returns>
 		public static string NormalizePath(string path, char separatorCharacter)
 		{
@@ -340,11 +381,22 @@ namespace Prebuild.Core.Utilities
 			return tmpPath;
 		}
 
+		/// <summary>
+		/// Normalizes the path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
 		public static string NormalizePath(string path)
 		{
 			return NormalizePath(path, Path.DirectorySeparatorChar);
 		}
         
+		/// <summary>
+		/// Ends the path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="separatorCharacter">The separator character.</param>
+		/// <returns></returns>
 		public static string EndPath(string path, char separatorCharacter)
 		{
 			if(path == null || path.Length < 1)
@@ -360,11 +412,23 @@ namespace Prebuild.Core.Utilities
 			return path;
 		}
 
+		/// <summary>
+		/// Ends the path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
 		public static string EndPath(string path)
 		{
 			return EndPath(path, Path.DirectorySeparatorChar);
 		}
 
+		/// <summary>
+		/// Makes the file path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="ext">The ext.</param>
+		/// <returns></returns>
 		public static string MakeFilePath(string path, string name, string ext)
 		{
 			string ret = EndPath(NormalizePath(path));
@@ -388,6 +452,10 @@ namespace Prebuild.Core.Utilities
 			return ret;
 		}
 
+		/// <summary>
+		/// Sets the current dir.
+		/// </summary>
+		/// <param name="path">The path.</param>
 		public static void SetCurrentDir(string path)
 		{
 			if( path == null )
@@ -402,6 +470,13 @@ namespace Prebuild.Core.Utilities
 			Environment.CurrentDirectory = path;
 		}
 
+		/// <summary>
+		/// Checks the type.
+		/// </summary>
+		/// <param name="typeToCheck">The type to check.</param>
+		/// <param name="attr">The attr.</param>
+		/// <param name="inter">The inter.</param>
+		/// <returns></returns>
 		public static object CheckType(Type typeToCheck, Type attr, Type inter)
 		{
 			if(typeToCheck == null || attr == null)
@@ -456,6 +531,13 @@ namespace Prebuild.Core.Utilities
 			return tmp;
 		}*/
 
+		/// <summary>
+		/// Attributes the value.
+		/// </summary>
+		/// <param name="node">The node.</param>
+		/// <param name="attr">The attr.</param>
+		/// <param name="def">The def.</param>
+		/// <returns></returns>
 		public static string AttributeValue(XmlNode node, string attr, string def)
 		{
 			if( node == null )
@@ -475,6 +557,13 @@ namespace Prebuild.Core.Utilities
 			return InterpolateForEnvironmentVariables(val);
 		}
 
+		/// <summary>
+		/// Parses the boolean.
+		/// </summary>
+		/// <param name="node">The node.</param>
+		/// <param name="attr">The attr.</param>
+		/// <param name="defaultValue">if set to <c>true</c> [default value].</param>
+		/// <returns></returns>
 		public static bool ParseBoolean(XmlNode node, string attr, bool defaultValue) 
 		{
 			if( node == null )
@@ -488,6 +577,14 @@ namespace Prebuild.Core.Utilities
 			return bool.Parse(node.Attributes[attr].Value);
 		}
 
+		/// <summary>
+		/// Enums the attribute value.
+		/// </summary>
+		/// <param name="node">The node.</param>
+		/// <param name="attr">The attr.</param>
+		/// <param name="enumType">Type of the enum.</param>
+		/// <param name="def">The def.</param>
+		/// <returns></returns>
 		public static object EnumAttributeValue(XmlNode node, string attr, Type enumType, object def)
 		{
 			if( def == null )

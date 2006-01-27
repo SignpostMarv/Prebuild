@@ -36,6 +36,9 @@ using System;
 
 namespace Prebuild.Core.Attributes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field)]
 	public sealed class OptionNodeAttribute : Attribute
 	{
@@ -47,6 +50,10 @@ namespace Prebuild.Core.Attributes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OptionNodeAttribute"/> class.
+		/// </summary>
+		/// <param name="nodeName">Name of the node.</param>
 		public OptionNodeAttribute(string nodeName)
 		{
 			m_NodeName = nodeName;
@@ -56,6 +63,10 @@ namespace Prebuild.Core.Attributes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		/// <value>The name of the node.</value>
 		public string NodeName
 		{
 			get

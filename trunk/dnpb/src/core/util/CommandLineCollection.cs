@@ -107,6 +107,11 @@ namespace Prebuild.Core.Utilities
 
 		#region Public Methods
 
+		/// <summary>
+		/// Wases the passed.
+		/// </summary>
+		/// <param name="arg">The arg.</param>
+		/// <returns></returns>
 		public bool WasPassed(string arg)
 		{
 			return (m_Arguments.ContainsKey(arg));
@@ -140,6 +145,13 @@ namespace Prebuild.Core.Utilities
 
 		#region IEnumerable Members
 
+		/// <summary>
+		/// Returns an enumerator that can iterate through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/>
+		/// that can be used to iterate through the collection.
+		/// </returns>
 		public IEnumerator GetEnumerator() 
 		{
 			return m_Arguments.Keys.GetEnumerator();

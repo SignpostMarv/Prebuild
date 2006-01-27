@@ -40,6 +40,9 @@ using Prebuild.Core.Interfaces;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class DataNode : IDataNode
 	{
 		#region Fields
@@ -50,6 +53,10 @@ namespace Prebuild.Core.Nodes
 
 		#region IDataNode Members
 
+		/// <summary>
+		/// Gets or sets the parent.
+		/// </summary>
+		/// <value>The parent.</value>
 		public virtual IDataNode Parent
 		{
 			get
@@ -62,6 +69,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public virtual void Parse(XmlNode node)
 		{
 		}

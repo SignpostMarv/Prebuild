@@ -37,6 +37,9 @@ using System.Collections.Specialized;
 
 namespace Prebuild.Core.Attributes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
 	public sealed class DataNodeAttribute : Attribute
 	{
@@ -48,6 +51,10 @@ namespace Prebuild.Core.Attributes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DataNodeAttribute"/> class.
+		/// </summary>
+		/// <param name="name">The name.</param>
 		public DataNodeAttribute(string name)
 		{
 			m_Name = name;
@@ -57,6 +64,10 @@ namespace Prebuild.Core.Attributes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get

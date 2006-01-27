@@ -44,13 +44,28 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum VSVersion
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		VS70,
+		/// <summary>
+		/// 
+		/// </summary>
 		VS71,
+		/// <summary>
+		/// 
+		/// </summary>
 		VS80
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	[Target("vs2003")]
 	public class VS2003Target : ITarget
 	{
@@ -66,6 +81,10 @@ namespace Prebuild.Core.Targets
 		Hashtable m_Tools;
 		Kernel m_Kernel;
 
+		/// <summary>
+		/// Gets or sets the solution version.
+		/// </summary>
+		/// <value>The solution version.</value>
 		protected string SolutionVersion
 		{
 			get
@@ -77,6 +96,10 @@ namespace Prebuild.Core.Targets
 				this.solutionVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the product version.
+		/// </summary>
+		/// <value>The product version.</value>
 		protected string ProductVersion
 		{
 			get
@@ -88,6 +111,10 @@ namespace Prebuild.Core.Targets
 				this.productVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the schema version.
+		/// </summary>
+		/// <value>The schema version.</value>
 		protected string SchemaVersion
 		{
 			get
@@ -99,6 +126,10 @@ namespace Prebuild.Core.Targets
 				this.schemaVersion = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the name of the version.
+		/// </summary>
+		/// <value>The name of the version.</value>
 		protected string VersionName
 		{
 			get
@@ -110,6 +141,10 @@ namespace Prebuild.Core.Targets
 				this.versionName = value;
 			}
 		}
+		/// <summary>
+		/// Gets or sets the version.
+		/// </summary>
+		/// <value>The version.</value>
 		protected VSVersion Version
 		{
 			get
@@ -126,6 +161,9 @@ namespace Prebuild.Core.Targets
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="VS2003Target"/> class.
+		/// </summary>
 		public VS2003Target()
 		{
 			m_Tools = new Hashtable();
@@ -316,6 +354,12 @@ namespace Prebuild.Core.Targets
 			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
+		/// <summary>
+		/// Gets the XML doc file.
+		/// </summary>
+		/// <param name="project">The project.</param>
+		/// <param name="conf">The conf.</param>
+		/// <returns></returns>
 		public static string GetXmlDocFile(ProjectNode project, ConfigurationNode conf) 
 		{
 			if( conf == null )
@@ -480,6 +524,10 @@ namespace Prebuild.Core.Targets
 
 		#region ITarget Members
 
+		/// <summary>
+		/// Writes the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public virtual void Write(Kernel kern)
 		{
 			if( kern == null )
@@ -494,6 +542,10 @@ namespace Prebuild.Core.Targets
 			m_Kernel = null;
 		}
 
+		/// <summary>
+		/// Cleans the specified kern.
+		/// </summary>
+		/// <param name="kern">The kern.</param>
 		public virtual void Clean(Kernel kern)
 		{
 			if( kern == null )
@@ -508,6 +560,10 @@ namespace Prebuild.Core.Targets
 			m_Kernel = null;
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public virtual string Name
 		{
 			get

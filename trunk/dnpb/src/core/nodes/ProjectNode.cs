@@ -43,19 +43,43 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum ProjectType
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		Exe,
+		/// <summary>
+		/// 
+		/// </summary>
 		WinExe,
+		/// <summary>
+		/// 
+		/// </summary>
 		Library
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum ClrRuntime
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		Microsoft,
+		/// <summary>
+		/// 
+		/// </summary>
 		Mono
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Project")]
 	public class ProjectNode : DataNode
 	{
@@ -83,6 +107,9 @@ namespace Prebuild.Core.Nodes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProjectNode"/> class.
+		/// </summary>
 		public ProjectNode()
 		{
 			m_Configurations = new Hashtable();
@@ -94,6 +121,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get
@@ -102,6 +133,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the path.
+		/// </summary>
+		/// <value>The path.</value>
 		public string Path
 		{
 			get
@@ -110,8 +145,22 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-		public string FilterGroups { get { return m_FilterGroups; } }
+		/// <summary>
+		/// Gets the filter groups.
+		/// </summary>
+		/// <value>The filter groups.</value>
+		public string FilterGroups 
+		{ 
+			get 
+			{ 
+				return m_FilterGroups; 
+			} 
+		}
 
+		/// <summary>
+		/// Gets the full path.
+		/// </summary>
+		/// <value>The full path.</value>
 		public string FullPath
 		{
 			get
@@ -120,6 +169,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the name of the assembly.
+		/// </summary>
+		/// <value>The name of the assembly.</value>
 		public string AssemblyName
 		{
 			get
@@ -128,6 +181,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the app icon.
+		/// </summary>
+		/// <value>The app icon.</value>
 		public string AppIcon 
 		{
 			get 
@@ -136,6 +193,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the language.
+		/// </summary>
+		/// <value>The language.</value>
 		public string Language
 		{
 			get
@@ -144,6 +205,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the type.
+		/// </summary>
+		/// <value>The type.</value>
 		public ProjectType Type
 		{
 			get
@@ -152,6 +217,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the runtime.
+		/// </summary>
+		/// <value>The runtime.</value>
 		public ClrRuntime Runtime
 		{
 			get
@@ -160,6 +229,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the startup object.
+		/// </summary>
+		/// <value>The startup object.</value>
 		public string StartupObject
 		{
 			get
@@ -168,6 +241,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the root namespace.
+		/// </summary>
+		/// <value>The root namespace.</value>
 		public string RootNamespace
 		{
 			get
@@ -176,6 +253,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the configurations.
+		/// </summary>
+		/// <value>The configurations.</value>
 		public ICollection Configurations
 		{
 			get
@@ -184,6 +265,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the configurations table.
+		/// </summary>
+		/// <value>The configurations table.</value>
 		public Hashtable ConfigurationsTable
 		{
 			get
@@ -192,6 +277,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the reference paths.
+		/// </summary>
+		/// <value>The reference paths.</value>
 		public ArrayList ReferencePaths
 		{
 			get
@@ -200,6 +289,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the references.
+		/// </summary>
+		/// <value>The references.</value>
 		public ArrayList References
 		{
 			get
@@ -208,6 +301,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the files.
+		/// </summary>
+		/// <value>The files.</value>
 		public FilesNode Files
 		{
 			get
@@ -216,6 +313,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the parent.
+		/// </summary>
+		/// <value>The parent.</value>
 		public override IDataNode Parent
 		{
 			get
@@ -236,6 +337,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the GUID.
+		/// </summary>
+		/// <value>The GUID.</value>
 		public Guid Guid
 		{
 			get
@@ -273,6 +378,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);

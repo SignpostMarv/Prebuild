@@ -41,6 +41,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Reference")]
 	public class ReferenceNode : DataNode
 	{
@@ -55,6 +58,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get
@@ -63,6 +70,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the path.
+		/// </summary>
+		/// <value>The path.</value>
 		public string Path
 		{
 			get
@@ -71,6 +82,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether [local copy specified].
+		/// </summary>
+		/// <value><c>true</c> if [local copy specified]; otherwise, <c>false</c>.</value>
 		public bool LocalCopySpecified 
 		{
 			get 
@@ -79,6 +94,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether [local copy].
+		/// </summary>
+		/// <value><c>true</c> if [local copy]; otherwise, <c>false</c>.</value>
 		public bool LocalCopy
 		{
 			get
@@ -91,6 +110,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the version.
+		/// </summary>
+		/// <value>The version.</value>
 		public string Version
 		{
 			get
@@ -103,6 +126,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);

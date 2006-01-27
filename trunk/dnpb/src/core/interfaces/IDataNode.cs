@@ -37,9 +37,20 @@ using System.Xml;
 
 namespace Prebuild.Core.Interfaces 
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public interface IDataNode 
 	{
+		/// <summary>
+		/// Gets or sets the parent.
+		/// </summary>
+		/// <value>The parent.</value>
 		IDataNode Parent { get; set; }        
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		void Parse(XmlNode node);
 	}
 }

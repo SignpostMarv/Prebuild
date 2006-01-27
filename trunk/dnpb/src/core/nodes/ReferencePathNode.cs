@@ -43,6 +43,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("ReferencePath")]
 	public class ReferencePathNode : DataNode
 	{
@@ -54,6 +57,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the path.
+		/// </summary>
+		/// <value>The path.</value>
 		public string Path
 		{
 			get
@@ -66,6 +73,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			if( node == null )

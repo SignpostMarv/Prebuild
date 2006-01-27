@@ -41,6 +41,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Configuration")]
 	public class ConfigurationNode : DataNode, ICloneable
 	{
@@ -53,6 +56,9 @@ namespace Prebuild.Core.Nodes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ConfigurationNode"/> class.
+		/// </summary>
 		public ConfigurationNode()
 		{
 			m_Options = new OptionsNode();
@@ -62,6 +68,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets or sets the parent.
+		/// </summary>
+		/// <value>The parent.</value>
 		public override IDataNode Parent
 		{
 			get
@@ -82,6 +92,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
 		public string Name
 		{
 			get
@@ -90,6 +104,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the options.
+		/// </summary>
+		/// <value>The options.</value>
 		public OptionsNode Options
 		{
 			get
@@ -106,6 +124,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
@@ -123,6 +145,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="conf">The conf.</param>
 		public void CopyTo(ConfigurationNode conf)
 		{
 			m_Options.CopyTo(conf.m_Options);
@@ -132,6 +158,12 @@ namespace Prebuild.Core.Nodes
 
 		#region ICloneable Members
 
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
 		public object Clone()
 		{
 			ConfigurationNode ret = new ConfigurationNode();

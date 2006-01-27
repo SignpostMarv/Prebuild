@@ -43,6 +43,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild 
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	class Prebuild
 	{
 		#region	Main

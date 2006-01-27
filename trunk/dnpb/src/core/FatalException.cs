@@ -37,16 +37,27 @@ using System.Runtime.Serialization;
 
 namespace Prebuild.Core
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Serializable()]
 	public class FatalException : Exception
 	{
 		#region Constructors
 
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FatalException"/> class.
+		/// </summary>
 		public FatalException()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FatalException"/> class.
+		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="args">The args.</param>
 		public FatalException(string format, params object[] args)
 			: base(String.Format(format, args))
 		{

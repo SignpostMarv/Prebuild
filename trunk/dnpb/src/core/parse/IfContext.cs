@@ -36,11 +36,26 @@ using System;
 
 namespace Prebuild.Core.Parse
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public enum IfState
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		None,
+		/// <summary>
+		/// 
+		/// </summary>
 		If,
+		/// <summary>
+		/// 
+		/// </summary>
 		ElseIf,
+		/// <summary>
+		/// 
+		/// </summary>
 		Else
 	}
 
@@ -61,6 +76,12 @@ namespace Prebuild.Core.Parse
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IfContext"/> class.
+		/// </summary>
+		/// <param name="active">if set to <c>true</c> [active].</param>
+		/// <param name="keep">if set to <c>true</c> [keep].</param>
+		/// <param name="state">The state.</param>
 		public IfContext(bool active, bool keep, IfState state)
 		{
 			m_Active = active;
@@ -73,6 +94,10 @@ namespace Prebuild.Core.Parse
 
 		#region Properties
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="IfContext"/> is active.
+		/// </summary>
+		/// <value><c>true</c> if active; otherwise, <c>false</c>.</value>
 		public bool Active
 		{
 			get
@@ -85,6 +110,10 @@ namespace Prebuild.Core.Parse
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="IfContext"/> is keep.
+		/// </summary>
+		/// <value><c>true</c> if keep; otherwise, <c>false</c>.</value>
 		public bool Keep
 		{
 			get
@@ -101,6 +130,10 @@ namespace Prebuild.Core.Parse
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether [ever kept].
+		/// </summary>
+		/// <value><c>true</c> if [ever kept]; otherwise, <c>false</c>.</value>
 		public bool EverKept
 		{
 			get
@@ -109,6 +142,10 @@ namespace Prebuild.Core.Parse
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the state.
+		/// </summary>
+		/// <value>The state.</value>
 		public IfState State
 		{
 			get

@@ -43,6 +43,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Process")]
 	public class ProcessNode : DataNode
 	{
@@ -55,6 +58,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the path.
+		/// </summary>
+		/// <value>The path.</value>
 		public string Path
 		{
 			get
@@ -63,6 +70,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this instance is valid.
+		/// </summary>
+		/// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
 		public bool IsValid
 		{
 			get
@@ -75,6 +86,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			if( node == null )

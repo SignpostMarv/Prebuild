@@ -37,15 +37,26 @@ using System.Runtime.Serialization;
 
 namespace Prebuild.Core
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[Serializable()]
 	public class WarningException : Exception
 	{
 		#region Constructors
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public WarningException()
 		{
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="format"></param>
+		/// <param name="args"></param>
 		public WarningException(string format, params object[] args)
 			: base(String.Format(format, args))
 		{

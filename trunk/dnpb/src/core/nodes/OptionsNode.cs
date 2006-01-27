@@ -46,6 +46,9 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Nodes
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[DataNode("Options")]
 	public class OptionsNode : DataNode
 	{
@@ -365,6 +368,9 @@ namespace Prebuild.Core.Nodes
 
 		#region Constructors
 
+		/// <summary>
+		/// Initializes the <see cref="OptionsNode"/> class.
+		/// </summary>
 		static OptionsNode()
 		{
 			Type t = typeof(OptionsNode);
@@ -383,6 +389,9 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OptionsNode"/> class.
+		/// </summary>
 		public OptionsNode()
 		{
 			m_FieldsDefined = new StringCollection();
@@ -392,6 +401,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the <see cref="Object"/> at the specified index.
+		/// </summary>
+		/// <value></value>
 		public object this[string index]
 		{
 			get
@@ -406,6 +419,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Object"/> at the specified index.
+		/// </summary>
+		/// <value></value>
 		public object this[string index, object defaultValue]
 		{
 			get
@@ -451,6 +468,10 @@ namespace Prebuild.Core.Nodes
 
 		#region Public Methods
 
+		/// <summary>
+		/// Parses the specified node.
+		/// </summary>
+		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
 			if( node == null )
@@ -464,6 +485,10 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="opt">The opt.</param>
 		public void CopyTo(OptionsNode opt)
 		{
 			if(opt == null)
