@@ -315,6 +315,7 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("        <Files>");
                 
 				ps.WriteLine("            <Include>");
+
 				foreach(string file in project.Files)
 				{
 					ps.WriteLine("                <File");

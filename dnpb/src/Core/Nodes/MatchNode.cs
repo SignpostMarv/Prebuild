@@ -118,7 +118,7 @@ namespace Prebuild.Core.Nodes
 		/// <param name="pattern">The pattern.</param>
 		/// <param name="recurse">if set to <c>true</c> [recurse].</param>
 		/// <param name="useRegex">if set to <c>true</c> [use regex].</param>
-		public void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex)
+		private void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex)
 		{
 			try
 			{
@@ -130,6 +130,10 @@ namespace Prebuild.Core.Nodes
 					if(files != null)
 					{
 						m_Files.AddRange(files);
+//						foreach (string file in files)
+//						{
+//							Console.WriteLine(file);
+//						}
 					}
 					else
 					{
@@ -221,6 +225,21 @@ namespace Prebuild.Core.Nodes
 			}
 
 			RecurseDirectories(path, pattern, recurse, useRegex);
+
+			foreach(XmlNode child in node.ChildNodes)
+			{
+				IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+				if(dataNode is ExcludeNode)
+				{
+					ExcludeNode excludeNode = (ExcludeNode)dataNode;
+					if (m_Files.Contains(".\\" + excludeNode.Name))
+					{
+						//Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
+						m_Files.Remove(".\\" + excludeNode.Name);
+					}
+				}
+			}
+
 			if(m_Files.Count < 1)
 			{
 				throw new WarningException("Match returned no files: {0}{1}", Helper.EndPath(path), pattern);
