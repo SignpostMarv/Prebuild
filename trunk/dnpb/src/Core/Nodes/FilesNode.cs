@@ -135,18 +135,25 @@ namespace Prebuild.Core.Nodes
 					FileNode fileNode = (FileNode)dataNode;
 					if(fileNode.IsValid)
 					{
-						m_Files.Add(fileNode.Path);
-						m_BuildActions[fileNode.Path] = fileNode.BuildAction;
-						m_SubTypes[fileNode.Path] = fileNode.SubType;
+						if (!m_Files.Contains(fileNode.Path))
+						{
+							m_Files.Add(fileNode.Path);
+							m_BuildActions[fileNode.Path] = fileNode.BuildAction;
+							m_SubTypes[fileNode.Path] = fileNode.SubType;
+						}
 					}
 				}
 				else if(dataNode is MatchNode)
 				{
 					foreach(string file in ((MatchNode)dataNode).Files)
 					{
-						m_Files.Add(file);
-						m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
-						m_SubTypes[file] = ((MatchNode)dataNode).SubType;
+						//Console.WriteLine("fileNode: " + file);
+						if (!m_Files.Contains(file))
+						{
+							m_Files.Add(file);
+							m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
+							m_SubTypes[file] = ((MatchNode)dataNode).SubType;
+						}
 					}
 				}
 			}
