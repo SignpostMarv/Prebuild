@@ -186,6 +186,10 @@ namespace Prebuild.Core.Nodes
 		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
+			if( node == null )
+			{
+				throw new ArgumentNullException("node");
+			}
 			string path = Helper.AttributeValue(node, "path", ".");
 			string pattern = Helper.AttributeValue(node, "pattern", "*");
 			bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
