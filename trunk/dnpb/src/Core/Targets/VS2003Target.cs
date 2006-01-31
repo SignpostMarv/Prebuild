@@ -238,7 +238,9 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("\t\t\t\t  DelaySign = \"false\"");
 
 				if(this.Version == VSVersion.VS70)
+				{
 					ps.WriteLine("\t\t\t\t  NoStandardLibraries = \"false\"");
+				}
 
 				ps.WriteLine("\t\t\t\t  OutputType = \"{0}\"", project.Type.ToString());
 				ps.WriteLine("\t\t\t\t  PreBuildEvent = \"\"");
