@@ -223,7 +223,7 @@ namespace Prebuild.Core.Targets
 					ss.Write(" target=\"{0}\"", project.Type);
 					ss.Write(" definesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
 					ss.Write(" generatexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
-					ss.Write(" win32Icon=\"{0}\"", project.AppIcon);
+					ss.Write(" win32Icon=\"{0}\"", Helper.NormalizePath(".\\" + project.AppIcon));
 					ss.Write(" noconfig=\"{0}\"", "False");
 					ss.Write(" nostdlib=\"{0}\"", conf.Options["NoStdLib"]);
 					ss.WriteLine(" />");
@@ -234,13 +234,13 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine(" />");
 
 					ss.Write("      <Output");
-					ss.Write(" directory=\".\\{0}\"", Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
+					ss.Write(" directory=\".\\{0}\"", Helper.NormalizePath(conf.Options["OutputPath"].ToString()));
 					ss.Write(" assembly=\"{0}\"", project.AssemblyName);
-					ss.Write(" executeScript=\"\"");
-					ss.Write(" executeBeforeBuild=\"\"");
-					ss.Write(" executeAfterBuild=\"\"");
-					ss.Write(" executeBeforeBuildArguments=\"\"");
-					ss.Write(" executeAfterBuildArguments=\"\"");
+					ss.Write(" executeScript=\"{0}\"", conf.Options["RunScript"]);
+					ss.Write(" executeBeforeBuild=\"{0}\"", conf.Options["PreBuildEvent"]);
+					ss.Write(" executeAfterBuild=\"{0}\"", conf.Options["PostBuildEvent"]);
+					ss.Write(" executeBeforeBuildArguments=\"{0}\"", conf.Options["PreBuildEventArgs"]);
+					ss.Write(" executeAfterBuildArguments=\"{0}\"", conf.Options["PreBuildEventArgs"]);
 					ss.WriteLine(" />");
 					ss.WriteLine("    </Configuration>");
 
