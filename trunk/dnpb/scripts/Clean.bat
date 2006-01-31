@@ -1,1 +1,1 @@
-Prebuild /clean /removedir obj /pause
+Prebuild /clean /removedir obj /file ../prebuild.xml /pause
