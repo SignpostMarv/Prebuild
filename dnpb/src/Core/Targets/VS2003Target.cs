@@ -216,6 +216,9 @@ namespace Prebuild.Core.Targets
 			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(projectFile));
 
+			IEnumerator enumerator;
+			//ConfigurationNode scripts;
+
 			using(ps)
 			{
 				ps.WriteLine("<VisualStudioProject>");
@@ -243,10 +246,26 @@ namespace Prebuild.Core.Targets
 				}
 
 				ps.WriteLine("\t\t\t\t  OutputType = \"{0}\"", project.Type.ToString());
-				ps.WriteLine("\t\t\t\t  PreBuildEvent = \"\"");
-				ps.WriteLine("\t\t\t\t  PostBuildEvent = \"\"");
+
+				enumerator = project.Configurations.GetEnumerator();
+				enumerator.Reset();
+				enumerator.MoveNext();
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					ps.WriteLine("\t\t\t\t  PreBuildEvent = \"{0}\"", conf.Options["PreBuildEvent"]);
+					ps.WriteLine("\t\t\t\t  PostBuildEvent = \"{0}\"", conf.Options["PostBuildEvent"]);
+					if (conf.Options["RunPostBuildEvent"] == null)
+					{
+						ps.WriteLine("\t\t\t\t  RunPostBuildEvent = \"{0}\"", "OnBuildSuccess");
+					}
+					else
+					{
+						ps.WriteLine("\t\t\t\t  RunPostBuildEvent = \"{0}\"", conf.Options["RunPostBuildEvent"]);
+					}
+					break;
+				}
+				
 				ps.WriteLine("\t\t\t\t  RootNamespace = \"{0}\"", project.RootNamespace);
-				ps.WriteLine("\t\t\t\t  RunPostBuildEvent = \"{0}\"", "OnBuildSuccess");
 				ps.WriteLine("\t\t\t\t  StartupObject = \"{0}\"", project.StartupObject);
 				ps.WriteLine("\t\t     >");
 

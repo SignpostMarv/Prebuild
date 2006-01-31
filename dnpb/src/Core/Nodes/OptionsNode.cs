@@ -127,6 +127,114 @@ namespace Prebuild.Core.Nodes
 				m_AllowUnsafe = value;
 			}
 		}
+		
+		[OptionNode("PreBuildEvent")]
+		private string m_PreBuildEvent;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string PreBuildEvent 
+		{
+			get 
+			{
+				return m_PreBuildEvent;
+			}
+			set 
+			{
+				m_PreBuildEvent = value;
+			}
+		}
+		
+		[OptionNode("PostBuildEvent")]
+		private string m_PostBuildEvent;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string PostBuildEvent 
+		{
+			get 
+			{
+				return m_PostBuildEvent;
+			}
+			set 
+			{
+				m_PostBuildEvent = value;
+			}
+		}
+			
+		[OptionNode("PreBuildEventArgs")]
+		private string m_PreBuildEventArgs;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string PreBuildEventArgs
+		{
+			get 
+			{
+				return m_PreBuildEventArgs;
+			}
+			set 
+			{
+				m_PreBuildEventArgs = value;
+			}
+		}
+		
+		[OptionNode("PostBuildEventArgs")]
+		private string m_PostBuildEventArgs;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string PostBuildEventArgs
+		{
+			get 
+			{
+				return m_PostBuildEventArgs;
+			}
+			set 
+			{
+				m_PostBuildEventArgs = value;
+			}
+		}
+		
+		[OptionNode("RunPostBuildEvent")]
+		private string m_RunPostBuildEvent;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string RunPostBuildEvent 
+		{
+			get 
+			{
+				return m_RunPostBuildEvent;
+			}
+			set 
+			{
+				m_RunPostBuildEvent = value;
+			}
+		}
+		
+		[OptionNode("RunScript")]
+		private string m_RunScript;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public string RunScript 
+		{
+			get 
+			{
+				return m_RunScript;
+			}
+			set 
+			{
+				m_RunScript = value;
+			}
+		}
         
 		[OptionNode("WarningLevel")]
 		private int m_WarningLevel = 4;
