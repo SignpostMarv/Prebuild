@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prebuild", "..\src\Prebuild.csproj", "{B62908A8-7A91-4DB4-A0B2-CC2C6BEA0728}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Release = Release
+		Debug = Debug
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{B62908A8-7A91-4DB4-A0B2-CC2C6BEA0728}.Release.ActiveCfg = Release|.NET
+		{B62908A8-7A91-4DB4-A0B2-CC2C6BEA0728}.Release.Build.0 = Release|.NET
+		{B62908A8-7A91-4DB4-A0B2-CC2C6BEA0728}.Debug.ActiveCfg = Debug|.NET
+		{B62908A8-7A91-4DB4-A0B2-CC2C6BEA0728}.Debug.Build.0 = Debug|.NET
+	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		prebuild.xml = prebuild.xml
+		..\doc\changes.txt = ..\doc\changes.txt
+		..\doc\license.txt = ..\doc\license.txt
+		..\doc\readme.txt = ..\doc\readme.txt
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
