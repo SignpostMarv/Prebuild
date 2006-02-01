@@ -236,10 +236,10 @@ namespace Prebuild.Core.Nodes
 				if(dataNode is ExcludeNode)
 				{
 					ExcludeNode excludeNode = (ExcludeNode)dataNode;
-					if (m_Files.Contains(".\\" + excludeNode.Name))
+					if (m_Files.Contains(Helper.NormalizePath(".\\" + excludeNode.Name)))
 					{
-						//Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
-						m_Files.Remove(".\\" + excludeNode.Name);
+						Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
+						m_Files.Remove(Helper.NormalizePath(".\\" + excludeNode.Name));
 					}
 				}
 			}
