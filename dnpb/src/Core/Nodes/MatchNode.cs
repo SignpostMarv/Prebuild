@@ -238,7 +238,7 @@ namespace Prebuild.Core.Nodes
 					ExcludeNode excludeNode = (ExcludeNode)dataNode;
 					if (m_Files.Contains(Helper.NormalizePath(".\\" + excludeNode.Name)))
 					{
-						Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
+						//Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
 						m_Files.Remove(Helper.NormalizePath(".\\" + excludeNode.Name));
 					}
 				}
