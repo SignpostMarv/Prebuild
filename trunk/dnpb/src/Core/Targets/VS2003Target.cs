@@ -339,11 +339,23 @@ namespace Prebuild.Core.Targets
 
 				foreach(string file in project.Files)
 				{
+					string fileName = file.Replace(".\\", "");
 					ps.WriteLine("                <File");
-					ps.WriteLine("                    RelPath = \"{0}\"", file.Replace(".\\", ""));
+					ps.WriteLine("                    RelPath = \"{0}\"", fileName);
 					ps.WriteLine("                    SubType = \"{0}\"", project.Files.GetSubType(file));
 					ps.WriteLine("                    BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
 					ps.WriteLine("                />");
+
+					if (project.Files.GetSubType(file).ToString() != "Code")
+					{
+						ps.WriteLine("                <File");
+						//Console.WriteLine("LastIndex: " + fileName.LastIndexOf('.'));
+						ps.WriteLine("                    RelPath = \"{0}\"", fileName.Substring(0, fileName.LastIndexOf('.')) + ".resx");
+						ps.WriteLine("                    DependentUpon = \"{0}\"", fileName);
+						ps.WriteLine("                    BuildAction = \"{0}\"", "EmbeddedResource");
+						ps.WriteLine("                />");
+
+					}
 				}
 				ps.WriteLine("            </Include>");
                 
