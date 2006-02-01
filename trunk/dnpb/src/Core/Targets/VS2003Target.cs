@@ -349,9 +349,18 @@ namespace Prebuild.Core.Targets
 					if (project.Files.GetSubType(file).ToString() != "Code")
 					{
 						ps.WriteLine("                <File");
-						//Console.WriteLine("LastIndex: " + fileName.LastIndexOf('.'));
 						ps.WriteLine("                    RelPath = \"{0}\"", fileName.Substring(0, fileName.LastIndexOf('.')) + ".resx");
-						ps.WriteLine("                    DependentUpon = \"{0}\"", fileName);
+						//Console.WriteLine("Last index: " + fileName.LastIndexOf('\\'));
+						//Console.WriteLine("Length: " + fileName.Length);
+						int slash = fileName.LastIndexOf('\\');
+						if (slash == -1)
+						{
+							ps.WriteLine("                    DependentUpon = \"{0}\"", fileName);
+						}
+						else
+						{
+							ps.WriteLine("                    DependentUpon = \"{0}\"", fileName.Substring(slash + 1, fileName.Length - slash - 1));
+						}
 						ps.WriteLine("                    BuildAction = \"{0}\"", "EmbeddedResource");
 						ps.WriteLine("                />");
 
