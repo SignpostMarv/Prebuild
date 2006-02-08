@@ -271,6 +271,56 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("        <delete dir=\"${obj.dir}\" failonerror=\"false\" />");
 				ss.WriteLine("    </target>");
 
+				ss.WriteLine("    <target name=\"doc\" description=\"Creates documentation.\">");
+				ss.WriteLine("        <property name=\"doc.target\" value=\"\" />");
+				ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
+				ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
+				ss.WriteLine("        </if>");
+				ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
+				ss.WriteLine("            <assemblies basedir=\"${nant.project.basedir}/${build.dir}\">");
+				ss.Write("                <include name=\"${nant.project.name}");
+				if (project.Type == ProjectType.Library)
+				{
+					ss.WriteLine(".dll\" />");
+				}
+				else
+				{
+					ss.WriteLine(".exe\" />");
+				}
+
+				ss.WriteLine("            </assemblies>");
+				ss.WriteLine("            <summaries basedir=\"${nant.project.basedir}/${build.dir}\">");
+				ss.WriteLine("                <include name=\"${nant.project.name}.xml\"/>");
+				ss.WriteLine("            </summaries>");
+				ss.WriteLine("            <referencepaths basedir=\"${nant.project.basedir}\">");
+				ss.WriteLine("                <include name=\"${build.dir}\" />");
+				ss.WriteLine("            </referencepaths>");
+				ss.WriteLine("            <documenters>");
+				ss.WriteLine("                <documenter name=\"MSDN\">");
+				ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${nant.project.basedir}/${build.dir}/doc/\" />");
+				ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
+				ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${nant.project.name}\" />");
+				ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
+				ss.WriteLine("                    <property name=\"Title\" value=\"${nant.project.name} SDK Documentation\" />");
+				ss.WriteLine("                    <property name=\"SplitTOCs\" value=\"False\" />");
+				ss.WriteLine("                    <property name=\"DefaulTOC\" value=\"\" />");
+				ss.WriteLine("                    <property name=\"ShowVisualBasic\" value=\"True\" />");
+				ss.WriteLine("                    <property name=\"AutoDocumentConstructors\" value=\"True\" />");
+				ss.WriteLine("                    <property name=\"ShowMissingSummaries\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"ShowMissingRemarks\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"ShowMissingParams\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"ShowMissingReturns\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"ShowMissingValues\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"DocumentInternals\" value=\"False\" />");
+				ss.WriteLine("                    <property name=\"DocumentPrivates\" value=\"False\" />");
+				ss.WriteLine("                    <property name=\"DocumentProtected\" value=\"True\" />");
+				ss.WriteLine("                    <property name=\"DocumentEmptyNamespaces\" value=\"${build.debug}\" />");
+				ss.WriteLine("                    <property name=\"IncludeAssemblyVersion\" value=\"True\" />");
+				ss.WriteLine("                </documenter>");
+				ss.WriteLine("            </documenters>");
+				ss.WriteLine("        </ndoc>");
+				ss.WriteLine("    </target>");
+
 				ss.WriteLine("</project>");
 
 				count++;
@@ -371,8 +421,8 @@ namespace Prebuild.Core.Targets
 					//foreach(ProjectNode project in solution.Projects)
 					//{
 					//	Console.WriteLine(project);
-						ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
-						ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
+					ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
+					ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
 					//}
 					ss.WriteLine("    </target>");
 					ss.WriteLine();
@@ -408,6 +458,22 @@ namespace Prebuild.Core.Targets
 						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name, "build"),'/'));
 					ss.WriteLine(" target=\"build\" />");
 				}
+				ss.WriteLine();
+
+				ss.WriteLine("    </target>");
+				ss.WriteLine("    <target name=\"doc\" depends=\"build\">");
+				ss.WriteLine("        <foreach item=\"File\" property=\"filename\">");
+				ss.WriteLine("            <in>");
+				ss.WriteLine("                <items>");
+				ss.WriteLine("                    <include name=\"**/*.build\" />");
+				ss.WriteLine("                    <exclude name=\"./*.build\" />");
+				ss.WriteLine("                </items>");
+				ss.WriteLine("            </in>");
+				ss.WriteLine("            <do>");
+				ss.WriteLine("                <echo message=\"${filename}\" />");
+				ss.WriteLine("                <nant buildfile=\"${filename}\" target=\"doc\" />");
+				ss.WriteLine("            </do>");
+				ss.WriteLine("        </foreach>");
 				ss.WriteLine("    </target>");
 				ss.WriteLine("</project>");
 			}
