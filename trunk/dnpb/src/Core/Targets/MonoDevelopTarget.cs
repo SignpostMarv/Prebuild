@@ -135,6 +135,30 @@ namespace Prebuild.Core.Targets
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the XML doc file.
+		/// </summary>
+		/// <param name="project">The project.</param>
+		/// <param name="conf">The conf.</param>
+		/// <returns></returns>
+		public static string GenerateXmlDocFile(ProjectNode project, ConfigurationNode conf) 
+		{
+			if( conf == null )
+			{
+				throw new ArgumentNullException("conf");
+			}
+			if( project == null )
+			{
+				throw new ArgumentNullException("project");
+			}
+			string docFile = (string)conf.Options["XmlDocFile"];
+			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
+			{
+				return "False";
+			}
+			return "True";
+		}
+
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
 			string csComp = "Mcs";
@@ -205,7 +229,7 @@ namespace Prebuild.Core.Targets
 					ss.Write(" mainclass=\"{0}\"", project.StartupObject);
 					ss.Write(" target=\"{0}\"", project.Type);
 					ss.Write(" definesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
-					ss.Write(" generatexmldocumentation=\"{0}\"", conf.Options["GenerateXmlDocFile"]);
+					ss.Write(" generatexmldocumentation=\"{0}\"", GenerateXmlDocFile(project, conf));
 					ss.Write(" win32Icon=\"{0}\"", project.AppIcon);
 					ss.Write(" ctype=\"CSharpCompilerParameters\"");
 					ss.WriteLine(" />");
