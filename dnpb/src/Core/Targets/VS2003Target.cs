@@ -413,10 +413,10 @@ namespace Prebuild.Core.Targets
 			{
 				throw new ArgumentNullException("project");
 			}
-			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
-			{
-				return string.Empty;
-			}
+//			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
+//			{
+//				return string.Empty;
+//			}
 			string docFile = (string)conf.Options["XmlDocFile"];
 			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
 			{
