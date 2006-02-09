@@ -82,28 +82,34 @@ namespace Prebuild.Core.Targets
 			string ret = "<include name=\"";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
-				//ret += "Project\"";
-				//ret += " localcopy=\"" + refr.LocalCopy.ToString() +  "\" refto=\"" + refr.Name + "\" />";
+				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
+				Console.WriteLine("Project fullpath: " + project.FullPath);
+				Console.WriteLine("Project reference path: " + project.ReferencePaths);
+				Console.WriteLine("Project path: " + project.Path);
+				Console.WriteLine("refr path: " + refr.Path);
+				
+				string fileRef = FindFileReference(refr.Name, project);
+
+
+				string finalPath = Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, "dll");
+				ret += finalPath;
+				ret += "\" />";
+				return ret;
 			}
 			else
 			{
 				ProjectNode project = (ProjectNode)refr.Parent;
 				string fileRef = FindFileReference(refr.Name, project);
+				Console.WriteLine("FileRef: " + fileRef);
 
 				if(refr.Path != null || fileRef != null)
 				{
-					//ret += "Assembly\" refto=\"";
-
-					//string finalPath = (refr.Path != null) ? Helper.MakeFilePath(refr.Path, refr.Name, "dll") : fileRef;
-
-					//ret += finalPath;
-					//ret += "\" localcopy=\"" + refr.LocalCopy.ToString() + "\" />";
+					string finalPath = (refr.Path != null) ? Helper.MakePathRelativeTo(refr.Name, refr.Path+refr.Name) : fileRef;
+					ret += finalPath;
+					ret += "\" />";
 					return ret;
 				}
 
-				//ret += "Gac\"";
-				//ret += " localcopy=\"" + refr.LocalCopy.ToString() + "\"";
-				//ret += " refto=\"";
 				try
 				{
 					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
@@ -229,7 +235,10 @@ namespace Prebuild.Core.Targets
 				{
 					ss.Write(".exe\"");
 				}
-				ss.Write(" win32icon=\"{0}\"", Helper.NormalizePath(project.AppIcon,'/'));
+				if(project.AppIcon != null && project.AppIcon.Length != 0)
+				{
+					ss.Write(" win32icon=\"{0}\"", Helper.NormalizePath(project.AppIcon,'/'));
+				}
 				ss.WriteLine(">");
 				ss.WriteLine("            <sources failonempty=\"true\">");
 				foreach(string file in project.Files)
