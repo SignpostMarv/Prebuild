@@ -82,15 +82,8 @@ namespace Prebuild.Core.Targets
 			string ret = "<include name=\"";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
-				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-				Console.WriteLine("Project fullpath: " + project.FullPath);
-				Console.WriteLine("Project reference path: " + project.ReferencePaths);
-				Console.WriteLine("Project path: " + project.Path);
-				Console.WriteLine("refr path: " + refr.Path);
-				
+				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];				
 				string fileRef = FindFileReference(refr.Name, project);
-
-
 				string finalPath = Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, "dll");
 				ret += finalPath;
 				ret += "\" />";
@@ -100,11 +93,15 @@ namespace Prebuild.Core.Targets
 			{
 				ProjectNode project = (ProjectNode)refr.Parent;
 				string fileRef = FindFileReference(refr.Name, project);
-				Console.WriteLine("FileRef: " + fileRef);
 
 				if(refr.Path != null || fileRef != null)
 				{
 					string finalPath = (refr.Path != null) ? Helper.MakePathRelativeTo(refr.Name, refr.Path+refr.Name) : fileRef;
+					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("path", "path"));
+					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to", "to/really/long/path"));
+					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "path"));
+					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "to"));
+					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "../../.."));
 					ret += finalPath;
 					ret += "\" />";
 					return ret;
