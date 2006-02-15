@@ -290,15 +290,15 @@ namespace Prebuild.Core.Utilities
 
 		// This little gem was taken from the NeL source, thanks guys!
 		/// <summary>
-		/// Makes the path relative to.
+		/// Makes a relative path
 		/// </summary>
-		/// <param name="basePath">The base path.</param>
-		/// <param name="relativePath">The relative path.</param>
-		/// <returns></returns>
-		public static string MakePathRelativeTo(string basePath, string relativePath)
+		/// <param name="startPath">Path to start from</param>
+		/// <param name="endPath">Path to end at</param>
+		/// <returns>Path that will get from startPath to endPath</returns>
+		public static string MakePathRelativeTo(string startPath, string endPath)
 		{
-			string tmp = NormalizePath(basePath, '/');
-			string src = NormalizePath(relativePath, '/');
+			string tmp = NormalizePath(startPath, '/');
+			string src = NormalizePath(endPath, '/');
 			string prefix = "";
 
 			while(true)
@@ -311,7 +311,8 @@ namespace Prebuild.Core.Utilities
 						return "./";
 					}
 
-					string ret = prefix + relativePath.Substring(size, relativePath.Length - size);
+					string ret = prefix + 
+						endPath.Substring(size, endPath.Length - size);
 					ret = ret.Trim();
 					if(ret[0] == '/' || ret[0] == '\\')
 					{
@@ -338,7 +339,7 @@ namespace Prebuild.Core.Utilities
 				prefix += "../";
 			}
 
-			return relativePath;
+			return endPath;
 		}
 
 		/// <summary>

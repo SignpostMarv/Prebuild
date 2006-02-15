@@ -96,12 +96,7 @@ namespace Prebuild.Core.Targets
 
 				if(refr.Path != null || fileRef != null)
 				{
-					string finalPath = (refr.Path != null) ? Helper.MakePathRelativeTo(refr.Name, refr.Path+refr.Name) : fileRef;
-					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("path", "path"));
-					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to", "to/really/long/path"));
-					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "path"));
-					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "to"));
-					Console.WriteLine("Relative path: " + Helper.MakePathRelativeTo("to/really/long/path", "../../.."));
+					string finalPath = (refr.Path != null) ? Helper.NormalizePath("../../" + refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
 					ret += finalPath;
 					ret += "\" />";
 					return ret;
@@ -122,7 +117,6 @@ namespace Prebuild.Core.Targets
 				}
 				ret += "\" />";
 			}
-
 			return ret;
 		}
 
@@ -157,10 +151,6 @@ namespace Prebuild.Core.Targets
 			{
 				throw new ArgumentNullException("project");
 			}
-			//			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
-			//			{
-			//				return string.Empty;
-			//			}
 			string docFile = (string)conf.Options["XmlDocFile"];
 			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
 			{
@@ -171,14 +161,6 @@ namespace Prebuild.Core.Targets
 
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
-			//string csComp = "Mcs";
-			//string netRuntime = "Mono";
-			if(project.Runtime == ClrRuntime.Microsoft)
-			{
-				//	csComp = "Csc";
-				//	netRuntime = "MsNet";
-			}
-
 			string projFile = Helper.MakeFilePath(project.FullPath, project.Name, "build");
 			StreamWriter ss = new StreamWriter(projFile);
 
@@ -198,26 +180,8 @@ namespace Prebuild.Core.Targets
 				ss.Write("        <csc");
 				
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
-				//					}
-				//					ss.WriteLine(" />");
-				//					
-				//					ss.Write("      <Execution");
-				//					ss.Write(" runwithwarnings=\"True\"");
-				//					ss.Write(" consolepause=\"True\"");
-				//					ss.Write(" runtime=\"{0}\"", netRuntime);
-				//					ss.WriteLine(" />");
-				//					
-				//					ss.Write("      <CodeGeneration");
-				//					ss.Write(" compiler=\"{0}\"", csComp);
-				//					ss.Write(" warninglevel=\"{0}\"", conf.Options["WarningLevel"]);
-				//					ss.Write(" nowarn=\"{0}\"", conf.Options["SuppressWarnings"]);
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
-				//					ss.Write(" optimize=\"{0}\"", conf.Options["OptimizeCode"]);
 				ss.Write(" unsafe=\"{0}\"", "true");
-				//					ss.Write(" generateoverflowchecks=\"{0}\"", conf.Options["CheckUnderflowOverflow"]);
-				//					ss.Write(" mainclass=\"{0}\"", project.StartupObject);
-				//					ss.Write(" target=\"{0}\"", project.Type);
-				//					ss.Write(" definesymbols=\"{0}\"", conf.Options["CompilerDefines"]);
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
 					ss.Write(" doc=\"{0}\"", "${nant.project.basedir}/${build.dir}/" + GetXmlDocFile(project, conf));
@@ -326,61 +290,9 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("            </documenters>");
 				ss.WriteLine("        </ndoc>");
 				ss.WriteLine("    </target>");
-
 				ss.WriteLine("</project>");
-
 				count++;
 			}                
-			//				ss.WriteLine("  </Configurations>");
-			//
-			//				ss.Write("  <DeploymentInformation");
-			//				ss.Write(" target=\"\"");
-			//				ss.Write(" script=\"\"");
-			//				ss.Write(" strategy=\"File\"");
-			//				ss.WriteLine(">");
-			//				ss.WriteLine("    <excludeFiles />");
-			//				ss.WriteLine("  </DeploymentInformation>");
-			//				
-			//				ss.WriteLine("  <Contents>");
-			//				foreach(string file in project.Files)
-			//				{
-			//					string buildAction = "Compile";
-			//					switch(project.Files.GetBuildAction(file))
-			//					{
-			//						case BuildAction.None:
-			//							buildAction = "Nothing";
-			//							break;
-			//
-			//						case BuildAction.Content:
-			//							buildAction = "Exclude";
-			//							break;
-			//
-			//						case BuildAction.EmbeddedResource:
-			//							buildAction = "EmbedAsResource";
-			//							break;
-			//
-			//						default:
-			//							buildAction = "Compile";
-			//							break;
-			//					}
-			//
-			//					// Sort of a hack, we try and resolve the path and make it relative, if we can.
-			//					string filePath = PrependPath(file);
-			//					ss.WriteLine("    <File name=\"{0}\" subtype=\"Code\" buildaction=\"{1}\" dependson=\"\" data=\"\" />", filePath, buildAction);
-			//				}
-			//				ss.WriteLine("  </Contents>");
-			//
-			//				ss.WriteLine("  <References>");
-			//				foreach(ReferenceNode refr in project.References)
-			//				{
-			//					ss.WriteLine("    {0}", BuildReference(solution, refr));
-			//				}
-			//				ss.WriteLine("  </References>");
-			//
-			//
-			//				ss.WriteLine("</Project>");
-			//			}
-
 			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
 
@@ -424,12 +336,8 @@ namespace Prebuild.Core.Targets
 						ss.WriteLine();
 					}
 					ss.WriteLine("    <target name=\"{0}\" description=\"\">", conf.Name);
-					//foreach(ProjectNode project in solution.Projects)
-					//{
-					//	Console.WriteLine(project);
 					ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
-					//}
 					ss.WriteLine("    </target>");
 					ss.WriteLine();
 					count++;
@@ -455,18 +363,39 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine(" target=\"clean\" />");
 				}
 				ss.WriteLine("    </target>");
+				ss.WriteLine();
 
 				ss.WriteLine("    <target name=\"build\" depends=\"init\" description=\"\">");
+				ArrayList arrayList = new ArrayList(solution.Projects.Count);
+				int position = arrayList.Capacity;
+				Console.WriteLine("Position: " +position);
 				foreach(ProjectNode project in solution.Projects)
 				{
+					position -= position;
+					foreach(ReferenceNode refr in project.References)
+					{
+						if(solution.ProjectsTable.ContainsKey(refr.Name))
+						{
+							if (arrayList.Contains(solution.ProjectsTable[refr.Name]) && arrayList.IndexOf(solution.ProjectsTable[refr.Name]) < position)
+							{
+								Console.WriteLine("Position: " +position);
+								position = arrayList.IndexOf(solution.ProjectsTable[refr.Name]) + 1;
+							}
+						}
+					}
+					arrayList.Insert(position, project);
+				}
+				for (int i=0;i>arrayList.Count;i++)
+				{
+					ProjectNode project = (ProjectNode)arrayList[i];
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
 					ss.Write("        <nant buildfile=\"{0}\"",
 						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name, "build"),'/'));
 					ss.WriteLine(" target=\"build\" />");
 				}
-				ss.WriteLine();
 
 				ss.WriteLine("    </target>");
+				ss.WriteLine();
 				ss.WriteLine("    <target name=\"doc\" depends=\"build\">");
 				ss.WriteLine("        <foreach item=\"File\" property=\"filename\">");
 				ss.WriteLine("            <in>");
@@ -557,7 +486,7 @@ namespace Prebuild.Core.Targets
 		{
 			get
 			{
-				return "sharpdev";
+				return "nant";
 			}
 		}
 
