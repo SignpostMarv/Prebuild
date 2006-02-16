@@ -198,7 +198,7 @@ namespace Prebuild.Core.Targets
 		string solutionVersion = "9.00";
 		string productVersion = "8.0.50727";
 		string schemaVersion = "2.0";
-		string versionName = "C# Express 2005";
+		string versionName = "C# 2005";
 		VSVersion version = VSVersion.VS80;
 
 		Hashtable tools;
@@ -354,7 +354,7 @@ namespace Prebuild.Core.Targets
 				//ps.WriteLine("\t\t<Build>");
 
 				//ps.WriteLine("\t\t\t<Settings");
-				ps.WriteLine( "\t\t<ApplicationIcon></ApplicationIcon>" );
+				ps.WriteLine( "\t\t<ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon );
 				ps.WriteLine( "\t\t<AssemblyKeyContainerName></AssemblyKeyContainerName>" );
 				ps.WriteLine( "\t\t<AssemblyName>{0}</AssemblyName>", project.AssemblyName );
 				ps.WriteLine( "\t\t<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>" );
@@ -532,7 +532,7 @@ namespace Prebuild.Core.Targets
 			using ( ss )
 			{
 				ss.WriteLine( "Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion );
-				ss.WriteLine( "# Visual C# Express 2005" );
+				ss.WriteLine( "# Visual Studio 2005" );
 				foreach ( ProjectNode project in solution.Projects )
 				{
 					if ( !tools.ContainsKey( project.Language ) )
@@ -552,6 +552,16 @@ namespace Prebuild.Core.Targets
 
 					ss.WriteLine( "EndProject" );
 				}
+
+                if ( solution.Files != null )
+                {
+                    ss.WriteLine( "Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "{468F1D07-AD17-4CC3-ABD0-2CA268E4E1A6}" );
+                    ss.WriteLine( "\tProjectSection(SolutionItems) = preProject" );
+                    foreach ( string file in solution.Files )
+                        ss.WriteLine( "\t\t{0} = {0}", file );
+                    ss.WriteLine( "\tEndProjectSection" );
+                    ss.WriteLine( "EndProject" );
+                }
 
 				ss.WriteLine( "Global" );
 
@@ -604,14 +614,6 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine( "\tGlobalSection(SolutionProperties) = preSolution" );
 				ss.WriteLine( "\t\tHideSolutionNode = FALSE" );
 				ss.WriteLine( "\tEndGlobalSection" );
-
-				//                if(solution.Files != null)
-				//                {
-				//                    ss.WriteLine("\tGlobalSection(SolutionItems) = postSolution");
-				//                    foreach(string file in solution.Files)
-				//                        ss.WriteLine("\t\t{0} = {0}", file);
-				//                    ss.WriteLine("\tEndGlobalSection");
-				//                }
 
 				ss.WriteLine( "EndGlobal" );
 			}
