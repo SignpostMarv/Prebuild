@@ -1,9 +1,0 @@
-obj
-bin
-*.user
-*.csproj
-*.swp
-Prebuild.prjx
-*.mdp
-*.build
-Prebuild.xml
