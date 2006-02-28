@@ -73,7 +73,7 @@ namespace Prebuild.Core
 		/// This must match the version of the schema that is embeeded
 		/// </summary>
 		private static string m_SchemaVersion = "1.6";
-		private static string m_Schema = "dnpb-" + m_SchemaVersion + ".xsd";
+		private static string m_Schema = "prebuild-" + m_SchemaVersion + ".xsd";
 		private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
 		bool disposed;
 		private Version m_Version;
@@ -306,7 +306,7 @@ namespace Prebuild.Core
 		{
 			m_Log.Write("Prebuild v" + this.Version);
 			m_Log.Write("Copyright (c) Matthew Holmes, Dan Moorehead and David Hudson");
-			m_Log.Write("See 'dnpb /usage' for help");
+			m_Log.Write("See 'prebuild /usage' for help");
 			m_Log.Write();
 		}
 
