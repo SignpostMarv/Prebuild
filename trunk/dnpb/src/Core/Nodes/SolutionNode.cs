@@ -61,6 +61,7 @@ namespace Prebuild.Core.Nodes
 		private FilesNode m_Files;
 		private Hashtable m_Configurations;
 		private Hashtable m_Projects;
+		private ArrayList m_ProjectsOrder;
 
 		#endregion
 
@@ -73,6 +74,7 @@ namespace Prebuild.Core.Nodes
 		{
 			m_Configurations = new Hashtable();
 			m_Projects = new Hashtable();
+			m_ProjectsOrder = new ArrayList();
 		}
 
 		#endregion
@@ -203,6 +205,18 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		/// <summary>
+		/// Gets the projects table.
+		/// </summary>
+		/// <value>The projects table.</value>
+		public ArrayList ProjectsTableOrder
+		{
+			get
+			{
+				return m_ProjectsOrder;
+			}
+		}
+
 		#endregion
 
 		#region Public Methods
@@ -255,6 +269,7 @@ namespace Prebuild.Core.Nodes
 					else if(dataNode is ProjectNode)
 					{
 						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
+						m_ProjectsOrder.Add(dataNode);
 					}
 				}
 			}
