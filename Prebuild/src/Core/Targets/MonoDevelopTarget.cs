@@ -196,6 +196,22 @@ namespace Prebuild.Core.Targets
 					ss.Write(" executeScript=\"{0}\"", conf.Options["RunScript"]);
 					ss.Write(" executeBeforeBuild=\"{0}\"", conf.Options["PreBuildEvent"]);
 					ss.Write(" executeAfterBuild=\"{0}\"", conf.Options["PostBuildEvent"]);
+					if (conf.Options["PreBuildEvent"] != null && conf.Options["PreBuildEvent"].ToString().Length != 0)
+					{
+						ss.Write(" executeBeforeBuild=\"{0}\"", Helper.NormalizePath(conf.Options["PreBuildEvent"].ToString()));
+					}
+					else
+					{
+						ss.Write(" executeBeforeBuild=\"{0}\"", conf.Options["PreBuildEvent"]);
+					}
+					if (conf.Options["PostBuildEvent"] != null && conf.Options["PostBuildEvent"].ToString().Length != 0)
+					{
+						ss.Write(" executeAfterBuild=\"{0}\"", Helper.NormalizePath(conf.Options["PostBuildEvent"].ToString()));
+					}
+					else
+					{
+						ss.Write(" executeAfterBuild=\"{0}\"", conf.Options["PostBuildEvent"]);
+					}
 					ss.Write(" executeBeforeBuildArguments=\"{0}\"", conf.Options["PreBuildEventArgs"]);
 					ss.Write(" executeAfterBuildArguments=\"{0}\"", conf.Options["PreBuildEventArgs"]);
 					ss.WriteLine(" />");

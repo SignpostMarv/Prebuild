@@ -252,8 +252,22 @@ namespace Prebuild.Core.Targets
 				enumerator.MoveNext();
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ps.WriteLine("\t\t\t\t  PreBuildEvent = \"{0}\"", conf.Options["PreBuildEvent"]);
-					ps.WriteLine("\t\t\t\t  PostBuildEvent = \"{0}\"", conf.Options["PostBuildEvent"]);
+					if (conf.Options["PreBuildEvent"] != null && conf.Options["PreBuildEvent"].ToString().Length != 0)
+					{
+						ps.WriteLine("\t\t\t\t  PreBuildEvent = \"{0}\"", Helper.NormalizePath(conf.Options["PreBuildEvent"].ToString()));
+					}
+					else
+					{
+						ps.WriteLine("\t\t\t\t  PreBuildEvent = \"{0}\"", conf.Options["PreBuildEvent"]);
+					}
+					if (conf.Options["PostBuildEvent"] != null && conf.Options["PostBuildEvent"].ToString().Length != 0)
+					{
+						ps.WriteLine("\t\t\t\t  PostBuildEvent = \"{0}\"", Helper.NormalizePath(conf.Options["PostBuildEvent"].ToString()));
+					}
+					else
+					{
+						ps.WriteLine("\t\t\t\t  PostBuildEvent = \"{0}\"", conf.Options["PostBuildEvent"]);
+					}
 					if (conf.Options["RunPostBuildEvent"] == null)
 					{
 						ps.WriteLine("\t\t\t\t  RunPostBuildEvent = \"{0}\"", "OnBuildSuccess");
@@ -413,10 +427,10 @@ namespace Prebuild.Core.Targets
 			{
 				throw new ArgumentNullException("project");
 			}
-//			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
-//			{
-//				return string.Empty;
-//			}
+			//			if(!(bool)conf.Options["GenerateXmlDocFile"]) //default to none, if the generate option is false
+			//			{
+			//				return string.Empty;
+			//			}
 			string docFile = (string)conf.Options["XmlDocFile"];
 			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
 			{
