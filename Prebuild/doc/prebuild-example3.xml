@@ -18,12 +18,12 @@
 				<!--The filter for the number of warnings or errors shown and the tolerance level as to what is an error. This is value from 0 to 4 where 4 is the most strict (least tolerent).-->
 
 				<WarningsAsErrors>false</WarningsAsErrors>
-				<SupressWarnings>1591;219;1573;1572;168</SupressWarnings> 
+				<SuppressWarnings>1591;219;1573;1572;168</SuppressWarnings> 
  				<!-- A semicolon ';'  delimited list of the warnings that are filtered and not shown in the output window during compiling a project.  Only include the number portion of the warning codes that are shown in output during compilation (eg CS1591, should be entered as 1591)-->
 
 				<OutputPath>..\bin</OutputPath>
 				<DebugInformation>true</DebugInformation>
-				<RegisterCOMInterop>false</RegisterCOMInterop>
+				<RegisterComInterop>false</RegisterComInterop>
 				<IncrementalBuild>true</IncrementalBuild>
 				<BaseAddress>285212672</BaseAddress>
 				<FileAlignment>4096</FileAlignment>
@@ -39,10 +39,10 @@
 				<AllowUnsafe>false</AllowUnsafe>
 				<WarningLevel>4</WarningLevel>
 				<WarningsAsErrors>false</WarningsAsErrors>
-				<SupressWarnings>1591;219;1573;1572;168</SupressWarnings>
+				<SuppressWarnings>1591;219;1573;1572;168</SuppressWarnings>
 				<OutputPath>..\bin</OutputPath>
 				<DebugInformation>false</DebugInformation>
-				<RegisterCOMInterop>false</RegisterCOMInterop>
+				<RegisterComInterop>false</RegisterComInterop>
 				<IncrementalBuild>true</IncrementalBuild>
 				<BaseAddress>285212672</BaseAddress>
 				<FileAlignment>4096</FileAlignment>

@@ -9,10 +9,10 @@
 				<AllowUnsafe>false</AllowUnsafe>
 				<WarningLevel>4</WarningLevel>
 				<WarningsAsErrors>false</WarningsAsErrors>
-				<SupressWarnings>1591;219;1573;1572;168</SupressWarnings>
+				<SuppressWarnings>1591;219;1573;1572;168</SuppressWarnings>
 				<OutputPath>..\bin</OutputPath>
 				<DebugInformation>true</DebugInformation>
-				<RegisterCOMInterop>false</RegisterCOMInterop>
+				<RegisterComInterop>false</RegisterComInterop>
 				<IncrementalBuild>true</IncrementalBuild>
 				<BaseAddress>285212672</BaseAddress>
 				<FileAlignment>4096</FileAlignment>
@@ -28,10 +28,10 @@
 				<AllowUnsafe>false</AllowUnsafe>
 				<WarningLevel>4</WarningLevel>
 				<WarningsAsErrors>false</WarningsAsErrors>
-				<SupressWarnings>1591;219;1573;1572;168</SupressWarnings>
+				<SuppressWarnings>1591;219;1573;1572;168</SuppressWarnings>
 				<OutputPath>..\bin</OutputPath>
 				<DebugInformation>false</DebugInformation>
-				<RegisterCOMInterop>false</RegisterCOMInterop>
+				<RegisterComInterop>false</RegisterComInterop>
 				<IncrementalBuild>true</IncrementalBuild>
 				<BaseAddress>285212672</BaseAddress>
 				<FileAlignment>4096</FileAlignment>
