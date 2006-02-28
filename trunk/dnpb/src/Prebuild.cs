@@ -99,7 +99,7 @@ namespace Prebuild
 
 		private	static void	OutputUsage() 
 		{
-			Console.WriteLine("Usage: dnpb /target <target>	[options]");
+			Console.WriteLine("Usage: prebuild /target <target>	[options]");
 			Console.WriteLine("Available command-line switches:");
 			Console.WriteLine();
 			Console.WriteLine("/target			Target for Prebuild");
@@ -109,8 +109,8 @@ namespace Prebuild
 			Console.WriteLine("/ppo				Pre-process	the	file, but perform no other processing");
 			Console.WriteLine("/pause			Pauses the application after execution to view the output");
 			Console.WriteLine();
-			Console.WriteLine("See 'dnpb /showtargets for a	list of	available targets");
-			Console.WriteLine("See readme.txt or check out http://dnpb.sf.net for more information");
+			Console.WriteLine("See 'prebuild /showtargets for a	list of	available targets");
+			Console.WriteLine("See readme.txt or check out http://dnpb.sourceforge.net for more information");
 			Console.WriteLine();
 		}
 

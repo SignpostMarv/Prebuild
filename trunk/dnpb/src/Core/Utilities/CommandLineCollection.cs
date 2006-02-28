@@ -41,7 +41,7 @@ namespace Prebuild.Core.Utilities
 {    
 	/// <summary>
 	/// The CommandLine class parses and interprets the command-line arguments passed to
-	/// dnpb.
+	/// prebuild.
 	/// </summary>
 	public class CommandLineCollection : IEnumerable 
 	{
