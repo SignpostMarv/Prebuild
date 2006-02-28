@@ -1,26 +1,27 @@
-.NET Pre-Build Instructions
+Prebuild Instructions
 
-.NET Pre-Build is an XML-driven pre-build tool allowing developers to easily generate project or make files for major IDE's and .NET development tools including: Visual Studio 2003, Visual Studio 2002, SharpDevelop, MonoDevelop, and NAnt.
+Prebuild is an XML-driven pre-build tool allowing developers to easily generate project or make files for major IDE's and .NET development tools including: Visual Studio 2005, Visual Studio 2003, Visual Studio 2002, SharpDevelop, MonoDevelop, and NAnt.
 
 _________________________________________________________________________________
 Overview
 
-.NET Prebuild can be either be run from the command line to generate the project and make files or you can execute the included batch (*.bat) and Unix Shell script (*.sh) files.
+Prebuild can be either be run from the command line to generate the project and make files or you can execute the included batch (*.bat) and Unix Shell script (*.sh) files.
 The Prebuild file
 
 _________________________________________________________________________________
 The currently supported developement tools and their associated batch and shell script files.
 
+Visual Studio .NET 2005 (VS2005.bat)
 Visual Studio .NET 2003 (VS2003.bat)
 Visual Studio .NET 2002 (VS2002.bat)
-Visual Studio .NET 2005 Express (VS2005Express.bat)
 SharpDevelop (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 MonoDevelop (MonoDevelop.sh) - http://www.monodevelop.com/
+NAnt (nant.sh and nant.bat) - http://nant.sourceforge.net/
 
 Notes:
-A Unix Shell script is provided for MonoDevelop, as this is far more appropriate then a windows batch file.
+A Unix Shell script is provided for MonoDevelop, as this is more appropriate than a windows batch file.
 Visual Studio .NET 2005 and the Visual Express IDE's can import solutions from older versions of Visual Studio .NET.
-NAnt and Makefiles are not currently supported as NAnt allows for VS.NET solutions to be executed directly.
+Makefiles are not currently supported.
 
 _________________________________________________________________________________
 Command Line Syntax:
@@ -53,7 +54,7 @@ Note: The '>' signified the command line, do not actually enter this manually
 _________________________________________________________________________________
 Command Line Options:
 
-/usage  - Shows the help information on how to use .NET Pre-Build and what the different options are and what they do
+/usage  - Shows the help information on how to use Prebuild and what the different options are and what they do
 
 /clean - The project files generated for the target type specified as a parameter for this option will be deleted.  If no value is specified or if 'all' is specified, then project files for all the target types will be deleted.
 
@@ -77,7 +78,7 @@ This allows you to check if an errors occurred and - if so - what it was.
 _________________________________________________________________________________
 Example Batch Files and Shell Scripts
 
-NOTE: Common batch and shell script files are included with .NET Prebuild source and file releases.
+NOTE: Common batch and shell script files are included with Prebuild source and file releases.
 ______________________________
 MonoDevelop
 
@@ -109,7 +110,7 @@ _________________________________
 
 <?xml version="1.0" encoding="utf-8"?>
     <!--The version of the XML schema specified in the version and xmlns attributes should match the one for which the version of Prebuild.exe used was compiled for.  In this example it is the version 1.3 schema, you can find the XSD schema file at the url specified in the xmlns attribute. -->
-<DNPreBuild version="1.5" xmlns="http://dnpb.sourceforge.net/schemas/dnpb-1.6.xsd">
+<DNPreBuild version="1.5" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
 	<Solution name="RealmForge"> <!--The title and file name for the solution, combine, workspace, or project group (depending on what development tool you are using)-->
                        <!--Configurations found as children of Solution are used as templates for the configurations found in the project, this allows you to avoid writing the same options in each project (and maintaining each of these).  You can provide defaults and then override them in the configurations defined for each project. All options are optional.-->
 		<Configuration name="Debug">
