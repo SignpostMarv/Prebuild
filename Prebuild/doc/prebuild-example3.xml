@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
     <!--The version of the XML schema specified in the version and xmlns attributes should match the one for which the version of Prebuild.exe used was compiled for.  In this example it is the version 1.6 schema, you can find the XSD schema file at the url specified in the xmlns attribute. -->
-    <DNPreBuild version="1.6" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
+    <Prebuild version="1.6" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
 	<Solution name="RealmForge"> <!--The title and file name for the solution, combine, workspace, or project group (depending on what development tool you are using)-->
                        <!--Configurations found as children of Solution are used as templates for the configurations found in the project, this allows you to avoid writing the same options in each project (and maintaining each of these).  You can provide defaults and then override them in the configurations defined for each project. All options are optional.-->
 		<Configuration name="Debug">
@@ -110,4 +110,4 @@
 		</Project>
 		
 	</Solution>
-</DNPreBuild>
+</Prebuild>

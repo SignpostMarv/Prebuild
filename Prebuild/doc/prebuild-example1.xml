@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DNPreBuild version="1.6" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
+<Prebuild version="1.6" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
 	<Solution name="RealmForge">
 		<Configuration name="Debug">
 			<Options>
@@ -295,6 +295,6 @@
 		</Project>
 		
 	</Solution>
-</DNPreBuild>
+</Prebuild>
 
 	
