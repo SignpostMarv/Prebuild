@@ -12,6 +12,7 @@
 		<OutputPath>bin\Debug</OutputPath>
 		<DebugInformation>true</DebugInformation>
 		<SuppressWarnings>1595</SuppressWarnings>
+		<PostBuildEvent>copy Prebuild.exe ../../../scripts</PostBuildEvent>
 	    </Options>
 	</Configuration>
 	<Configuration name="Release">
@@ -25,6 +26,7 @@
 		<OptimizeCode>true</OptimizeCode>
 		<DebugInformation>false</DebugInformation>
 		<SuppressWarnings>1595</SuppressWarnings>
+		<PostBuildEvent>copy Prebuild.exe ../../../scripts</PostBuildEvent>
 	    </Options>
 	</Configuration>
 	<Files>
@@ -44,6 +46,7 @@
 		    <DebugInformation>true</DebugInformation>
 		    <XmlDocFile>Prebuild.xml</XmlDocFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
+		    <PostBuildEvent>copy Prebuild.exe ../../../scripts</PostBuildEvent>
 		</Options>
 	    </Configuration>
 	    <Configuration name="Release">
@@ -58,6 +61,7 @@
 		    <DebugInformation>false</DebugInformation>
 		    <XmlDocFile>Prebuild.xml</XmlDocFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
+		    <PostBuildEvent>copy Prebuild.exe ../../../scripts</PostBuildEvent>
 		</Options>
 	    </Configuration>
 	    <Reference name="System.Xml" />
