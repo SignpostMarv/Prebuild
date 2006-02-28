@@ -366,28 +366,9 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 
 				ss.WriteLine("    <target name=\"build\" depends=\"init\" description=\"\">");
-				ArrayList arrayList = new ArrayList(solution.Projects.Count);
-				int position = arrayList.Capacity;
-				Console.WriteLine("Position: " +position);
-				foreach(ProjectNode project in solution.Projects)
+				
+				foreach(ProjectNode project in solution.ProjectsTableOrder)
 				{
-					position -= position;
-					foreach(ReferenceNode refr in project.References)
-					{
-						if(solution.ProjectsTable.ContainsKey(refr.Name))
-						{
-							if (arrayList.Contains(solution.ProjectsTable[refr.Name]) && arrayList.IndexOf(solution.ProjectsTable[refr.Name]) < position)
-							{
-								Console.WriteLine("Position: " +position);
-								position = arrayList.IndexOf(solution.ProjectsTable[refr.Name]) + 1;
-							}
-						}
-					}
-					arrayList.Insert(position, project);
-				}
-				for (int i=0;i>arrayList.Count;i++)
-				{
-					ProjectNode project = (ProjectNode)arrayList[i];
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
 					ss.Write("        <nant buildfile=\"{0}\"",
 						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name, "build"),'/'));
