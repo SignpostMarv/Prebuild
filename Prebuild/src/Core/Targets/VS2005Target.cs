@@ -401,6 +401,7 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine( "\t\t<RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options[ "RemoveIntegerChecks" ] );
 					ps.WriteLine( "\t\t<TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options[ "WarningsAsErrors" ] );
 					ps.WriteLine( "\t\t<WarningLevel>{0}</WarningLevel>", conf.Options[ "WarningLevel" ] );
+					ps.WriteLine( "\t\t<NoWarn>{0}</NoWarn>", conf.Options[ "SuppressWarnings" ] );
 					ps.WriteLine( "\t</PropertyGroup>" );
 				}
 
