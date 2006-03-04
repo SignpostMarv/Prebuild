@@ -659,22 +659,25 @@ namespace Prebuild.Core
 				{
 					return;
 				}
-			}
-			
-			if(target == "all")
-			{
-				target = "vs2002";//can be imported by all other tools
-			}
-			ITarget targ = (ITarget)m_Targets[target];
-			
-			if(clean)
-			{
-				targ.Clean(this);
+				//clean all targets (just cleaning vs2002 target didn't clean nant)
+				foreach(ITarget targ in m_Targets.Values)
+				{
+					targ.Clean(this);
+				}
 			}
 			else
 			{
-				targ.Write(this);
-			}
+                ITarget targ = (ITarget)m_Targets[target];
+
+                if(clean)
+                {
+                    targ.Clean(this);
+                }
+                else
+                {
+                    targ.Write(this);
+                }
+            }
 
 			m_Log.Flush();
 		}
