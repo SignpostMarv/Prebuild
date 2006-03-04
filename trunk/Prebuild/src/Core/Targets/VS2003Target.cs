@@ -431,12 +431,13 @@ namespace Prebuild.Core.Targets
 			//			{
 			//				return string.Empty;
 			//			}
-			string docFile = (string)conf.Options["XmlDocFile"];
-			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
-			{
-				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
-			}
-			return docFile;
+
+			//default to "AssemblyName.xml"
+			//string defaultValue = Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
+			//return (string)conf.Options["XmlDocFile", defaultValue];
+
+			//default to no XmlDocFile file
+			return (string)conf.Options["XmlDocFile", ""];
 		}
 
 		private void WriteSolution(SolutionNode solution)
