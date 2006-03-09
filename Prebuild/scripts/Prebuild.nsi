@@ -1,8 +1,7 @@
 !verbose 3
 
 !define PRODUCT_NAME "Prebuild"
-!define PRODUCT_VERSION "1.3.0"
-!define PRODUCT_BUILD "1"
+!define PRODUCT_VERSION "1.3.1"
 !define PRODUCT_PUBLISHER "Prebuild"
 !define PRODUCT_PACKAGE "prebuild"
 !define PRODUCT_WEB_SITE "http://dnpb.sourceforge.net"
@@ -68,7 +67,7 @@ CRCCheck on
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\${PRODUCT_PACKAGE}-${PRODUCT_VERSION}-${PRODUCT_BUILD}-setup.exe"
+OutFile "..\${PRODUCT_PACKAGE}-${PRODUCT_VERSION}-setup.exe"
 InstallDir "$PROGRAMFILES\Prebuild"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
