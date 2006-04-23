@@ -416,6 +416,8 @@ namespace Prebuild.Core.Targets
 						ps.Write( "\t\t<Reference" );
 						ps.WriteLine( " Include = \"{0}\">", refr.Name );
 						ps.WriteLine( "\t\t\t<Name>{0}</Name>", refr.Name );
+                        // TODO: Allow reference to *.exe files
+                        ps.WriteLine( "\t\t\t<HintPath>{0}</HintPath>", Helper.MakePathRelativeTo( project.FullPath, refr.Path + "\\" + refr.Name + ".dll" ) );
 						ps.WriteLine( "\t\t</Reference>" );
 					}
 				}
@@ -428,6 +430,7 @@ namespace Prebuild.Core.Targets
 					if ( solution.ProjectsTable.ContainsKey( refr.Name ) )
 					{
 						ProjectNode refProject = (ProjectNode)solution.ProjectsTable[ refr.Name ];
+                        // TODO: Allow reference to visual basic projects
 						ps.WriteLine( "\t\t<ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo( project.FullPath, Helper.MakeFilePath( refProject.FullPath, refProject.Name, "csproj" ) ) );
 						//<ProjectReference Include="..\..\RealmForge\Utility\RealmForge.Utility.csproj">
 						ps.WriteLine( "\t\t\t<Name>{0}</Name>", refProject.Name );
