@@ -175,8 +175,8 @@ namespace Prebuild.Core.Targets
 				int count = 0;
 
 				ss.WriteLine("    <target name=\"{0}\">", "build");
-				ss.WriteLine("        <echo message=\"Build Directory is ${nant.project.basedir}/${build.dir}\" />");
-				ss.WriteLine("        <mkdir dir=\"${nant.project.basedir}/${build.dir}\" />");				
+				ss.WriteLine("        <echo message=\"Build Directory is ${project::get-base-directory()}/${build.dir}\" />");
+				ss.WriteLine("        <mkdir dir=\"${project::get-base-directory()}/${build.dir}\" />");				
 				ss.Write("        <csc");
 				
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
@@ -184,10 +184,10 @@ namespace Prebuild.Core.Targets
 				ss.Write(" unsafe=\"{0}\"", "true");
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ss.Write(" doc=\"{0}\"", "${nant.project.basedir}/${build.dir}/" + GetXmlDocFile(project, conf));
+					ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
 					break;
 				}
-				ss.Write(" output=\"{0}", "${nant.project.basedir}/${build.dir}/${nant.project.name}");
+				ss.Write(" output=\"{0}", "${project::get-base-directory()}/${build.dir}/${nant.project.name}");
 				if (project.Type == ProjectType.Library)
 				{
 					ss.Write(".dll\"");
@@ -214,7 +214,7 @@ namespace Prebuild.Core.Targets
 					}
 				}
 				ss.WriteLine("            </sources>");
-				ss.WriteLine("            <references basedir=\"${nant.project.basedir}/${build.dir}\">");
+				ss.WriteLine("            <references basedir=\"${project::get-base-directory()}/${build.dir}\">");
 				foreach(ReferenceNode refr in project.References)
 				{
 					ss.WriteLine("                {0}", BuildReference(solution, refr));
@@ -247,7 +247,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
 				ss.WriteLine("        </if>");
 				ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
-				ss.WriteLine("            <assemblies basedir=\"${nant.project.basedir}/${build.dir}\">");
+				ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}/${build.dir}\">");
 				ss.Write("                <include name=\"${nant.project.name}");
 				if (project.Type == ProjectType.Library)
 				{
@@ -259,15 +259,15 @@ namespace Prebuild.Core.Targets
 				}
 
 				ss.WriteLine("            </assemblies>");
-				ss.WriteLine("            <summaries basedir=\"${nant.project.basedir}/${build.dir}\">");
+				ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}/${build.dir}\">");
 				ss.WriteLine("                <include name=\"${nant.project.name}.xml\"/>");
 				ss.WriteLine("            </summaries>");
-				ss.WriteLine("            <referencepaths basedir=\"${nant.project.basedir}\">");
+				ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
 				ss.WriteLine("                <include name=\"${build.dir}\" />");
 				ss.WriteLine("            </referencepaths>");
 				ss.WriteLine("            <documenters>");
 				ss.WriteLine("                <documenter name=\"MSDN\">");
-				ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${nant.project.basedir}/${build.dir}/doc/\" />");
+				ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/\" />");
 				ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
 				ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${nant.project.name}\" />");
 				ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
@@ -325,7 +325,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 				ss.WriteLine("    <property name=\"bin.dir\" value=\"bin\" />");
 				ss.WriteLine("    <property name=\"obj.dir\" value=\"obj\" />");
-				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${nant.project.basedir}\" />");
+				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
 				count = 0;
 				foreach(ConfigurationNode conf in solution.Configurations)
