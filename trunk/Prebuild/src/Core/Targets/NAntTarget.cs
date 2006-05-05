@@ -107,7 +107,7 @@ namespace Prebuild.Core.Targets
 					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
 					if (assem != null)
 					{
-						ret += "${nant.settings.currentframework.frameworkassemblydirectory}/" + refr.Name + ".dll";
+						ret += "${framework::get-assembly-directory(framework::get-target-framework())}/" + refr.Name + ".dll";
 					}
 				}
 				catch (System.NullReferenceException e)
@@ -187,7 +187,7 @@ namespace Prebuild.Core.Targets
 					ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
 					break;
 				}
-				ss.Write(" output=\"{0}", "${project::get-base-directory()}/${build.dir}/${nant.project.name}");
+				ss.Write(" output=\"{0}", "${project::get-base-directory()}/${build.dir}/${project::get-name()}");
 				if (project.Type == ProjectType.Library)
 				{
 					ss.Write(".dll\"");
@@ -248,7 +248,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("        </if>");
 				ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
 				ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}/${build.dir}\">");
-				ss.Write("                <include name=\"${nant.project.name}");
+				ss.Write("                <include name=\"${project::get-name()}");
 				if (project.Type == ProjectType.Library)
 				{
 					ss.WriteLine(".dll\" />");
@@ -260,7 +260,7 @@ namespace Prebuild.Core.Targets
 
 				ss.WriteLine("            </assemblies>");
 				ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}/${build.dir}\">");
-				ss.WriteLine("                <include name=\"${nant.project.name}.xml\"/>");
+				ss.WriteLine("                <include name=\"${project::get-name()}.xml\"/>");
 				ss.WriteLine("            </summaries>");
 				ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
 				ss.WriteLine("                <include name=\"${build.dir}\" />");
@@ -269,9 +269,9 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("                <documenter name=\"MSDN\">");
 				ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/\" />");
 				ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
-				ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${nant.project.name}\" />");
+				ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${project::get-name()}\" />");
 				ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
-				ss.WriteLine("                    <property name=\"Title\" value=\"${nant.project.name} SDK Documentation\" />");
+				ss.WriteLine("                    <property name=\"Title\" value=\"${project::get-name()} SDK Documentation\" />");
 				ss.WriteLine("                    <property name=\"SplitTOCs\" value=\"False\" />");
 				ss.WriteLine("                    <property name=\"DefaulTOC\" value=\"\" />");
 				ss.WriteLine("                    <property name=\"ShowVisualBasic\" value=\"True\" />");
