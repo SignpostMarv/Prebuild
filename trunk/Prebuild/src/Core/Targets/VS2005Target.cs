@@ -198,7 +198,7 @@ namespace Prebuild.Core.Targets
 		string solutionVersion = "9.00";
 		string productVersion = "8.0.50727";
 		string schemaVersion = "2.0";
-		string versionName = "C# 2005";
+		string versionName = "Visual C# 2005";
 		VSVersion version = VSVersion.VS80;
 
 		Hashtable tools;
@@ -518,7 +518,7 @@ namespace Prebuild.Core.Targets
 
 		private void WriteSolution( SolutionNode solution )
 		{
-			kernel.Log.Write( "Creating Visual {0} solution and project files", this.VersionName );
+			kernel.Log.Write( "Creating {0} solution and project files", this.VersionName );
 
 			foreach ( ProjectNode project in solution.Projects )
 			{
@@ -639,7 +639,7 @@ namespace Prebuild.Core.Targets
 
 		private void CleanSolution( SolutionNode solution )
 		{
-			kernel.Log.Write( "Cleaning Visual {0} solution and project files", this.VersionName, solution.Name );
+			kernel.Log.Write( "Cleaning {0} solution and project files", this.VersionName, solution.Name );
 
 			string slnFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "sln" );
 			string suoFile = Helper.MakeFilePath( solution.FullPath, solution.Name, "suo" );

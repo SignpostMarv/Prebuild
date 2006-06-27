@@ -105,9 +105,14 @@ namespace Prebuild.Core.Targets
 				try
 				{
 					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					//Console.WriteLine(assem.Location);
 					if (assem != null)
 					{
-						ret += "${framework::get-assembly-directory(framework::get-target-framework())}/" + refr.Name + ".dll";
+						ret += assem.Location;
+					}
+					else
+					{
+						ret += (refr.Name + ".dll");
 					}
 				}
 				catch (System.NullReferenceException e)
@@ -161,7 +166,7 @@ namespace Prebuild.Core.Targets
 
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
-			string projFile = Helper.MakeFilePath(project.FullPath, project.Name, "build");
+			string projFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
 			StreamWriter ss = new StreamWriter(projFile);
 
 			m_Kernel.CurrentWorkingDirectory.Push();
@@ -359,7 +364,7 @@ namespace Prebuild.Core.Targets
 				{
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
 					ss.Write("        <nant buildfile=\"{0}\"",
-						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name, "build"),'/'));
+						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"),'/'));
 					ss.WriteLine(" target=\"clean\" />");
 				}
 				ss.WriteLine("    </target>");
@@ -371,7 +376,7 @@ namespace Prebuild.Core.Targets
 				{
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
 					ss.Write("        <nant buildfile=\"{0}\"",
-						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name, "build"),'/'));
+						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"),'/'));
 					ss.WriteLine(" target=\"build\" />");
 				}
 
