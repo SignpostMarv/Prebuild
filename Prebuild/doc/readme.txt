@@ -15,6 +15,7 @@ Visual Studio .NET 2005 (VS2005.bat)
 Visual Studio .NET 2003 (VS2003.bat)
 Visual Studio .NET 2002 (VS2002.bat)
 SharpDevelop (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
+SharpDevelop2 (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 MonoDevelop (MonoDevelop.sh) - http://www.monodevelop.com/
 NAnt (nant.sh and nant.bat) - http://nant.sourceforge.net/
 
