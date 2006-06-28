@@ -303,23 +303,29 @@ namespace Prebuild.Core.Utilities
 
 			while(true)
 			{
-				if(String.Compare(tmp, 0, src, 0, tmp.Length) == 0)
+				if((String.Compare(tmp, 0, src, 0, tmp.Length) == 0))
 				{
+					string ret;
 					int size = tmp.Length;
 					if(size == src.Length)
 					{
 						return "./";
 					}
-
-					string ret = prefix + 
-						endPath.Substring(size, endPath.Length - size);
-					ret = ret.Trim();
-					if(ret[0] == '/' || ret[0] == '\\')
+					if  ((src.Length > tmp.Length) && src[tmp.Length-1] != '/' && src[tmp.Length-1] != '\\')
 					{
-						ret = "." + ret;
 					}
+					else
+					{
+						ret = prefix + endPath.Substring(size, endPath.Length - size);
+						ret = ret.Trim();
+						if(ret[0] == '/' || ret[0] == '\\')
+						{
+							ret = "." + ret;
+						}
 
-					return NormalizePath(ret);
+						return NormalizePath(ret);
+					}
+					
 				}
 
 				if(tmp.Length < 2)

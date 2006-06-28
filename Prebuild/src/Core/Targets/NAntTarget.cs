@@ -79,14 +79,13 @@ namespace Prebuild.Core.Targets
 
 		private static string BuildReference(SolutionNode solution, ReferenceNode refr)
 		{
-			string ret = "<include name=\"";
+			string ret = "";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
 				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];				
 				string fileRef = FindFileReference(refr.Name, project);
-				string finalPath = Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, "dll");
+				string finalPath = Helper.NormalizePath(Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, "dll"), '/');
 				ret += finalPath;
-				ret += "\" />";
 				return ret;
 			}
 			else
@@ -98,17 +97,15 @@ namespace Prebuild.Core.Targets
 				{
 					string finalPath = (refr.Path != null) ? Helper.NormalizePath("../../" + refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
 					ret += finalPath;
-					ret += "\" />";
 					return ret;
 				}
 
 				try
 				{
 					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
-					//Console.WriteLine(assem.Location);
 					if (assem != null)
 					{
-						ret += assem.Location;
+						ret += (refr.Name + ".dll");
 					}
 					else
 					{
@@ -120,7 +117,6 @@ namespace Prebuild.Core.Targets
 					e.ToString();
 					ret += refr.Name + ".dll";
 				}
-				ret += "\" />";
 			}
 			return ret;
 		}
@@ -219,10 +215,13 @@ namespace Prebuild.Core.Targets
 					}
 				}
 				ss.WriteLine("            </sources>");
-				ss.WriteLine("            <references basedir=\"${project::get-base-directory()}/${build.dir}\">");
+				ss.WriteLine("            <references basedir=\"${project::get-base-directory()}\">");
+				ss.WriteLine("                <lib>");
+				ss.WriteLine("                    <include name=\"${project::get-base-directory()}\" />");
+				ss.WriteLine("                </lib>");
 				foreach(ReferenceNode refr in project.References)
 				{
-					ss.WriteLine("                {0}", BuildReference(solution, refr));
+					ss.WriteLine("                <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr))+"\" />", '/'));
 				}
 				ss.WriteLine("            </references>");
 				ss.WriteLine("            <resources>");
