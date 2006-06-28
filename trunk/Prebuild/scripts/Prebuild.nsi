@@ -8,7 +8,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Prebuild"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\Prebuild"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_PATH "."
+!define PRODUCT_PATH ".."
 
 ;!define MUI_WELCOMEFINISHPAGE_BITMAP "PrebuildLogo.bmp"
 ;!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
@@ -40,8 +40,6 @@ CRCCheck on
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\doc\license.txt"
-; Components Page
-!insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 
@@ -98,10 +96,20 @@ Function .onInit
   NoAbort:
 FunctionEnd
 
+Section "Source" SecSource
+  SetOverwrite ifnewer
+  SetOutPath "$INSTDIR\src"
+  File /r /x *.swp /x .svn /x *.xml /x *.csproj /x *.user /x *.build /x *.prjx /x *.mdp /x bin /x obj /x *.nsi ${PRODUCT_PATH}\src\*.*
+
+  ;Store installation folder
+  WriteRegStr HKCU "Software\Prebuild" "" $INSTDIR
+  
+SectionEnd
+
 Section "Runtime" SecRuntime
   SetOverwrite ifnewer
   SetOutPath "$INSTDIR"
-  File /r /x *.swp /x .svn /x *.nsi ${PRODUCT_PATH}\*.exe
+  File /r /x *.swp /x .svn /x *.nsi /x src /x *.sln /x *.cmbx /x *.mds ${PRODUCT_PATH}\Prebuild.exe ${PRODUCT_PATH}\prebuild.xml
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Prebuild" "" $INSTDIR
@@ -111,7 +119,7 @@ SectionEnd
 Section "Documentation" SecDocs
   SetOverwrite ifnewer
   SetOutPath "$INSTDIR\doc"
-  File /r /x *.swp /x .svn ${PRODUCT_PATH}\..\doc\*.*
+  File /r /x *.swp /x .svn /x *.exe ${PRODUCT_PATH}\doc\*.*
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Prebuild" "" $INSTDIR
@@ -120,26 +128,13 @@ SectionEnd
 Section "Scripts" SecScripts
   SetOverwrite ifnewer
   SetOutPath "$INSTDIR\scripts"
-  File /r /x *.swp /x .svn /x *.nsi /x *.exe ${PRODUCT_PATH}\..\scripts\*.*
+  File /r /x *.swp /x .svn /x *.nsi /x *.exe ${PRODUCT_PATH}\scripts\*.*
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Prebuild" "" $INSTDIR
 SectionEnd
 
 ;Language strings
-LangString TEXT_IO_TITLE ${LANG_ENGLISH} "Installation Options"
-LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Prebuild Installation Options."
-LangString DESC_SecDocs ${LANG_ENGLISH} "Installs documentation"
-LangString DESC_SecScripts ${LANG_ENGLISH} "Installs sample scripts"
-LangString DESC_SecRuntime ${LANG_ENGLISH} "Copies the program to the Prebuild directory."
-
-;Assign language strings to sections
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-!insertmacro MUI_DESCRIPTION_TEXT ${SecDocs} $(DESC_SecDocs)
-!insertmacro MUI_DESCRIPTION_TEXT ${SecScripts} $(DESC_SecScripts)
-!insertmacro MUI_DESCRIPTION_TEXT ${SecRuntime} $(DESC_SecRuntime)
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
-
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
