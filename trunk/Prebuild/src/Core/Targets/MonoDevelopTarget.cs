@@ -194,8 +194,8 @@ namespace Prebuild.Core.Targets
 					ss.Write(" directory=\"{0}\"", Helper.EndPath(Helper.NormalizePath(".\\" + conf.Options["OutputPath"].ToString())));
 					ss.Write(" assembly=\"{0}\"", project.AssemblyName);
 					ss.Write(" executeScript=\"{0}\"", conf.Options["RunScript"]);
-					ss.Write(" executeBeforeBuild=\"{0}\"", conf.Options["PreBuildEvent"]);
-					ss.Write(" executeAfterBuild=\"{0}\"", conf.Options["PostBuildEvent"]);
+					//ss.Write(" executeBeforeBuild=\"{0}\"", conf.Options["PreBuildEvent"]);
+					//ss.Write(" executeAfterBuild=\"{0}\"", conf.Options["PostBuildEvent"]);
 					if (conf.Options["PreBuildEvent"] != null && conf.Options["PreBuildEvent"].ToString().Length != 0)
 					{
 						ss.Write(" executeBeforeBuild=\"{0}\"", Helper.NormalizePath(conf.Options["PreBuildEvent"].ToString()));
