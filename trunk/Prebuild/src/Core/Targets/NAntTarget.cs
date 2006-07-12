@@ -327,14 +327,15 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 				ss.WriteLine("    <property name=\"bin.dir\" value=\"bin\" />");
 				ss.WriteLine("    <property name=\"obj.dir\" value=\"obj\" />");
-				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
+                ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
+                ss.WriteLine();
 
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
-                    // Setting the project.config with each configuration
-                    // makes the default configuration the last one written.
-                    // ... Which is what we want.
-					ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
+                    // Set the project.config to a non-debug configuration
+                    if( conf.Options["DebugInformation"].ToString().ToLower() != "true" )
+					    ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
+
 					ss.WriteLine("    <target name=\"{0}\" description=\"\">", conf.Name);
 					ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
