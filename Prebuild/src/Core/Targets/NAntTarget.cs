@@ -153,10 +153,10 @@ namespace Prebuild.Core.Targets
 				throw new ArgumentNullException("project");
 			}
 			string docFile = (string)conf.Options["XmlDocFile"];
-			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
-			{
-				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
-			}
+//			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
+//			{
+//				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
+//			}
 			return docFile;
 		}
 
@@ -185,7 +185,10 @@ namespace Prebuild.Core.Targets
 				ss.Write(" unsafe=\"{0}\"", "true");
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
+					if (GetXmlDocFile(project, conf) !="")
+					{
+						ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
+					}
 					break;
 				}
 				ss.Write(" output=\"{0}", "${project::get-base-directory()}/${build.dir}/${project::get-name()}");
