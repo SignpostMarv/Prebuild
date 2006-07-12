@@ -1,6 +1,6 @@
 Prebuild Instructions
 
-Prebuild is an XML-driven pre-build tool allowing developers to easily generate project or make files for major IDE's and .NET development tools including: Visual Studio 2005, Visual Studio 2003, Visual Studio 2002, SharpDevelop, MonoDevelop, and NAnt.
+Prebuild is an XML-driven pre-build tool allowing developers to easily generate project or make files for major IDE's and .NET development tools including: Visual Studio 2005, Visual Studio 2003, Visual Studio 2002, SharpDevelop, SharpDevelop2, MonoDevelop, and NAnt.
 
 _________________________________________________________________________________
 Overview
