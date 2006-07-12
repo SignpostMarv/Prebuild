@@ -95,7 +95,7 @@ namespace Prebuild.Core.Targets
 
 				if(refr.Path != null || fileRef != null)
 				{
-					string finalPath = (refr.Path != null) ? Helper.NormalizePath("../../" + refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
+					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
 					ret += finalPath;
 					return ret;
 				}
@@ -172,8 +172,6 @@ namespace Prebuild.Core.Targets
 			{
 				ss.WriteLine("<?xml version=\"1.0\" ?>");
 				ss.WriteLine("<project name=\"{0}\" default=\"build\">", project.Name);
-
-				int count = 0;
 
 				ss.WriteLine("    <target name=\"{0}\">", "build");
 				ss.WriteLine("        <echo message=\"Build Directory is ${project::get-base-directory()}/${build.dir}\" />");
@@ -298,7 +296,6 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("        </ndoc>");
 				ss.WriteLine("    </target>");
 				ss.WriteLine("</project>");
-				count++;
 			}                
 			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
@@ -322,8 +319,6 @@ namespace Prebuild.Core.Targets
 			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(combFile));
             
-			int count = 0;
-            
 			using(ss)
 			{
 				ss.WriteLine("<?xml version=\"1.0\" ?>");
@@ -334,23 +329,18 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("    <property name=\"obj.dir\" value=\"obj\" />");
 				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
-				count = 0;
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
-					if(count == 0)
-					{
-						ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
-						ss.WriteLine();
-					}
+                    // Setting the project.config with each configuration
+                    // makes the default configuration the last one written.
+                    // ... Which is what we want.
+					ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("    <target name=\"{0}\" description=\"\">", conf.Name);
 					ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
 					ss.WriteLine("    </target>");
 					ss.WriteLine();
-					count++;
 				}
-				
-				count = 0;
 
 				ss.WriteLine("    <target name=\"init\" description=\"\">");
 				ss.WriteLine("        <call target=\"${project.config}\" />");
