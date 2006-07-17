@@ -167,6 +167,7 @@ namespace Prebuild.Core.Targets
 
 			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(projFile));
+			bool hasDoc = false;
 
 			using(ss)
 			{
@@ -186,6 +187,7 @@ namespace Prebuild.Core.Targets
 					if (GetXmlDocFile(project, conf) !="")
 					{
 						ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
+						hasDoc = true;
 					}
 					break;
 				}
@@ -247,53 +249,56 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("    </target>");
 
 				ss.WriteLine("    <target name=\"doc\" description=\"Creates documentation.\">");
-				ss.WriteLine("        <property name=\"doc.target\" value=\"\" />");
-				ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
-				ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
-				ss.WriteLine("        </if>");
-				ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
-				ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}/${build.dir}\">");
-				ss.Write("                <include name=\"${project::get-name()}");
-				if (project.Type == ProjectType.Library)
+				if (hasDoc)
 				{
-					ss.WriteLine(".dll\" />");
-				}
-				else
-				{
-					ss.WriteLine(".exe\" />");
-				}
+					ss.WriteLine("        <property name=\"doc.target\" value=\"\" />");
+					ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
+					ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
+					ss.WriteLine("        </if>");
+					ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
+					ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}/${build.dir}\">");
+					ss.Write("                <include name=\"${project::get-name()}");
+					if (project.Type == ProjectType.Library)
+					{
+						ss.WriteLine(".dll\" />");
+					}
+					else
+					{
+						ss.WriteLine(".exe\" />");
+					}
 
-				ss.WriteLine("            </assemblies>");
-				ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}/${build.dir}\">");
-				ss.WriteLine("                <include name=\"${project::get-name()}.xml\"/>");
-				ss.WriteLine("            </summaries>");
-				ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
-				ss.WriteLine("                <include name=\"${build.dir}\" />");
-				ss.WriteLine("            </referencepaths>");
-				ss.WriteLine("            <documenters>");
-				ss.WriteLine("                <documenter name=\"MSDN\">");
-				ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/\" />");
-				ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
-				ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${project::get-name()}\" />");
-				ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
-				ss.WriteLine("                    <property name=\"Title\" value=\"${project::get-name()} SDK Documentation\" />");
-				ss.WriteLine("                    <property name=\"SplitTOCs\" value=\"False\" />");
-				ss.WriteLine("                    <property name=\"DefaulTOC\" value=\"\" />");
-				ss.WriteLine("                    <property name=\"ShowVisualBasic\" value=\"True\" />");
-				ss.WriteLine("                    <property name=\"AutoDocumentConstructors\" value=\"True\" />");
-				ss.WriteLine("                    <property name=\"ShowMissingSummaries\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"ShowMissingRemarks\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"ShowMissingParams\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"ShowMissingReturns\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"ShowMissingValues\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"DocumentInternals\" value=\"False\" />");
-				ss.WriteLine("                    <property name=\"DocumentPrivates\" value=\"False\" />");
-				ss.WriteLine("                    <property name=\"DocumentProtected\" value=\"True\" />");
-				ss.WriteLine("                    <property name=\"DocumentEmptyNamespaces\" value=\"${build.debug}\" />");
-				ss.WriteLine("                    <property name=\"IncludeAssemblyVersion\" value=\"True\" />");
-				ss.WriteLine("                </documenter>");
-				ss.WriteLine("            </documenters>");
-				ss.WriteLine("        </ndoc>");
+					ss.WriteLine("            </assemblies>");
+					ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}/${build.dir}\">");
+					ss.WriteLine("                <include name=\"${project::get-name()}.xml\"/>");
+					ss.WriteLine("            </summaries>");
+					ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
+					ss.WriteLine("                <include name=\"${build.dir}\" />");
+					ss.WriteLine("            </referencepaths>");
+					ss.WriteLine("            <documenters>");
+					ss.WriteLine("                <documenter name=\"MSDN\">");
+					ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/\" />");
+					ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
+					ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${project::get-name()}\" />");
+					ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
+					ss.WriteLine("                    <property name=\"Title\" value=\"${project::get-name()} SDK Documentation\" />");
+					ss.WriteLine("                    <property name=\"SplitTOCs\" value=\"False\" />");
+					ss.WriteLine("                    <property name=\"DefaulTOC\" value=\"\" />");
+					ss.WriteLine("                    <property name=\"ShowVisualBasic\" value=\"True\" />");
+					ss.WriteLine("                    <property name=\"AutoDocumentConstructors\" value=\"True\" />");
+					ss.WriteLine("                    <property name=\"ShowMissingSummaries\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"ShowMissingRemarks\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"ShowMissingParams\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"ShowMissingReturns\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"ShowMissingValues\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"DocumentInternals\" value=\"False\" />");
+					ss.WriteLine("                    <property name=\"DocumentPrivates\" value=\"False\" />");
+					ss.WriteLine("                    <property name=\"DocumentProtected\" value=\"True\" />");
+					ss.WriteLine("                    <property name=\"DocumentEmptyNamespaces\" value=\"${build.debug}\" />");
+					ss.WriteLine("                    <property name=\"IncludeAssemblyVersion\" value=\"True\" />");
+					ss.WriteLine("                </documenter>");
+					ss.WriteLine("            </documenters>");
+					ss.WriteLine("        </ndoc>");
+				}
 				ss.WriteLine("    </target>");
 				ss.WriteLine("</project>");
 			}                
