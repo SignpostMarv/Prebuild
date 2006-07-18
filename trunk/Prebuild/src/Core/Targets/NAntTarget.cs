@@ -153,10 +153,10 @@ namespace Prebuild.Core.Targets
 				throw new ArgumentNullException("project");
 			}
 			string docFile = (string)conf.Options["XmlDocFile"];
-//			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
-//			{
-//				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
-//			}
+			//			if(docFile != null && docFile.Length == 0)//default to assembly name if not specified
+			//			{
+			//				return Path.GetFileNameWithoutExtension(project.AssemblyName) + ".xml";
+			//			}
 			return docFile;
 		}
 
@@ -173,12 +173,11 @@ namespace Prebuild.Core.Targets
 			{
 				ss.WriteLine("<?xml version=\"1.0\" ?>");
 				ss.WriteLine("<project name=\"{0}\" default=\"build\">", project.Name);
-
 				ss.WriteLine("    <target name=\"{0}\">", "build");
 				ss.WriteLine("        <echo message=\"Build Directory is ${project::get-base-directory()}/${build.dir}\" />");
 				ss.WriteLine("        <mkdir dir=\"${project::get-base-directory()}/${build.dir}\" />");				
-				ss.Write("        <csc");
 				
+				ss.Write("        <csc");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
 				ss.Write(" unsafe=\"{0}\"", "true");
@@ -330,23 +329,45 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("<project name=\"{0}\" default=\"build\">", solution.Name);
 				ss.WriteLine("    <echo message=\"Using '${nant.settings.currentframework}' Framework\"/>");
 				ss.WriteLine();
+
 				ss.WriteLine("    <property name=\"bin.dir\" value=\"bin\" />");
 				ss.WriteLine("    <property name=\"obj.dir\" value=\"obj\" />");
-                ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
-                ss.WriteLine();
+				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
 				foreach(ConfigurationNode conf in solution.Configurations)
 				{
-                    // Set the project.config to a non-debug configuration
-                    if( conf.Options["DebugInformation"].ToString().ToLower() != "true" )
-					    ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
-
+					// Set the project.config to a non-debug configuration
+					if( conf.Options["DebugInformation"].ToString().ToLower() != "true" )
+					{
+						ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", conf.Name);
+					}
+					ss.WriteLine();
 					ss.WriteLine("    <target name=\"{0}\" description=\"\">", conf.Name);
 					ss.WriteLine("        <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("        <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
 					ss.WriteLine("    </target>");
 					ss.WriteLine();
 				}
+
+				ss.WriteLine("    <target name=\"net-1.1\" description=\"Sets framework to .NET 1.1\">");
+				ss.WriteLine("        <property name=\"nant.settings.currentframework\" value=\"net-1.1\" />");
+				ss.WriteLine("    </target>");
+				ss.WriteLine();
+    
+				ss.WriteLine("    <target name=\"net-2.0\" description=\"Sets framework to .NET 2.0\">");
+				ss.WriteLine("        <property name=\"nant.settings.currentframework\" value=\"net-2.0\" />");
+				ss.WriteLine("    </target>");
+				ss.WriteLine();
+
+				ss.WriteLine("    <target name=\"mono-2.0\" description=\"Sets framework to mono 2.0\">");
+				ss.WriteLine("        <property name=\"nant.settings.currentframework\" value=\"mono-2.0\" />");
+				ss.WriteLine("    </target>");
+				ss.WriteLine();
+
+				ss.WriteLine("    <target name=\"mono-1.0\" description=\"Sets framework to mono 1.0\">");
+				ss.WriteLine("        <property name=\"nant.settings.currentframework\" value=\"mono-1.0\" />");
+				ss.WriteLine("    </target>");
+				ss.WriteLine();
 
 				ss.WriteLine("    <target name=\"init\" description=\"\">");
 				ss.WriteLine("        <call target=\"${project.config}\" />");
@@ -377,15 +398,20 @@ namespace Prebuild.Core.Targets
 						Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"),'/'));
 					ss.WriteLine(" target=\"build\" />");
 				}
-
 				ss.WriteLine("    </target>");
 				ss.WriteLine();
-				ss.WriteLine("    <target name=\"doc\" depends=\"build\">");
+
+				ss.WriteLine("    <target name=\"build-release\" depends=\"Release, init, build\" description=\"Builds in Release mode\" />");
+				ss.WriteLine();
+				ss.WriteLine("    <target name=\"build-debug\" depends=\"Debug, init, build\" description=\"Builds in Debug mode\" />");
+				ss.WriteLine();
+
+				ss.WriteLine("    <target name=\"doc\" depends=\"build-release\">");
 				ss.WriteLine("        <foreach item=\"File\" property=\"filename\">");
 				ss.WriteLine("            <in>");
 				ss.WriteLine("                <items>");
 				ss.WriteLine("                    <include name=\"**/*.build\" />");
-				ss.WriteLine("                    <exclude name=\"./*.build\" />");
+				ss.WriteLine("                    <exclude name=\"${project::get-buildfile-path()}\" />");
 				ss.WriteLine("                </items>");
 				ss.WriteLine("            </in>");
 				ss.WriteLine("            <do>");
