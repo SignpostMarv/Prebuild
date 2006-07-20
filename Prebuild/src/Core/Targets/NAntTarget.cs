@@ -429,7 +429,7 @@ namespace Prebuild.Core.Targets
 		private void CleanProject(ProjectNode project)
 		{
 			m_Kernel.Log.Write("...Cleaning project: {0}", project.Name);
-			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, "build");
+            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
 			Helper.DeleteIfExists(projectFile);
 		}
 
