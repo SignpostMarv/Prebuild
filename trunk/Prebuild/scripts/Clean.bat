@@ -1,2 +1,2 @@
 cd ..
-Prebuild /clean /removedir obj /file prebuild.xml /pause
+Prebuild /clean /yes /removedir obj /file prebuild.xml /pause
