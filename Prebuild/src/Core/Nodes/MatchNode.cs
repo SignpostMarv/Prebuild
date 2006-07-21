@@ -26,9 +26,9 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #region CVS Information
 /*
  * $Source$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: jendave $
+ * $Date: 2006-02-01 14:04:31 -0500 (Wed, 01 Feb 2006) $
+ * $Revision: 80 $
  */
 #endregion
 

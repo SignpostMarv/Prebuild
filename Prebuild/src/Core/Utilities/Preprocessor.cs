@@ -28,9 +28,9 @@ using System;
 #region CVS Information
 /*
  * $Source$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: jendave $
+ * $Date: 2006-01-27 19:49:58 -0500 (Fri, 27 Jan 2006) $
+ * $Revision: 71 $
  */
 #endregion
 
