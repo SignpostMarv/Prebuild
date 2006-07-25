@@ -468,6 +468,8 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 				ss.WriteLine("    <target name=\"build-debug\" depends=\"Debug, init, build\" description=\"Builds in Debug mode\" />");
 				ss.WriteLine();
+				ss.WriteLine("    <target name=\"package\" depends=\"clean, doc\" description=\"Builds in Release mode\" />");
+				ss.WriteLine();
 
 				ss.WriteLine("    <target name=\"doc\" depends=\"build-release\">");
 				ss.WriteLine("        <foreach item=\"File\" property=\"filename\">");
