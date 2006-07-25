@@ -460,6 +460,23 @@ namespace Prebuild.Core.Utilities
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public static string MakeReferencePath(string path)
+		{
+			string ret = EndPath(NormalizePath(path));
+            
+			foreach(char c in Path.InvalidPathChars)
+			{
+				ret = ret.Replace(c, '_');
+			}
+
+			return ret;
+		}
+
+		/// <summary>
 		/// Sets the current dir.
 		/// </summary>
 		/// <param name="path">The path.</param>

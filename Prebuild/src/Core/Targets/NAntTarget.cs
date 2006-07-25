@@ -121,6 +121,50 @@ namespace Prebuild.Core.Targets
 			return ret;
 		}
 
+		private static string BuildReferencePath(SolutionNode solution, ReferenceNode refr)
+		{
+			string ret = "";
+			if(solution.ProjectsTable.ContainsKey(refr.Name))
+			{
+				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];				
+				string fileRef = FindFileReference(refr.Name, project);
+				string finalPath = Helper.NormalizePath(Helper.MakeReferencePath(project.FullPath + "/${build.dir}/"), '/');
+				ret += finalPath;
+				return ret;
+			}
+			else
+			{
+				ProjectNode project = (ProjectNode)refr.Parent;
+				string fileRef = FindFileReference(refr.Name, project);
+
+				if(refr.Path != null || fileRef != null)
+				{
+					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path, '/') : fileRef;
+					ret += finalPath;
+					return ret;
+				}
+
+				try
+				{
+					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					if (assem != null)
+					{
+						ret += "";
+					}
+					else
+					{
+						ret += "";
+					}
+				}
+				catch (System.NullReferenceException e)
+				{
+					e.ToString();
+					ret += "";
+				}
+			}
+			return ret;
+		}
+
 		private static string FindFileReference(string refName, ProjectNode project) 
 		{
 			foreach(ReferencePathNode refPath in project.ReferencePaths) 
@@ -176,7 +220,17 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("    <target name=\"{0}\">", "build");
 				ss.WriteLine("        <echo message=\"Build Directory is ${project::get-base-directory()}/${build.dir}\" />");
 				ss.WriteLine("        <mkdir dir=\"${project::get-base-directory()}/${build.dir}\" />");				
-				
+				ss.WriteLine("        <copy todir=\"${project::get-base-directory()}/${build.dir}\">");
+				ss.WriteLine("            <fileset basedir=\"${project::get-base-directory()}\">");
+				foreach(ReferenceNode refr in project.References)
+				{
+					if (refr.LocalCopy)
+					{
+						ss.WriteLine("                <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr))+"\" />", '/'));
+					}
+				}
+				ss.WriteLine("            </fileset>");
+				ss.WriteLine("        </copy>");
 				ss.Write("        <csc");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
@@ -220,6 +274,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("            <references basedir=\"${project::get-base-directory()}\">");
 				ss.WriteLine("                <lib>");
 				ss.WriteLine("                    <include name=\"${project::get-base-directory()}\" />");
+				ss.WriteLine("                    <include name=\"${project::get-base-directory()}/${build.dir}\" />");
 				ss.WriteLine("                </lib>");
 				foreach(ReferenceNode refr in project.References)
 				{
@@ -255,8 +310,8 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
 					ss.WriteLine("        </if>");
 					ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
-					ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}/${build.dir}\">");
-					ss.Write("                <include name=\"${project::get-name()}");
+					ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}\">");
+					ss.Write("                <include name=\"${build.dir}/${project::get-name()}");
 					if (project.Type == ProjectType.Library)
 					{
 						ss.WriteLine(".dll\" />");
@@ -267,11 +322,19 @@ namespace Prebuild.Core.Targets
 					}
 
 					ss.WriteLine("            </assemblies>");
-					ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}/${build.dir}\">");
-					ss.WriteLine("                <include name=\"${project::get-name()}.xml\"/>");
+					ss.WriteLine("            <summaries basedir=\"${project::get-base-directory()}\">");
+					ss.WriteLine("                <include name=\"${build.dir}/${project::get-name()}.xml\"/>");
 					ss.WriteLine("            </summaries>");
 					ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
 					ss.WriteLine("                <include name=\"${build.dir}\" />");
+//					foreach(ReferenceNode refr in project.References)
+//					{
+//						string path = Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReferencePath(solution, refr)), '/');
+//						if (path != "")
+//						{
+//							ss.WriteLine("                <include name=\"{0}\" />", path);
+//						}
+//					}
 					ss.WriteLine("            </referencepaths>");
 					ss.WriteLine("            <documenters>");
 					ss.WriteLine("                <documenter name=\"MSDN\">");
