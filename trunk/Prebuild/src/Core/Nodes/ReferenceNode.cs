@@ -104,7 +104,7 @@ namespace Prebuild.Core.Nodes
 			{
 				if( m_LocalCopy == null)
 				{
-					return true;
+					return false;
 				}
 				return bool.Parse(m_LocalCopy);
 			}
