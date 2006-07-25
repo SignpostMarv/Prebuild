@@ -327,14 +327,14 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("            </summaries>");
 					ss.WriteLine("            <referencepaths basedir=\"${project::get-base-directory()}\">");
 					ss.WriteLine("                <include name=\"${build.dir}\" />");
-//					foreach(ReferenceNode refr in project.References)
-//					{
-//						string path = Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReferencePath(solution, refr)), '/');
-//						if (path != "")
-//						{
-//							ss.WriteLine("                <include name=\"{0}\" />", path);
-//						}
-//					}
+					//					foreach(ReferenceNode refr in project.References)
+					//					{
+					//						string path = Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReferencePath(solution, refr)), '/');
+					//						if (path != "")
+					//						{
+					//							ss.WriteLine("                <include name=\"{0}\" />", path);
+					//						}
+					//					}
 					ss.WriteLine("            </referencepaths>");
 					ss.WriteLine("            <documenters>");
 					ss.WriteLine("                <documenter name=\"MSDN\">");
@@ -393,8 +393,11 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("    <echo message=\"Using '${nant.settings.currentframework}' Framework\"/>");
 				ss.WriteLine();
 
+				ss.WriteLine("    <property name=\"dist.dir\" value=\"dist\" />");
+				ss.WriteLine("    <property name=\"source.dir\" value=\"source\" />");
 				ss.WriteLine("    <property name=\"bin.dir\" value=\"bin\" />");
 				ss.WriteLine("    <property name=\"obj.dir\" value=\"obj\" />");
+				ss.WriteLine("    <property name=\"doc.dir\" value=\"doc\" />");
 				ss.WriteLine("    <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
 				foreach(ConfigurationNode conf in solution.Configurations)
@@ -442,6 +445,9 @@ namespace Prebuild.Core.Targets
 				
 				ss.WriteLine("    <target name=\"clean\" description=\"\">");
 				ss.WriteLine("        <echo message=\"Deleting all builds from all configurations\" />");
+				ss.WriteLine("        <delete dir=\"${dist.dir}\" failonerror=\"false\" />");
+				ss.WriteLine("        <delete dir=\"${bin.dir}\" failonerror=\"false\" />");
+				ss.WriteLine("        <delete dir=\"${obj.dir}\" failonerror=\"false\" />");
 				foreach(ProjectNode project in solution.Projects)
 				{
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
@@ -468,7 +474,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 				ss.WriteLine("    <target name=\"build-debug\" depends=\"Debug, init, build\" description=\"Builds in Debug mode\" />");
 				ss.WriteLine();
-				ss.WriteLine("    <target name=\"package\" depends=\"clean, doc\" description=\"Builds in Release mode\" />");
+				ss.WriteLine("    <target name=\"package\" depends=\"clean, doc, copyfiles, zip\" description=\"Builds in Release mode\" />");
 				ss.WriteLine();
 
 				ss.WriteLine("    <target name=\"doc\" depends=\"build-release\">");
@@ -485,6 +491,57 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("            </do>");
 				ss.WriteLine("        </foreach>");
 				ss.WriteLine("    </target>");
+				ss.WriteLine();    
+				ss.WriteLine("    <target name=\"copyfiles\">");
+				ss.WriteLine("        <copy todir=\"${dist.dir}/${string::to-lower(project::get-name())}/${source.dir}\">");
+				ss.WriteLine("    	      <fileset>");
+				ss.WriteLine("    		      <include name=\"**\" />");
+				ss.WriteLine();
+				ss.WriteLine("                <exclude name=\"**/${obj.dir}/**\" />");
+                ss.WriteLine("                <exclude name=\"**/${bin.dir}/**\" />");
+                ss.WriteLine("                <exclude name=\"**/*j.user\" />");
+                ss.WriteLine("                <exclude name=\"**.suo\" />");
+                ss.WriteLine("                <exclude name=\"**/*.build\" />");
+                ss.WriteLine("                <exclude name=\"**/*.mdp\" />");
+                ss.WriteLine("                <exclude name=\"**/*.mds\" />");
+                ss.WriteLine("                <exclude name=\"**/*.sln\" />");
+                ss.WriteLine("                <exclude name=\"**/*.cmbx\" />");
+                ss.WriteLine("                <exclude name=\"**/*.csproj\" />");
+                ss.WriteLine("                <exclude name=\"**/*.old\" />");
+                ss.WriteLine("                <exclude name=\"**/*.prjx\" />");
+                ss.WriteLine("                <exclude name=\"**/doc/**\" />");
+                ss.WriteLine("                <exclude name=\"**/Debug/**\" />");
+                ss.WriteLine("                <exclude name=\"**/Release/**\" />");
+                ss.WriteLine("                <exclude name=\"**.swp\" />");
+                ss.WriteLine("                <exclude name=\"**.bak\" />");
+                ss.WriteLine("                <exclude name=\"**.project\" />");
+				ss.WriteLine("    	      </fileset>");
+				ss.WriteLine("    	  </copy>");
+
+				ss.WriteLine("        <copy todir=\"${dist.dir}/${string::to-lower(project::get-name())}/${doc.dir}\" flatten=\"true\">");
+				ss.WriteLine("    	      <fileset basedir=\".\">");
+				ss.WriteLine("    		      <include name=\"**/*.chm\"/>");
+				ss.WriteLine("    	      </fileset>");
+				ss.WriteLine("        </copy>");
+				ss.WriteLine("    </target>");
+				ss.WriteLine("    <target name=\"zip\" description=\"zip/gzip files\">");
+				ss.WriteLine("        <property name=\"project.zip-path\" value=\"${project::get-base-directory()}/${dist.dir}/${string::to-lower(project::get-name())}\"/>");
+				ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
+				ss.WriteLine("            <tar destfile=\"${project.zip-path}.tar.gz\" compression=\"GZip\">");
+				ss.WriteLine("                <fileset basedir=\"${dist.dir}\">");
+				ss.WriteLine("                    <include name=\"${project.zip-path}/**\" />");
+				ss.WriteLine("                </fileset>");
+				ss.WriteLine("            </tar>");
+				ss.WriteLine("        </if>");
+				ss.WriteLine("        <if test=\"${platform::is-win32()}\">");
+				ss.WriteLine("            <zip zipfile=\"${project.zip-path}.zip\">");
+				ss.WriteLine("                <fileset basedir=\"${dist.dir}\">");
+				ss.WriteLine("                    <include name=\"${project.zip-path}/**\" />");
+				ss.WriteLine("                </fileset>");
+				ss.WriteLine("            </zip>");
+				ss.WriteLine("        </if>");
+				ss.WriteLine("        <echo message=\"Created '${project::get-name()}' packages at ${project.zip-path}\" />");
+				ss.WriteLine("    </target>");
 				ss.WriteLine("</project>");
 			}
 
@@ -494,7 +551,7 @@ namespace Prebuild.Core.Targets
 		private void CleanProject(ProjectNode project)
 		{
 			m_Kernel.Log.Write("...Cleaning project: {0}", project.Name);
-            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
+			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
 			Helper.DeleteIfExists(projectFile);
 		}
 
