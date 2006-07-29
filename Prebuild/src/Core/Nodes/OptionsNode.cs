@@ -343,6 +343,24 @@ namespace Prebuild.Core.Nodes
 				m_XmlDocFile = value;
 			}
 		}
+
+		[OptionNode("KeyFile")]
+		private string m_KeyFile = "";
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string KeyFile
+		{
+			get
+			{
+				return m_KeyFile;
+			}
+			set
+			{
+				m_KeyFile = value;
+			}
+		}
         
 		[OptionNode("DebugInformation")]
 		private bool m_DebugInformation;
