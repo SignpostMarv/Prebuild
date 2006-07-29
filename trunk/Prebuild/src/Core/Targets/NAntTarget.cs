@@ -234,7 +234,19 @@ namespace Prebuild.Core.Targets
 				ss.Write("        <csc");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
-				ss.Write(" unsafe=\"{0}\"", "true");
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					if (conf.Options.KeyFile !="")
+					{
+						ss.Write(" keyfile=\"{0}\"", conf.Options.KeyFile);
+						break;
+					}
+				}
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					ss.Write(" unsafe=\"{0}\"", conf.Options.AllowUnsafe);
+					break;
+				}
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
 					if (GetXmlDocFile(project, conf) !="")
