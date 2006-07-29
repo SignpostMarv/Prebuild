@@ -355,9 +355,17 @@ namespace Prebuild.Core.Targets
 
 				//ps.WriteLine("\t\t\t<Settings");
 				ps.WriteLine( "\t\t<ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon );
-				ps.WriteLine( "\t\t<AssemblyKeyContainerName></AssemblyKeyContainerName>" );
+				ps.WriteLine( "\t\t<AssemblyKeyContainerName></AssemblyKeyContainerName>");
 				ps.WriteLine( "\t\t<AssemblyName>{0}</AssemblyName>", project.AssemblyName );
-				ps.WriteLine( "\t\t<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>" );
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					if (conf.Options.KeyFile !="")
+					{
+						ps.WriteLine( "\t\t<AssemblyOriginatorKeyFile>{0}</AssemblyOriginatorKeyFile>", conf.Options.KeyFile );
+						ps.WriteLine( "\t\t<SignAssembly>true</SignAssembly>");
+						break;
+					}
+				}
 				ps.WriteLine( "\t\t<DefaultClientScript>JScript</DefaultClientScript>" );
 				ps.WriteLine( "\t\t<DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>" );
 				ps.WriteLine( "\t\t<DefaultTargetSchema>IE50</DefaultTargetSchema>" );
@@ -456,7 +464,10 @@ namespace Prebuild.Core.Targets
 				{
 					ps.Write( "\t\t<{0} ", project.Files.GetBuildAction( file ) );
 					ps.WriteLine( " Include =\"{0}\">", file.Replace( ".\\", "" ) );
-					ps.WriteLine( "\t\t\t<SubType>Code</SubType>" );
+					if (project.Files.GetBuildAction( file ) != BuildAction.None)
+					{
+						ps.WriteLine( "\t\t\t<SubType>Code</SubType>" );
+					}
 					ps.WriteLine( "\t\t</{0}>", project.Files.GetBuildAction( file ) );
 
 					//                    ps.WriteLine("\t\t\t\t<File");
