@@ -72,7 +72,7 @@ namespace Prebuild.Core
 		/// <summary>
 		/// This must match the version of the schema that is embeeded
 		/// </summary>
-		private static string m_SchemaVersion = "1.6";
+		private static string m_SchemaVersion = "1.7";
 		private static string m_Schema = "prebuild-" + m_SchemaVersion + ".xsd";
 		private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
 		bool disposed;
