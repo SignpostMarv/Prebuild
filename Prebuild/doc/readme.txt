@@ -168,7 +168,7 @@ _________________________________
 		</Configuration>
 
 		<!-- One of the projects that is included in the Solution -->
-		<Project name="RealmForge.Utility" path="Utility" type="Library" assemblyName="RealmForge.Utility" rootNamespace="RealmForge">
+		<Project name="RealmForge.Utility" Language="VisualBasic" path="Utility" type="Library" assemblyName="RealmForge.Utility" rootNamespace="RealmForge">
 			<Configuration name="Debug">
 				<Options>
 					<OutputPath>..\bin\lib\Utility</OutputPath>
@@ -189,12 +189,12 @@ _________________________________
 			<Reference name="System.Runtime.Serialization.Formatters.Soap"/>
 			<Reference name="ICSharpCode.SharpZipLib"/>
 			<Files>
-				<Match path="." pattern="*.cs" recurse="true"/>
+				<Match path="." pattern="*.vb" recurse="true"/>
 			</Files>
 		</Project>
 
 		<!-- Another projects that is included in the Solution -->
-		<Project name="DemoGame" path="DemoGame" type="WinExe" icon="..\bin\RealmForge.ico" assemblyName="DemoGame" rootNamespace="RealmForge">
+		<Project name="DemoGame" Language="C#" path="DemoGame" type="WinExe" icon="..\bin\RealmForge.ico" assemblyName="DemoGame" rootNamespace="RealmForge">
 				<!-- icon is used to define the location of the .ico file that is embeeded in the assembly when the project is compiled.  This is relative to the project path -->
 				<!--type defines the type of project, valid types are Library (.dll), WinExe (.exe), and Exe (.exe).  WinExe is not windows specific, it just defines that it is a GUI application and that no Console or Command window will show when it is started-->
 
