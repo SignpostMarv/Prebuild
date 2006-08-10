@@ -52,7 +52,8 @@ namespace Prebuild.Core.Targets
 		string name;
 		string guid;
 		string fileExtension;
-		string xmlTag;
+        string xmlTag;
+		string importProject;
 
 		/// <summary>
 		/// Gets or sets the name.
@@ -109,12 +110,45 @@ namespace Prebuild.Core.Targets
 		{
 			get
 			{
-				return xmlTag;
+                return xmlTag;
 			}
 			set
 			{
-				xmlTag = value;
+                xmlTag = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the import project property.
+		/// </summary>
+		/// <value>The ImportProject tag.</value>
+		public string ImportProject
+		{
+			get
+			{
+                return importProject;
+			}
+			set
+			{
+                importProject = value;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ToolInfo"/> class.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="guid">The GUID.</param>
+		/// <param name="fileExtension">The file extension.</param>
+		/// <param name="xml">The XML.</param>
+        /// <param name="importProject">The import project.</param>
+		public ToolInfo(string name, string guid, string fileExtension, string xml, string importProject)
+		{
+			this.name = name;
+			this.guid = guid;
+			this.fileExtension = fileExtension;
+            this.xmlTag = xml;
+            this.importProject = importProject;
 		}
 
 		/// <summary>
@@ -129,7 +163,8 @@ namespace Prebuild.Core.Targets
 			this.name = name;
 			this.guid = guid;
 			this.fileExtension = fileExtension;
-			this.xmlTag = xml;
+            this.xmlTag = xml;
+            this.importProject = "$(MSBuildBinPath)\\Microsoft." + xml + ".Targets";
 		}
 
 		/// <summary>
@@ -146,8 +181,8 @@ namespace Prebuild.Core.Targets
 			if (obj.GetType() != typeof(ToolInfo))
 				return false;
                 
-			ToolInfo c = (ToolInfo)obj;   
-			return ((this.name == c.name) && (this.guid == c.guid) && (this.fileExtension == c.fileExtension) && (this.xmlTag == c.xmlTag));
+			ToolInfo c = (ToolInfo)obj;
+            return ((this.name == c.name) && (this.guid == c.guid) && (this.fileExtension == c.fileExtension) && (this.importProject == c.importProject));
 		}
 
 		/// <summary>
@@ -158,7 +193,7 @@ namespace Prebuild.Core.Targets
 		/// <returns>True if toolInfos are equal</returns>
 		public static bool operator== (ToolInfo c1, ToolInfo c2)
 		{
-			return ((c1.name == c2.name) && (c1.guid == c2.guid) && (c1.fileExtension == c2.fileExtension) && (c1.xmlTag == c2.xmlTag));
+            return ((c1.name == c2.name) && (c1.guid == c2.guid) && (c1.fileExtension == c2.fileExtension) && (c1.importProject == c2.importProject) && (c1.xmlTag == c2.xmlTag));
 		}
 
 		/// <summary>
@@ -178,7 +213,7 @@ namespace Prebuild.Core.Targets
 		/// <returns>Hash code</returns>
 		public override int GetHashCode()
 		{
-			return name.GetHashCode() ^ guid.GetHashCode() ^ this.fileExtension.GetHashCode() ^ this.xmlTag.GetHashCode();
+            return name.GetHashCode() ^ guid.GetHashCode() ^ this.fileExtension.GetHashCode() ^ this.importProject.GetHashCode() ^ this.xmlTag.GetHashCode();
 
 		}
 	}
@@ -291,7 +326,9 @@ namespace Prebuild.Core.Targets
 		{
 			this.tools = new Hashtable();
 
-			this.tools[ "C#" ] = new ToolInfo( "C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP" );
+			this.tools[ "C#" ] = new ToolInfo( "C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP", "$(MSBuildBinPath)\\Microsoft.CSHARP.Targets" );
+            this.tools[ "Boo" ] = new ToolInfo( "Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets" );
+            this.tools[ "VisualBasic" ] = new ToolInfo( "VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets" );
 		}
 
 		#endregion
@@ -479,7 +516,7 @@ namespace Prebuild.Core.Targets
 				//                ps.WriteLine("\t\t\t</Include>");
 
 				ps.WriteLine( "\t</ItemGroup>" );
-				ps.WriteLine( "\t<Import Project=\"$(MSBuildBinPath)\\Microsoft.CSHARP.Targets\" />" );
+                ps.WriteLine("\t<Import Project=\"" + toolInfo.ImportProject + "\" />");
 				ps.WriteLine( "\t<PropertyGroup>" );
 				ps.WriteLine( "\t\t<PreBuildEvent>" );
 				ps.WriteLine( "\t\t</PreBuildEvent>" );
