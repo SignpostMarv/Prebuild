@@ -490,19 +490,15 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("    <target name=\"package\" depends=\"clean, doc\" description=\"Builds all\" />");
 				ss.WriteLine();
 
-				ss.WriteLine("    <target name=\"doc\" depends=\"build-release\">");
-				ss.WriteLine("        <foreach item=\"File\" property=\"filename\">");
-				ss.WriteLine("            <in>");
-				ss.WriteLine("                <items>");
-				ss.WriteLine("                    <include name=\"**/*.build\" />");
-				ss.WriteLine("                    <exclude name=\"${project::get-buildfile-path()}\" />");
-				ss.WriteLine("                </items>");
-				ss.WriteLine("            </in>");
-				ss.WriteLine("            <do>");
-				ss.WriteLine("                <echo message=\"${filename}\" />");
-				ss.WriteLine("                <nant buildfile=\"${filename}\" target=\"doc\" />");
-				ss.WriteLine("            </do>");
-				ss.WriteLine("        </foreach>");
+                ss.WriteLine("    <target name=\"doc\" depends=\"build-release\">");
+                ss.WriteLine("        <echo message=\"Generating all documentation from all builds\" />");
+                foreach (ProjectNode project in solution.Projects)
+                {
+                    string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
+                    ss.Write("        <nant buildfile=\"{0}\"",
+                        Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"), '/'));
+                    ss.WriteLine(" target=\"doc\" />");
+                }
 				ss.WriteLine("    </target>");
 				ss.WriteLine();    
 //				ss.WriteLine("    <target name=\"copyfiles\">");
