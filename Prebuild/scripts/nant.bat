@@ -1,4 +1,4 @@
-@rem Generates a solution (.sln) and a set of project files (.csproj) 
-@rem for Microsoft Visual Studio .NET 2002
+@rem Generates a .build files 
+@rem for NAnt
 cd ..
 Prebuild /target nant /file prebuild.xml /pause
