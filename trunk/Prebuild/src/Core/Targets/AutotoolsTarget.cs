@@ -37,11 +37,13 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
 using Prebuild.Core.Nodes;
+using Prebuild.Core.Parse;
 using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
@@ -204,6 +206,33 @@ namespace Prebuild.Core.Targets
 			return docFile;
 		}
 
+		/// <summary>
+		/// Normalizes the path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns></returns>
+		public static string NormalizePath(string path)
+		{
+			if(path == null)
+			{
+				return "";
+			}
+
+			StringBuilder tmpPath;
+
+			if (Core.Parse.Preprocessor.GetOS() == "Win32")
+			{
+				tmpPath = new StringBuilder(path.Replace('\\', '/'));
+				tmpPath.Replace("/", @"\\");
+			}
+			else
+			{
+				tmpPath = new StringBuilder(path.Replace('\\', '/'));
+				tmpPath = tmpPath.Replace('/', Path.DirectorySeparatorChar);
+			}
+			return tmpPath.ToString();
+		}
+
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
 			string projFile = Helper.MakeFilePath(project.FullPath, "Makefile", "am");
@@ -254,7 +283,7 @@ namespace Prebuild.Core.Targets
 					{
 						case BuildAction.Compile:
 							ss.WriteLine(" \\");
-							ss.Write("\t" + Helper.NormalizePath(PrependPath(file), '/'));
+							ss.Write("\t" + NormalizePath(file));
 							break;
 						default:
 							break;
@@ -314,10 +343,14 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine();
 				ss.WriteLine("CLEANFILES = $(BUILD_DIR)/$(CONFIG)/$(ASSEMBLY_NAME).$(ASSEMBLY_EXT) $(BUILD_DIR)/$(CONFIG)/$(ASSEMBLY_NAME).mdb $(BUILD_DIR)/$(CONFIG)/$(ASSEMBLY_NAME).pdb $(ASSEMBLY_NAME).xml");
 				ss.WriteLine("EXTRA_DIST = \\");
-				ss.WriteLine("	$(FILES) \\");
+				ss.Write("	$(FILES)");
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ss.WriteLine("\t" + conf.Options.KeyFile);
+					if (conf.Options.KeyFile != "")
+					{
+						ss.Write(" \\");
+						ss.WriteLine("\t" + conf.Options.KeyFile);
+					}
 					break;
 				}
 				//ss.WriteLine("	Tao.Sdl.dll.config");

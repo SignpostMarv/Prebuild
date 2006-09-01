@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<Prebuild xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.6.xsd">
+<Prebuild xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd" version="1.7">
     <Solution name="Prebuild">
 	<Configuration name="Debug">
 	    <Options>
@@ -44,7 +44,6 @@
 		    <OptimizeCode>false</OptimizeCode>
 		    <OutputPath>bin\Debug</OutputPath>
 		    <DebugInformation>true</DebugInformation>
-		    <XmlDocFile>Prebuild.xml</XmlDocFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
@@ -59,7 +58,6 @@
 		    <OutputPath>bin\Release</OutputPath>
 		    <OptimizeCode>true</OptimizeCode>
 		    <DebugInformation>false</DebugInformation>
-		    <XmlDocFile>Prebuild.xml</XmlDocFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
