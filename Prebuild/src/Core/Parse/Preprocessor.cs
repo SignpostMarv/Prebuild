@@ -124,12 +124,13 @@ namespace Prebuild.Core.Parse
 		#endregion
 
 		#region Private Methods
-
-		/*
-		 * Parts of this code were taken from NAnt and is subject to the GPL
-		 * as per NAnt's license. Thanks to the NAnt guys for this little gem.
-		 */
-		private static string GetOS()
+		 
+		/// <summary>
+		/// Parts of this code were taken from NAnt and is subject to the GPL
+		/// as per NAnt's license. Thanks to the NAnt guys for this little gem.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetOS()
 		{
 			PlatformID platId = Environment.OSVersion.Platform;
 			if(platId == PlatformID.Win32NT || platId == PlatformID.Win32Windows)
