@@ -18,6 +18,7 @@ SharpDevelop (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 SharpDevelop2 (SharpDevelop.bat) - http://www.icsharpcode.net/OpenSource/SD/
 MonoDevelop (MonoDevelop.sh) - http://www.monodevelop.com/
 NAnt (nant.sh and nant.bat) - http://nant.sourceforge.net/
+Autotool (autotools.bat and autotools.sh) http://www.gnu.org. Only partial support
 
 Notes:
 A Unix Shell script is provided for MonoDevelop, as this is more appropriate than a windows batch file.

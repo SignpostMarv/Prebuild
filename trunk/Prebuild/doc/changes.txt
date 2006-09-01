@@ -8,6 +8,7 @@ Prebuild is licensed under the BSD license.
 	+ Added Keyfile signing to NAnt target and VS2005 target
 	+ Updated XSD file
 	+ Boo and VisualBasic Language support in VS2005 target
+	* Added very basic Autotools target. Use at your own risk
 	
 
 [ July 21, 2006 - 1.3.1 ]
