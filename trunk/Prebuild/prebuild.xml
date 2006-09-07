@@ -9,7 +9,7 @@
 		<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
 		<?endif ?>
 		<OptimizeCode>false</OptimizeCode>
-		<OutputPath>bin\Debug</OutputPath>
+		<OutputPath>bin/Debug</OutputPath>
 		<DebugInformation>true</DebugInformation>
 		<SuppressWarnings>1595</SuppressWarnings>
 		<PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
@@ -22,7 +22,7 @@
 		<?else ?>
 		<CompilerDefines>TRACE;POSIX</CompilerDefines>
 		<?endif ?>
-		<OutputPath>bin\Release</OutputPath>
+		<OutputPath>bin/Release</OutputPath>
 		<OptimizeCode>true</OptimizeCode>
 		<DebugInformation>false</DebugInformation>
 		<SuppressWarnings>1595</SuppressWarnings>
@@ -42,7 +42,7 @@
 		    <CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
 		    <?endif ?>
 		    <OptimizeCode>false</OptimizeCode>
-		    <OutputPath>bin\Debug</OutputPath>
+		    <OutputPath>bin/Debug</OutputPath>
 		    <DebugInformation>true</DebugInformation>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
@@ -55,7 +55,7 @@
 		    <?else ?>
 		    <CompilerDefines>TRACE;POSIX</CompilerDefines>
 		    <?endif ?>
-		    <OutputPath>bin\Release</OutputPath>
+		    <OutputPath>bin/Release</OutputPath>
 		    <OptimizeCode>true</OptimizeCode>
 		    <DebugInformation>false</DebugInformation>
 		    <SuppressWarnings>1595</SuppressWarnings>
