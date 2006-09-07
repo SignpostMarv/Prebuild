@@ -40,6 +40,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Xml;
+using Prebuild.Core.Nodes;
 
 namespace Prebuild.Core.Utilities
 {
@@ -460,6 +461,31 @@ namespace Prebuild.Core.Utilities
 		}
 
 		/// <summary>
+		/// Makes the file path.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public static string MakeFilePath(string path, string name)
+		{
+			string ret = EndPath(NormalizePath(path));
+            
+			if( name == null )
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			ret += name;
+            
+			foreach(char c in Path.InvalidPathChars)
+			{
+				ret = ret.Replace(c, '_');
+			}
+
+			return ret;
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="path"></param>
@@ -617,6 +643,17 @@ namespace Prebuild.Core.Utilities
 			}
 			string val = AttributeValue(node, attr, def.ToString());
 			return Enum.Parse(enumType, val, true);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="assemblyName"></param>
+		/// <param name="projectType"></param>
+		/// <returns></returns>
+		public static string AssemblyFullName(string assemblyName, ProjectType projectType)
+		{
+			return assemblyName + (projectType == ProjectType.Library ? ".dll" : ".exe");
 		}
 
 		#endregion
