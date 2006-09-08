@@ -98,7 +98,7 @@ namespace Prebuild.Core.Targets
 				if(refr.Path != null || fileRef != null)
 				{
 					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
-					ret += finalPath;
+					ret += Path.Combine(project.Path, finalPath);					
 					return ret;
 				}
 
@@ -128,8 +128,7 @@ namespace Prebuild.Core.Targets
 			string ret = "";
 			if(solution.ProjectsTable.ContainsKey(refr.Name))
 			{
-				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];				
-				string fileRef = FindFileReference(refr.Name, project);
+				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];	
 				string finalPath = Helper.NormalizePath(Helper.MakeReferencePath(project.FullPath + "/${build.dir}/"), '/');
 				ret += finalPath;
 				return ret;
@@ -139,6 +138,7 @@ namespace Prebuild.Core.Targets
 				ProjectNode project = (ProjectNode)refr.Parent;
 				string fileRef = FindFileReference(refr.Name, project);
 
+				
 				if(refr.Path != null || fileRef != null)
 				{
 					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path, '/') : fileRef;
@@ -272,7 +272,7 @@ namespace Prebuild.Core.Targets
 				{
 					if (conf.Options.KeyFile !="")
 					{
-						//ss.WriteLine("\t\t/keyfile:" + Helper.NormalizePath(Helper.MakePathRelativeTo(solution.FullPath, conf.Options.KeyFile), '/') + " \\");
+						ss.WriteLine("\t\t/keyfile:" + Helper.NormalizePath(Path.Combine(project.Path, conf.Options.KeyFile), '/') + " \\");	
 						break;
 					}
 				}
@@ -284,6 +284,11 @@ namespace Prebuild.Core.Targets
 						break;
 					}
 				}
+				if (project.AppIcon != "")
+				{
+					ss.WriteLine("\t\t/win32icon:" + Helper.NormalizePath(Path.Combine(project.Path, project.AppIcon), '/') + " \\");
+				}
+				
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
 					if (GetXmlDocFile(project, conf) !="")
@@ -412,7 +417,7 @@ namespace Prebuild.Core.Targets
 				foreach(ProjectNode project in solution.ProjectsTableOrder)
 				{
 					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
-					ss.Write(Helper.AssemblyFullName(project.Name, project.Type) + " ");
+					ss.Write(Helper.AssemblyFullName(project.AssemblyName, project.Type) + " ");
 						
 				}
 				ss.WriteLine();
@@ -438,7 +443,7 @@ namespace Prebuild.Core.Targets
 			{
 				if (this.hasLibrary)
 				{
-					bool done = false;
+					//bool done = false;
 					foreach(ProjectNode project in solution.ProjectsTableOrder)
 					{
 						if (project.Type == ProjectType.Library)
