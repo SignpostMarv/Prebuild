@@ -31,7 +31,6 @@
 	</Configuration>
 	<Files>
 	    <File>prebuild.xml</File>
-	    <Match path="doc" pattern="*.txt"/>
 	</Files>
 	<Project name="Prebuild" path="src" language="C#" assemblyName="Prebuild" icon="App.ico" type="Exe" rootNamespace="Prebuild" startupObject="Prebuild.Prebuild">
 	    <Configuration name="Debug">
