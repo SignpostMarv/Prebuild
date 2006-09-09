@@ -293,7 +293,7 @@ namespace Prebuild.Core.Targets
 				{
 					if (GetXmlDocFile(project, conf) !="")
 					{
-						ss.WriteLine("\t\t/doc:" + project.Name + ".xml \\");
+						ss.WriteLine("\t\t/doc:" + Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "/$(BUILD_DIR)/$(CONFIG)/" + project.Name + ".xml \\");
 						break;
 					}
 				}
