@@ -501,56 +501,6 @@ namespace Prebuild.Core.Targets
                 }
 				ss.WriteLine("    </target>");
 				ss.WriteLine();    
-//				ss.WriteLine("    <target name=\"copyfiles\">");
-//				ss.WriteLine("        <copy todir=\"${dist.dir}/${string::to-lower(project::get-name())}/${source.dir}\">");
-//				ss.WriteLine("    	      <fileset>");
-//				ss.WriteLine("    		      <include name=\"**\" />");
-//				ss.WriteLine();
-//				ss.WriteLine("                <exclude name=\"**/${obj.dir}/**\" />");
-//                ss.WriteLine("                <exclude name=\"**/${bin.dir}/**\" />");
-//                ss.WriteLine("                <exclude name=\"**/*j.user\" />");
-//                ss.WriteLine("                <exclude name=\"**.suo\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.build\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.mdp\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.mds\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.sln\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.cmbx\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.csproj\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.old\" />");
-//                ss.WriteLine("                <exclude name=\"**/*.prjx\" />");
-//                ss.WriteLine("                <exclude name=\"**/doc/**\" />");
-//                ss.WriteLine("                <exclude name=\"**/Debug/**\" />");
-//                ss.WriteLine("                <exclude name=\"**/Release/**\" />");
-//                ss.WriteLine("                <exclude name=\"**.swp\" />");
-//                ss.WriteLine("                <exclude name=\"**.bak\" />");
-//                ss.WriteLine("                <exclude name=\"**.project\" />");
-//				ss.WriteLine("    	      </fileset>");
-//				ss.WriteLine("    	  </copy>");
-//
-//				ss.WriteLine("        <copy todir=\"${dist.dir}/${string::to-lower(project::get-name())}/${doc.dir}\" flatten=\"true\">");
-//				ss.WriteLine("    	      <fileset basedir=\".\">");
-//				ss.WriteLine("    		      <include name=\"**/*.chm\"/>");
-//				ss.WriteLine("    	      </fileset>");
-//				ss.WriteLine("        </copy>");
-//				ss.WriteLine("    </target>");
-//				ss.WriteLine("    <target name=\"zip\" description=\"zip/gzip files\">");
-//				ss.WriteLine("        <property name=\"project.zip-path\" value=\"${project::get-base-directory()}/${dist.dir}/${string::to-lower(project::get-name())}\"/>");
-//				ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
-//				ss.WriteLine("            <tar destfile=\"${project.zip-path}.tar.gz\" compression=\"GZip\">");
-//				ss.WriteLine("                <fileset basedir=\"${dist.dir}\">");
-//				ss.WriteLine("                    <include name=\"${project.zip-path}/**\" />");
-//				ss.WriteLine("                </fileset>");
-//				ss.WriteLine("            </tar>");
-//				ss.WriteLine("        </if>");
-//				ss.WriteLine("        <if test=\"${platform::is-win32()}\">");
-//				ss.WriteLine("            <zip zipfile=\"${project.zip-path}.zip\">");
-//				ss.WriteLine("                <fileset basedir=\"${dist.dir}\">");
-//				ss.WriteLine("                    <include name=\"${project.zip-path}/**\" />");
-//				ss.WriteLine("                </fileset>");
-//				ss.WriteLine("            </zip>");
-//				ss.WriteLine("        </if>");
-//				ss.WriteLine("        <echo message=\"Created '${project::get-name()}' packages at ${project.zip-path}\" />");
-//				ss.WriteLine("    </target>");
 				ss.WriteLine("</project>");
 			}
 
