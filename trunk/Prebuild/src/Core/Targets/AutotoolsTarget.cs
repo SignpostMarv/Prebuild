@@ -241,12 +241,20 @@ namespace Prebuild.Core.Targets
 
 			m_Kernel.CurrentWorkingDirectory.Push();
 			Helper.SetCurrentDir(Path.GetDirectoryName(projFile));
-			//bool hasDoc = false;
 
 			using(ss)
 			{
 				ss.WriteLine(Helper.AssemblyFullName(project.AssemblyName, project.Type) + ":");
 				ss.WriteLine("\tmkdir -p " + Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "/$(BUILD_DIR)/$(CONFIG)/");
+				foreach(string file in project.Files)
+				{
+					if (project.Files.GetSubType(file).ToString() != "Code")
+					{
+						ss.Write("\tresgen ");
+						ss.Write(Helper.NormalizePath(Path.Combine(project.Path, file.Substring(0, file.LastIndexOf('.')) + ".resx "), '/'));
+						ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Name + ".resources"), '/'));
+					}
+				}
 				ss.WriteLine("\t$(CSC)\t/out:" + Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "/$(BUILD_DIR)/$(CONFIG)/" + Helper.AssemblyFullName(project.AssemblyName, project.Type) + " \\");
 				ss.WriteLine("\t\t/target:" + project.Type.ToString().ToLower() + " \\");
 				if (project.References.Count > 0)
@@ -266,6 +274,24 @@ namespace Prebuild.Core.Targets
 						ss.Write("{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(solution.FullPath, BuildReference(solution, refr)), '/'));
 					}
 					ss.WriteLine(" \\");
+				}
+
+				foreach(string file in project.Files)
+				{
+					switch(project.Files.GetBuildAction(file))
+					{
+						case BuildAction.EmbeddedResource:
+							ss.Write("\t\t/resource:");
+							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/') + "," + file + " \\");
+							break;
+						default:
+							if (project.Files.GetSubType(file).ToString() != "Code")
+							{
+								ss.Write("\t\t/resource:");
+								ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Name + ".resources"), '/') + "," + project.RootNamespace + "." + project.Name + ".resources" + " \\");
+							}
+							break;
+					}
 				}
 				
 				foreach(ConfigurationNode conf in project.Configurations)
@@ -287,6 +313,12 @@ namespace Prebuild.Core.Targets
 				if (project.AppIcon != "")
 				{
 					ss.WriteLine("\t\t/win32icon:" + Helper.NormalizePath(Path.Combine(project.Path, project.AppIcon), '/') + " \\");
+				}
+
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
+					ss.Write("\t\t/define:{0}", conf.Options.CompilerDefines);
+					break;
 				}
 				
 				foreach(ConfigurationNode conf in project.Configurations)
@@ -335,7 +367,6 @@ namespace Prebuild.Core.Targets
 					}
 					break;
 				}
-				//ss.WriteLine("	Tao.Sdl.dll.config");
 			}                
 			m_Kernel.CurrentWorkingDirectory.Pop();
 		}
@@ -373,7 +404,6 @@ namespace Prebuild.Core.Targets
 					}
 				}
 
-
 				if (hasLibrary)
 				{
 					ss.Write("pkgconfig_in_files = ");
@@ -398,7 +428,6 @@ namespace Prebuild.Core.Targets
 							}
 						}
 					}
-				
 				
 					ss.WriteLine();
 					ss.WriteLine("pkgconfigdir=$(prefix)/lib/pkgconfig");
@@ -514,15 +543,15 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("CSFLAGS=\"\"");
 				ts.WriteLine("AC_SUBST(CSFLAGS)");
 				ts.WriteLine();
-//				ts.WriteLine("AC_MSG_CHECKING(--disable-sdl argument)");
-//				ts.WriteLine("AC_ARG_ENABLE(sdl,");
-//				ts.WriteLine("    [  --disable-sdl         Disable Sdl interface.],");
-//				ts.WriteLine("    [disable_sdl=$disableval],");
-//				ts.WriteLine("    [disable_sdl=\"no\"])");
-//				ts.WriteLine("AC_MSG_RESULT($disable_sdl)");
-//				ts.WriteLine("if test \"$disable_sdl\" = \"yes\"; then");
-//				ts.WriteLine("  AC_DEFINE(FEAT_SDL)");
-//				ts.WriteLine("fi");
+				//				ts.WriteLine("AC_MSG_CHECKING(--disable-sdl argument)");
+				//				ts.WriteLine("AC_ARG_ENABLE(sdl,");
+				//				ts.WriteLine("    [  --disable-sdl         Disable Sdl interface.],");
+				//				ts.WriteLine("    [disable_sdl=$disableval],");
+				//				ts.WriteLine("    [disable_sdl=\"no\"])");
+				//				ts.WriteLine("AC_MSG_RESULT($disable_sdl)");
+				//				ts.WriteLine("if test \"$disable_sdl\" = \"yes\"; then");
+				//				ts.WriteLine("  AC_DEFINE(FEAT_SDL)");
+				//				ts.WriteLine("fi");
 				ts.WriteLine();
 				ts.WriteLine("dnl Find pkg-config");
 				ts.WriteLine("AC_PATH_PROG(PKGCONFIG, pkg-config, no)");
@@ -585,12 +614,12 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("        AC_MSG_ERROR([No gacutil tool found])");
 				ts.WriteLine("fi");
 				ts.WriteLine();
-//				foreach(ProjectNode project in solution.ProjectsTableOrder)
-//				{
-//					if (project.Type == ProjectType.Library)
-//					{
-//					}
-//				}
+				//				foreach(ProjectNode project in solution.ProjectsTableOrder)
+				//				{
+				//					if (project.Type == ProjectType.Library)
+				//					{
+				//					}
+				//				}
 				ts.WriteLine("GACUTIL_FLAGS='/package " + solution.Name + " /gacdir $(DESTDIR)$(prefix)/lib'");
 				ts.WriteLine("AC_SUBST(GACUTIL_FLAGS)");
 				ts.WriteLine();
@@ -602,25 +631,25 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("esac");
 				ts.WriteLine("AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)");
 				ts.WriteLine();
-//				ts.WriteLine("dnl Check for SDL");
-//				ts.WriteLine();
-//				ts.WriteLine("AC_PATH_PROG([SDL_CONFIG], [sdl-config])");
-//				ts.WriteLine("have_sdl=no");
-//				ts.WriteLine("if test -n \"${SDL_CONFIG}\"; then");
-//				ts.WriteLine("    have_sdl=yes");
-//				ts.WriteLine("    SDL_CFLAGS=`$SDL_CONFIG --cflags`");
-//				ts.WriteLine("    SDL_LIBS=`$SDL_CONFIG --libs`");
-//				ts.WriteLine("    #");
-//				ts.WriteLine("    # sdl-config sometimes emits an rpath flag pointing at its library");
-//				ts.WriteLine("    # installation directory.  We don't want this, as it prevents users from");
-//				ts.WriteLine("    # linking sdl-viewer against, for example, a locally compiled libGL when a");
-//				ts.WriteLine("    # version of the library also exists in SDL's library installation");
-//				ts.WriteLine("    # directory, typically /usr/lib.");
-//				ts.WriteLine("    #");
-//				ts.WriteLine("    SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`");
-//				ts.WriteLine("fi");
-//				ts.WriteLine("AC_SUBST([SDL_CFLAGS])");
-//				ts.WriteLine("AC_SUBST([SDL_LIBS])");
+				//				ts.WriteLine("dnl Check for SDL");
+				//				ts.WriteLine();
+				//				ts.WriteLine("AC_PATH_PROG([SDL_CONFIG], [sdl-config])");
+				//				ts.WriteLine("have_sdl=no");
+				//				ts.WriteLine("if test -n \"${SDL_CONFIG}\"; then");
+				//				ts.WriteLine("    have_sdl=yes");
+				//				ts.WriteLine("    SDL_CFLAGS=`$SDL_CONFIG --cflags`");
+				//				ts.WriteLine("    SDL_LIBS=`$SDL_CONFIG --libs`");
+				//				ts.WriteLine("    #");
+				//				ts.WriteLine("    # sdl-config sometimes emits an rpath flag pointing at its library");
+				//				ts.WriteLine("    # installation directory.  We don't want this, as it prevents users from");
+				//				ts.WriteLine("    # linking sdl-viewer against, for example, a locally compiled libGL when a");
+				//				ts.WriteLine("    # version of the library also exists in SDL's library installation");
+				//				ts.WriteLine("    # directory, typically /usr/lib.");
+				//				ts.WriteLine("    #");
+				//				ts.WriteLine("    SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`");
+				//				ts.WriteLine("fi");
+				//				ts.WriteLine("AC_SUBST([SDL_CFLAGS])");
+				//				ts.WriteLine("AC_SUBST([SDL_LIBS])");
 				ts.WriteLine();
 				ts.WriteLine("AC_OUTPUT([");
 				ts.WriteLine("Makefile");
@@ -630,8 +659,8 @@ namespace Prebuild.Core.Targets
 					{
 						ts.WriteLine(project.Name + ".pc");
 					}
-					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
-					ts.WriteLine(Helper.NormalizePath(Helper.MakeFilePath(path, "Include"),'/'));
+					//					string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
+					//					ts.WriteLine(Helper.NormalizePath(Helper.MakeFilePath(path, "Include"),'/'));
 				}
 				ts.WriteLine("])");
 				ts.WriteLine();

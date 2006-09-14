@@ -249,6 +249,11 @@ namespace Prebuild.Core.Targets
 				}
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
+					ss.Write(" define=\"{0}\"", conf.Options.CompilerDefines);
+					break;
+				}
+				foreach(ConfigurationNode conf in project.Configurations)
+				{
 					if (GetXmlDocFile(project, conf) !="")
 					{
 						ss.Write(" doc=\"{0}\"", "${project::get-base-directory()}/${build.dir}/" + GetXmlDocFile(project, conf));
@@ -302,9 +307,17 @@ namespace Prebuild.Core.Targets
 							ss.WriteLine("                {0}", "<include name=\"" + Helper.NormalizePath(PrependPath(file), '/') + "\" />");
 							break;
 						default:
+							if (project.Files.GetSubType(file).ToString() != "Code")
+							{
+								ss.WriteLine("                <include name=\"{0}\" />", file.Substring(0, file.LastIndexOf('.')) + ".resx"); 
+							}
 							break;
 					}
 				}
+				//if (project.Files.GetSubType(file).ToString() != "Code")
+				//{
+				//	ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
+						
 				ss.WriteLine("            </resources>");
 				ss.WriteLine("        </csc>");
 				ss.WriteLine("    </target>");
