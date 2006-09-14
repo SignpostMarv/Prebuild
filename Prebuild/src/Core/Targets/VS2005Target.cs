@@ -379,151 +379,176 @@ namespace Prebuild.Core.Targets
 			using ( ps )
 			{
 				ps.WriteLine( "<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">" );
-				//ps.WriteLine("\t<{0}", toolInfo.XMLTag);
-				ps.WriteLine( "\t<PropertyGroup>" );
-				ps.WriteLine( "\t\t<ProjectType>Local</ProjectType>" );
-				ps.WriteLine( "\t\t<ProductVersion>{0}</ProductVersion>", this.ProductVersion );
-				ps.WriteLine( "\t\t<SchemaVersion>{0}</SchemaVersion>", this.SchemaVersion );
-				ps.WriteLine( "\t\t<ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper() );
+				//ps.WriteLine("  <{0}", toolInfo.XMLTag);
+				ps.WriteLine( "  <PropertyGroup>" );
+				ps.WriteLine( "    <ProjectType>Local</ProjectType>" );
+				ps.WriteLine( "    <ProductVersion>{0}</ProductVersion>", this.ProductVersion );
+				ps.WriteLine( "    <SchemaVersion>{0}</SchemaVersion>", this.SchemaVersion );
+				ps.WriteLine( "    <ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper() );
 
-				ps.WriteLine( "\t\t<Configuration Condition = \" '$(Configuration)' == '' \">Debug</Configuration>" );
-				ps.WriteLine( "\t\t<Platform Condition = \" '$(Platform)' == '' \">AnyCPU</Platform>" );
-				//ps.WriteLine("\t\t<Build>");
+				ps.WriteLine( "    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>" );
+				ps.WriteLine( "    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>" );
+				//ps.WriteLine("    <Build>");
 
-				//ps.WriteLine("\t\t\t<Settings");
-				ps.WriteLine( "\t\t<ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon );
-				ps.WriteLine( "\t\t<AssemblyKeyContainerName></AssemblyKeyContainerName>");
-				ps.WriteLine( "\t\t<AssemblyName>{0}</AssemblyName>", project.AssemblyName );
+				//ps.WriteLine("      <Settings");
+				ps.WriteLine( "    <ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon );
+				ps.WriteLine( "    <AssemblyKeyContainerName>");
+				ps.WriteLine( "    </AssemblyKeyContainerName>");
+				ps.WriteLine( "    <AssemblyName>{0}</AssemblyName>", project.AssemblyName );
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
 					if (conf.Options.KeyFile !="")
 					{
-						ps.WriteLine( "\t\t<AssemblyOriginatorKeyFile>{0}</AssemblyOriginatorKeyFile>", conf.Options.KeyFile );
-						ps.WriteLine( "\t\t<SignAssembly>true</SignAssembly>");
+						ps.WriteLine( "    <AssemblyOriginatorKeyFile>{0}</AssemblyOriginatorKeyFile>", conf.Options.KeyFile );
+						ps.WriteLine( "    <SignAssembly>true</SignAssembly>");
 						break;
 					}
 				}
-				ps.WriteLine( "\t\t<DefaultClientScript>JScript</DefaultClientScript>" );
-				ps.WriteLine( "\t\t<DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>" );
-				ps.WriteLine( "\t\t<DefaultTargetSchema>IE50</DefaultTargetSchema>" );
-				ps.WriteLine( "\t\t<DelaySign>false</DelaySign>" );
+				ps.WriteLine( "    <DefaultClientScript>JScript</DefaultClientScript>" );
+				ps.WriteLine( "    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>" );
+				ps.WriteLine( "    <DefaultTargetSchema>IE50</DefaultTargetSchema>" );
+				ps.WriteLine( "    <DelaySign>false</DelaySign>" );
 
 				//if(m_Version == VSVersion.VS70)
-				//    ps.WriteLine("\t\t\t\tNoStandardLibraries = \"false\"");
+				//    ps.WriteLine("        NoStandardLibraries = \"false\"");
 
-				ps.WriteLine( "\t\t<OutputType>{0}</OutputType>", project.Type.ToString() );
-				ps.WriteLine( "\t\t<RootNamespace>{0}</RootNamespace>", project.RootNamespace );
-				ps.WriteLine( "\t\t<StartupObject>{0}</StartupObject>", project.StartupObject );
-				//ps.WriteLine("\t\t\t>");
-				ps.WriteLine( "\t\t<FileUpgradeFlags></FileUpgradeFlags>" );
+				ps.WriteLine( "    <OutputType>{0}</OutputType>", project.Type.ToString() );
+				ps.WriteLine( "    <RootNamespace>{0}</RootNamespace>", project.RootNamespace );
+				ps.WriteLine( "    <StartupObject>{0}</StartupObject>", project.StartupObject );
+				//ps.WriteLine("      >");
+				ps.WriteLine( "    <FileUpgradeFlags>");
+				ps.WriteLine( "    </FileUpgradeFlags>" );
 
-				ps.WriteLine( "\t</PropertyGroup>" );
+				ps.WriteLine( "  </PropertyGroup>" );
 
 				foreach ( ConfigurationNode conf in project.Configurations )
 				{
-					ps.Write( "\t<PropertyGroup " );
+					ps.Write( "  <PropertyGroup " );
 					ps.WriteLine( "Condition=\" '$(Configuration)|$(Platform)' == '{0}|AnyCPU' \">", conf.Name );
-					ps.WriteLine( "\t\t<AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options[ "AllowUnsafe" ] );
-					ps.WriteLine( "\t\t<BaseAddress>{0}</BaseAddress>", conf.Options[ "BaseAddress" ] );
-					ps.WriteLine( "\t\t<CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options[ "CheckUnderflowOverflow" ] );
-					ps.WriteLine( "\t\t<ConfigurationOverrideFile></ConfigurationOverrideFile>" );
-					ps.WriteLine( "\t\t<DefineConstants>{0}</DefineConstants>", conf.Options[ "CompilerDefines" ] );
-					ps.WriteLine( "\t\t<DocumentationFile>{0}</DocumentationFile>", conf.Options[ "XmlDocFile" ] );
-					ps.WriteLine( "\t\t<DebugSymbols>{0}</DebugSymbols>", conf.Options[ "DebugInformation" ] );
-					ps.WriteLine( "\t\t<FileAlignment>{0}</FileAlignment>", conf.Options[ "FileAlignment" ] );
-					//                    ps.WriteLine("\t\t<IncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
+					ps.WriteLine( "    <AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options[ "AllowUnsafe" ] );
+					ps.WriteLine( "    <BaseAddress>{0}</BaseAddress>", conf.Options[ "BaseAddress" ] );
+					ps.WriteLine( "    <CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options[ "CheckUnderflowOverflow" ] );
+					ps.WriteLine( "    <ConfigurationOverrideFile>");
+					ps.WriteLine( "    </ConfigurationOverrideFile>" );
+					ps.WriteLine( "    <DefineConstants>{0}</DefineConstants>", conf.Options[ "CompilerDefines" ] );
+					ps.WriteLine( "    <DocumentationFile>{0}</DocumentationFile>", conf.Options[ "XmlDocFile" ] );
+					ps.WriteLine( "    <DebugSymbols>{0}</DebugSymbols>", conf.Options[ "DebugInformation" ] );
+					ps.WriteLine( "    <FileAlignment>{0}</FileAlignment>", conf.Options[ "FileAlignment" ] );
+					//                    ps.WriteLine("    <IncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
 
 					//                    if(m_Version == VSVersion.VS71)
 					//                    {
-					//                        ps.WriteLine("\t\t\t\t\tNoStdLib = \"{0}\"", conf.Options["NoStdLib"]);
-					//                        ps.WriteLine("\t\t\t\t\tNoWarn = \"{0}\"", conf.Options["SuppressWarnings"]);
+					//                        ps.WriteLine("          NoStdLib = \"{0}\"", conf.Options["NoStdLib"]);
+					//                        ps.WriteLine("          NoWarn = \"{0}\"", conf.Options["SuppressWarnings"]);
 					//                    }
 
-					ps.WriteLine( "\t\t<Optimize>{0}</Optimize>", conf.Options[ "OptimizeCode" ] );
-					ps.WriteLine( "\t\t<OutputPath>{0}</OutputPath>",
+					ps.WriteLine( "    <Optimize>{0}</Optimize>", conf.Options[ "OptimizeCode" ] );
+					ps.WriteLine( "    <OutputPath>{0}</OutputPath>",
 						Helper.EndPath( Helper.NormalizePath( conf.Options[ "OutputPath" ].ToString() ) ) );
-					ps.WriteLine( "\t\t<RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options[ "RegisterComInterop" ] );
-					ps.WriteLine( "\t\t<RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options[ "RemoveIntegerChecks" ] );
-					ps.WriteLine( "\t\t<TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options[ "WarningsAsErrors" ] );
-					ps.WriteLine( "\t\t<WarningLevel>{0}</WarningLevel>", conf.Options[ "WarningLevel" ] );
-					ps.WriteLine( "\t\t<NoWarn>{0}</NoWarn>", conf.Options[ "SuppressWarnings" ] );
-					ps.WriteLine( "\t</PropertyGroup>" );
+					ps.WriteLine( "    <RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options[ "RegisterComInterop" ] );
+					ps.WriteLine( "    <RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options[ "RemoveIntegerChecks" ] );
+					ps.WriteLine( "    <TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options[ "WarningsAsErrors" ] );
+					ps.WriteLine( "    <WarningLevel>{0}</WarningLevel>", conf.Options[ "WarningLevel" ] );
+					ps.WriteLine( "    <NoWarn>{0}</NoWarn>", conf.Options[ "SuppressWarnings" ] );
+					ps.WriteLine( "  </PropertyGroup>" );
 				}
 
-				//ps.WriteLine("\t\t\t</Settings>");
+				//ps.WriteLine("      </Settings>");
 
 				// Assembly References
-				ps.WriteLine( "\t<ItemGroup>" );
+				ps.WriteLine( "  <ItemGroup>" );
 				foreach ( ReferenceNode refr in project.References )
 				{
 					if ( !solution.ProjectsTable.ContainsKey( refr.Name ) )
 					{
-						ps.Write( "\t\t<Reference" );
-						ps.WriteLine( " Include = \"{0}\">", refr.Name );
-						ps.WriteLine( "\t\t\t<Name>{0}</Name>", refr.Name );
+						ps.Write( "    <Reference" );
+						ps.WriteLine( " Include=\"{0}\">", refr.Name );
+						ps.WriteLine( "      <Name>{0}</Name>", refr.Name );
                         // TODO: Allow reference to *.exe files
-                        ps.WriteLine( "\t\t\t<HintPath>{0}</HintPath>", Helper.MakePathRelativeTo( project.FullPath, refr.Path + "\\" + refr.Name + ".dll" ) );
-						ps.WriteLine( "\t\t</Reference>" );
+                        ps.WriteLine( "      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo( project.FullPath, refr.Path + "\\" + refr.Name + ".dll" ) );
+						ps.WriteLine( "    </Reference>" );
 					}
 				}
-				ps.WriteLine( "\t</ItemGroup>" );
+				ps.WriteLine( "  </ItemGroup>" );
 
 				//Project References
-				ps.WriteLine( "\t<ItemGroup>" );
+				ps.WriteLine( "  <ItemGroup>" );
 				foreach ( ReferenceNode refr in project.References )
 				{
 					if ( solution.ProjectsTable.ContainsKey( refr.Name ) )
 					{
 						ProjectNode refProject = (ProjectNode)solution.ProjectsTable[ refr.Name ];
                         // TODO: Allow reference to visual basic projects
-						ps.WriteLine( "\t\t<ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo( project.FullPath, Helper.MakeFilePath( refProject.FullPath, refProject.Name, "csproj" ) ) );
+						ps.WriteLine( "    <ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo( project.FullPath, Helper.MakeFilePath( refProject.FullPath, refProject.Name, "csproj" ) ) );
 						//<ProjectReference Include="..\..\RealmForge\Utility\RealmForge.Utility.csproj">
-						ps.WriteLine( "\t\t\t<Name>{0}</Name>", refProject.Name );
+						ps.WriteLine( "      <Name>{0}</Name>", refProject.Name );
 						//  <Name>RealmForge.Utility</Name>
-						ps.WriteLine( "\t\t\t<Project>{{{0}}}</Project>", refProject.Guid.ToString().ToUpper() );
+						ps.WriteLine( "      <Project>{{{0}}}</Project>", refProject.Guid.ToString().ToUpper() );
 						//  <Project>{6880D1D3-69EE-461B-B841-5319845B20D3}</Project>
-						ps.WriteLine( "\t\t\t<Package>{0}</Package>", toolInfo.Guid.ToString().ToUpper() );
+						ps.WriteLine( "      <Package>{0}</Package>", toolInfo.Guid.ToString().ToUpper() );
 						//  <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-						ps.WriteLine( "\t\t</ProjectReference>" );
+						ps.WriteLine( "    </ProjectReference>" );
 						//</ProjectReference>
 					}
 					else
 					{
 					}
 				}
-				ps.WriteLine( "\t</ItemGroup>" );
+				ps.WriteLine( "  </ItemGroup>" );
 
-				//                ps.WriteLine("\t\t</Build>");
-				ps.WriteLine( "\t<ItemGroup>" );
+				//                ps.WriteLine("    </Build>");
+				ps.WriteLine( "  <ItemGroup>" );
 
-				//                ps.WriteLine("\t\t\t<Include>");
+				//                ps.WriteLine("      <Include>");
 				foreach ( string file in project.Files )
 				{
-					ps.Write( "\t\t<{0} ", project.Files.GetBuildAction( file ) );
-					ps.WriteLine( " Include =\"{0}\">", file.Replace( ".\\", "" ) );
-					if (project.Files.GetBuildAction( file ) != BuildAction.None)
+					if (project.Files.GetSubType(file).ToString() != "Code")
 					{
-						ps.WriteLine( "\t\t\t<SubType>Code</SubType>" );
+						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
+						//						//Console.WriteLine("Last index: " + fileName.LastIndexOf('\\'));
+						//						//Console.WriteLine("Length: " + fileName.Length);
+						int slash = file.LastIndexOf('\\');
+						if (slash == -1)
+						{
+							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file);
+						}
+						else
+						{
+							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(slash + 1, file.Length - slash - 1));
+						}
+						ps.WriteLine("      <SubType>Designer</SubType>");
+						ps.WriteLine("    </EmbeddedResource>");
+						//
 					}
-					ps.WriteLine( "\t\t</{0}>", project.Files.GetBuildAction( file ) );
+					//else
+					//{
+						ps.Write( "    <{0} ", project.Files.GetBuildAction( file ) );
+						ps.WriteLine( "Include=\"{0}\">", file.Replace( ".\\", "" ) );
+					
+						//if (project.Files.GetBuildAction( file ) != BuildAction.None)
+						//{
+						ps.WriteLine( "      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+						//}
+						ps.WriteLine( "    </{0}>", project.Files.GetBuildAction( file ) );
 
-					//                    ps.WriteLine("\t\t\t\t<File");
-					//                    ps.WriteLine("\t\t\t\t\tRelPath = \"{0}\"", file.Replace(".\\", ""));
-					//                    ps.WriteLine("\t\t\t\t\tSubType = \"Code\"");
-					//                    ps.WriteLine("\t\t\t\t\tBuildAction = \"{0}\"", project.Files.GetBuildAction(file));
-					//                    ps.WriteLine("\t\t\t\t/>");
+						//                    ps.WriteLine("        <File");
+						//                    ps.WriteLine("          RelPath = \"{0}\"", file.Replace(".\\", ""));
+						//                    ps.WriteLine("          SubType = \"Code\"");
+						//                    ps.WriteLine("          BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
+						//                    ps.WriteLine("        />");
+					//}
 				}
-				//                ps.WriteLine("\t\t\t</Include>");
+				//                ps.WriteLine("      </Include>");
 
-				ps.WriteLine( "\t</ItemGroup>" );
-                ps.WriteLine("\t<Import Project=\"" + toolInfo.ImportProject + "\" />");
-				ps.WriteLine( "\t<PropertyGroup>" );
-				ps.WriteLine( "\t\t<PreBuildEvent>" );
-				ps.WriteLine( "\t\t</PreBuildEvent>" );
-				ps.WriteLine( "\t\t<PostBuildEvent>" );
-				ps.WriteLine( "\t\t</PostBuildEvent>" );
-				ps.WriteLine( "\t</PropertyGroup>" );
-				//                ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
+				ps.WriteLine( "  </ItemGroup>" );
+                ps.WriteLine("  <Import Project=\"" + toolInfo.ImportProject + "\" />");
+				ps.WriteLine( "  <PropertyGroup>" );
+				ps.WriteLine( "    <PreBuildEvent>" );
+				ps.WriteLine( "    </PreBuildEvent>" );
+				ps.WriteLine( "    <PostBuildEvent>" );
+				ps.WriteLine( "    </PostBuildEvent>" );
+				ps.WriteLine( "  </PropertyGroup>" );
+				//                ps.WriteLine("  </{0}>", toolInfo.XMLTag);
 				ps.WriteLine( "</Project>" );
 			}
 			#endregion
@@ -535,27 +560,27 @@ namespace Prebuild.Core.Targets
 			{
 				ps.WriteLine( "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">" );
 				//ps.WriteLine( "<VisualStudioProject>" );
-				//ps.WriteLine("\t<{0}>", toolInfo.XMLTag);
-				//ps.WriteLine("\t\t<Build>");
-				ps.WriteLine( "\t<PropertyGroup>" );
-				//ps.WriteLine("\t\t\t<Settings ReferencePath=\"{0}\">", MakeRefPath(project));
-				ps.WriteLine( "\t\t<Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>" );
-				ps.WriteLine( "\t\t<Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>" );
-				ps.WriteLine( "\t\t<ReferencePath>{0}</ReferencePath>", MakeRefPath( project ) );
-				ps.WriteLine( "\t\t<LastOpenVersion>{0}</LastOpenVersion>", this.ProductVersion );
-				ps.WriteLine( "\t\t<ProjectView>ProjectFiles</ProjectView>" );
-				ps.WriteLine( "\t\t<ProjectTrust>0</ProjectTrust>" );
-				ps.WriteLine( "\t</PropertyGroup>" );
+				//ps.WriteLine("  <{0}>", toolInfo.XMLTag);
+				//ps.WriteLine("    <Build>");
+				ps.WriteLine( "  <PropertyGroup>" );
+				//ps.WriteLine("      <Settings ReferencePath=\"{0}\">", MakeRefPath(project));
+				ps.WriteLine( "    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>" );
+				ps.WriteLine( "    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>" );
+				ps.WriteLine( "    <ReferencePath>{0}</ReferencePath>", MakeRefPath( project ) );
+				ps.WriteLine( "    <LastOpenVersion>{0}</LastOpenVersion>", this.ProductVersion );
+				ps.WriteLine( "    <ProjectView>ProjectFiles</ProjectView>" );
+				ps.WriteLine( "    <ProjectTrust>0</ProjectTrust>" );
+				ps.WriteLine( "  </PropertyGroup>" );
 				foreach ( ConfigurationNode conf in project.Configurations )
 				{
-					ps.Write( "\t<PropertyGroup" );
+					ps.Write( "  <PropertyGroup" );
 					ps.Write( " Condition = \" '$(Configuration)|$(Platform)' == '{0}|AnyCPU' \"", conf.Name );
 					ps.WriteLine( " />" );
 				}
-				//ps.WriteLine("\t\t\t</Settings>");
+				//ps.WriteLine("      </Settings>");
 
-				//ps.WriteLine("\t\t</Build>");
-				//ps.WriteLine("\t</{0}>", toolInfo.XMLTag);
+				//ps.WriteLine("    </Build>");
+				//ps.WriteLine("  </{0}>", toolInfo.XMLTag);
 				//ps.WriteLine("</VisualStudioProject>");
 				ps.WriteLine( "</Project>" );
 			}
@@ -599,8 +624,8 @@ namespace Prebuild.Core.Targets
 						toolInfo.Guid, project.Name, Helper.MakeFilePath( path, project.Name,
 						toolInfo.FileExtension ), project.Guid.ToString().ToUpper() );
 
-					//ss.WriteLine("\tProjectSection(ProjectDependencies) = postProject");
-					//ss.WriteLine("\tEndProjectSection");
+					//ss.WriteLine("  ProjectSection(ProjectDependencies) = postProject");
+					//ss.WriteLine("  EndProjectSection");
 
 					ss.WriteLine( "EndProject" );
 				}
@@ -617,16 +642,16 @@ namespace Prebuild.Core.Targets
 
 				ss.WriteLine( "Global" );
 
-				ss.WriteLine( "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution" );
+				ss.WriteLine( "  GlobalSection(SolutionConfigurationPlatforms) = preSolution" );
 				foreach ( ConfigurationNode conf in solution.Configurations )
 				{
-					ss.WriteLine( "\t\t{0}|Any CPU = {0}|Any CPU", conf.Name );
+					ss.WriteLine( "    {0}|Any CPU = {0}|Any CPU", conf.Name );
 				}
-				ss.WriteLine( "\tEndGlobalSection" );
+				ss.WriteLine( "  EndGlobalSection" );
 
 				if ( solution.Projects.Count > 1 )
 				{
-					ss.WriteLine( "\tGlobalSection(ProjectDependencies) = postSolution" );
+					ss.WriteLine( "  GlobalSection(ProjectDependencies) = postSolution" );
 				}
 				foreach ( ProjectNode project in solution.Projects )
 				{
@@ -636,7 +661,7 @@ namespace Prebuild.Core.Targets
 						if ( solution.ProjectsTable.ContainsKey( refr.Name ) )
 						{
 							ProjectNode refProject = (ProjectNode)solution.ProjectsTable[ refr.Name ];
-							ss.WriteLine( "\t\t({{{0}}}).{1} = ({{{2}}})",
+							ss.WriteLine( "    ({{{0}}}).{1} = ({{{2}}})",
 								project.Guid.ToString().ToUpper()
 								, i,
 								refProject.Guid.ToString().ToUpper()
@@ -646,26 +671,26 @@ namespace Prebuild.Core.Targets
 				}
 				if ( solution.Projects.Count > 1 )
 				{
-					ss.WriteLine( "\tEndGlobalSection" );
+					ss.WriteLine( "  EndGlobalSection" );
 				}
-				ss.WriteLine( "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution" );
+				ss.WriteLine( "  GlobalSection(ProjectConfigurationPlatforms) = postSolution" );
 				foreach ( ProjectNode project in solution.Projects )
 				{
 					foreach ( ConfigurationNode conf in solution.Configurations )
 					{
-						ss.WriteLine( "\t\t{{{0}}}.{1}|Any CPU.ActiveCfg = {1}|Any CPU",
+						ss.WriteLine( "    {{{0}}}.{1}|Any CPU.ActiveCfg = {1}|Any CPU",
 							project.Guid.ToString().ToUpper(),
 							conf.Name );
 
-						ss.WriteLine( "\t\t{{{0}}}.{1}|Any CPU.Build.0 = {1}|Any CPU",
+						ss.WriteLine( "    {{{0}}}.{1}|Any CPU.Build.0 = {1}|Any CPU",
 							project.Guid.ToString().ToUpper(),
 							conf.Name );
 					}
 				}
-				ss.WriteLine( "\tEndGlobalSection" );
-				ss.WriteLine( "\tGlobalSection(SolutionProperties) = preSolution" );
-				ss.WriteLine( "\t\tHideSolutionNode = FALSE" );
-				ss.WriteLine( "\tEndGlobalSection" );
+				ss.WriteLine( "  EndGlobalSection" );
+				ss.WriteLine( "  GlobalSection(SolutionProperties) = preSolution" );
+				ss.WriteLine( "    HideSolutionNode = FALSE" );
+				ss.WriteLine( "  EndGlobalSection" );
 
 				ss.WriteLine( "EndGlobal" );
 			}
