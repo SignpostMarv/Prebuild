@@ -317,7 +317,7 @@ namespace Prebuild.Core.Targets
 
 				foreach(ConfigurationNode conf in project.Configurations)
 				{
-					ss.Write("\t\t/define:{0}", conf.Options.CompilerDefines);
+					ss.WriteLine("\t\t/define:{0}", conf.Options.CompilerDefines.Replace(';', ',') + " \\");
 					break;
 				}
 				
