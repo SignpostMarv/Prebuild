@@ -97,6 +97,7 @@ namespace Prebuild.Core.Nodes
 		#region Fields
 
 		private string m_Path;
+		private string m_ResourceName = "";
 		private BuildAction m_BuildAction = BuildAction.Compile;
 		private bool m_Valid;
 		private SubType m_SubType = SubType.Code;
@@ -113,6 +114,17 @@ namespace Prebuild.Core.Nodes
 			get
 			{
 				return m_Path;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string ResourceName
+		{
+			get
+			{
+				return m_ResourceName;
 			}
 		}
 
@@ -163,6 +175,7 @@ namespace Prebuild.Core.Nodes
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
 				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
+			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 
 			if( node == null )
 			{

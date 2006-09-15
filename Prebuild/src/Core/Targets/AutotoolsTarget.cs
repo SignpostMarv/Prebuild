@@ -252,7 +252,14 @@ namespace Prebuild.Core.Targets
 					{
 						ss.Write("\tresgen ");
 						ss.Write(Helper.NormalizePath(Path.Combine(project.Path, file.Substring(0, file.LastIndexOf('.')) + ".resx "), '/'));
-						ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Name + ".resources"), '/'));
+						if (project.Files.GetResourceName(file) != "")
+						{
+								ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Files.GetResourceName(file) + ".resources"), '/'));
+						}
+						else
+						{
+							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + file.Substring(0, file.LastIndexOf('.')) + ".resources"), '/'));
+						}
 					}
 				}
 				ss.WriteLine("\t$(CSC)\t/out:" + Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "/$(BUILD_DIR)/$(CONFIG)/" + Helper.AssemblyFullName(project.AssemblyName, project.Type) + " \\");
@@ -288,7 +295,14 @@ namespace Prebuild.Core.Targets
 							if (project.Files.GetSubType(file).ToString() != "Code")
 							{
 								ss.Write("\t\t/resource:");
-								ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Name + ".resources"), '/') + "," + project.RootNamespace + "." + project.Name + ".resources" + " \\");
+								if (project.Files.GetResourceName(file) != "")
+								{
+									ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Files.GetResourceName(file) + ".resources"), '/') + "," + project.RootNamespace + "." + project.Files.GetResourceName(file) + ".resources" + " \\");
+								}
+								else
+								{
+									ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + file.Substring(0, file.LastIndexOf('.')) + ".resources"), '/') + "," + project.RootNamespace + "." + file.Substring(0, file.LastIndexOf('.')) + ".resources" + " \\");
+								}
 							}
 							break;
 					}

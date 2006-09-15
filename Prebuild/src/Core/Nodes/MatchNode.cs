@@ -56,6 +56,7 @@ namespace Prebuild.Core.Nodes
 		private Regex m_Regex;
 		private BuildAction m_BuildAction = BuildAction.Compile;
 		private SubType m_SubType = SubType.Code;
+		string m_ResourceName = "";
 
 		#endregion
 
@@ -103,6 +104,17 @@ namespace Prebuild.Core.Nodes
 			get
 			{
 				return m_SubType;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string ResourceName
+		{
+			get
+			{
+				return m_ResourceName;
 			}
 		}
 
@@ -198,6 +210,7 @@ namespace Prebuild.Core.Nodes
 				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
 			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
 				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
+			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 
 			if(path != null && path.Length == 0)
 			{
