@@ -65,14 +65,14 @@ namespace Prebuild.Core.Targets
 			string tmpPath = Helper.NormalizePath(path, '/');
 			Regex regex = new Regex(@"(\w):/(\w+)");
 			Match match = regex.Match(tmpPath);
-			if(match.Success || tmpPath[0] == '.' || tmpPath[0] == '/')
-			{
+			//if(match.Success || tmpPath[0] == '.' || tmpPath[0] == '/')
+			//{
 				tmpPath = Helper.NormalizePath(tmpPath);
-			}
-			else
-			{
-				tmpPath = Helper.NormalizePath("./" + tmpPath);
-			}
+			//}
+//			else
+//			{
+//				tmpPath = Helper.NormalizePath("./" + tmpPath);
+//			}
 
 			return tmpPath;
 		}
