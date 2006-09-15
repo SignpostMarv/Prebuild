@@ -53,6 +53,7 @@ namespace Prebuild.Core.Nodes
 		private StringCollection m_Files;
 		private Hashtable m_BuildActions;
 		private Hashtable m_SubTypes;
+		private Hashtable m_ResourceNames;
 
 		#endregion
 
@@ -66,6 +67,7 @@ namespace Prebuild.Core.Nodes
 			m_Files = new StringCollection();
 			m_BuildActions = new Hashtable();
 			m_SubTypes = new Hashtable();
+			m_ResourceNames = new Hashtable();
 		}
 
 		#endregion
@@ -120,6 +122,21 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public string GetResourceName(string file)
+		{
+			if(!m_ResourceNames.ContainsKey(file))
+			{
+				return "";
+			}
+
+			return (string)m_ResourceNames[file];
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
@@ -140,6 +157,7 @@ namespace Prebuild.Core.Nodes
 							m_Files.Add(fileNode.Path);
 							m_BuildActions[fileNode.Path] = fileNode.BuildAction;
 							m_SubTypes[fileNode.Path] = fileNode.SubType;
+							m_ResourceNames[fileNode.Path] = fileNode.ResourceName;
 						}
 					}
 				}
@@ -153,6 +171,7 @@ namespace Prebuild.Core.Nodes
 							m_Files.Add(file);
 							m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
 							m_SubTypes[file] = ((MatchNode)dataNode).SubType;
+							m_ResourceNames[file] = ((MatchNode)dataNode).ResourceName;
 						}
 					}
 				}
