@@ -379,7 +379,7 @@ namespace Prebuild.Core.Utilities
 		/// <returns></returns>
 		public static string NormalizePath(string path, char separatorCharacter)
 		{
-			if(path == null)
+			if(path == null || path == "" || path.Length < 1)
 			{
 				return "";
 			}
@@ -407,7 +407,7 @@ namespace Prebuild.Core.Utilities
 		/// <returns></returns>
 		public static string EndPath(string path, char separatorCharacter)
 		{
-			if(path == null || path.Length < 1)
+			if(path == null || path == "" || path.Length < 1)
 			{
 				return "";
 			}

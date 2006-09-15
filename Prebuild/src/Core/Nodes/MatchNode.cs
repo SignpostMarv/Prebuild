@@ -139,13 +139,28 @@ namespace Prebuild.Core.Nodes
 				if(!useRegex)
 				{
 					files = Directory.GetFiles(path, pattern);
+					//Console.WriteLine("Path: " + path);
+					//Console.WriteLine("Pattern: " + pattern);
 					if(files != null)
 					{
-						m_Files.AddRange(files);
-//						foreach (string file in files)
-//						{
-//							Console.WriteLine(file);
-//						}
+						string fileTemp;
+						//m_Files.AddRange(files);
+						foreach (string file in files)
+						{
+
+							if (file.Substring(0,2) == "./" || file.Substring(0,2) == ".\\")
+							{
+								//Console.WriteLine("Hi There!");
+								fileTemp = file.Substring(2);
+								}
+							else
+							{
+								fileTemp = file;
+							}
+							
+							m_Files.Add(fileTemp);
+							//Console.WriteLine(fileTemp);
+						}
 					}
 					else
 					{
@@ -173,6 +188,8 @@ namespace Prebuild.Core.Nodes
 					{
 						foreach(string str in dirs)
 						{
+							//Console.WriteLine("Str in dirs: " + str);
+
 							RecurseDirectories(Helper.NormalizePath(str), pattern, recurse, useRegex);
 						}
 					}
@@ -223,7 +240,9 @@ namespace Prebuild.Core.Nodes
 				throw new WarningException("Match must have a 'pattern' attribute");
 			}
 
+			//Console.WriteLine("pre Normalize path: " + path);
 			path = Helper.NormalizePath(path);
+			//Console.WriteLine("post Normalize path: " + path);
 			if(!Directory.Exists(path))
 			{
 				throw new WarningException("Match path does not exist: {0}", path);
@@ -249,10 +268,10 @@ namespace Prebuild.Core.Nodes
 				if(dataNode is ExcludeNode)
 				{
 					ExcludeNode excludeNode = (ExcludeNode)dataNode;
-					if (m_Files.Contains(Helper.NormalizePath(".\\" + excludeNode.Name)))
+					if (m_Files.Contains(Helper.NormalizePath(excludeNode.Name)))
 					{
 						//Console.WriteLine("Exclude: " + ".\\" + excludeNode.Name);
-						m_Files.Remove(Helper.NormalizePath(".\\" + excludeNode.Name));
+						m_Files.Remove(Helper.NormalizePath(excludeNode.Name));
 					}
 				}
 			}

@@ -254,7 +254,7 @@ namespace Prebuild.Core.Targets
 						ss.Write(Helper.NormalizePath(Path.Combine(project.Path, file.Substring(0, file.LastIndexOf('.')) + ".resx "), '/'));
 						if (project.Files.GetResourceName(file) != "")
 						{
-								ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Files.GetResourceName(file) + ".resources"), '/'));
+							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, project.RootNamespace + "." + project.Files.GetResourceName(file) + ".resources"), '/'));
 						}
 						else
 						{
@@ -349,7 +349,7 @@ namespace Prebuild.Core.Targets
 					{
 						case BuildAction.Compile:
 							ss.WriteLine("\t\t\\");
-							ss.Write("\t\t" + NormalizePath(Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "\\\\" + file));
+							ss.Write("\t\t" + NormalizePath(Path.Combine(Helper.MakePathRelativeTo(solution.FullPath, project.Path), file)));
 							break;
 						default:
 							break;
