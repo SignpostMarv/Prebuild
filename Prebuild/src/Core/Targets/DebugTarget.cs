@@ -58,7 +58,9 @@ namespace Prebuild.Core.Targets
 			{
 				Console.WriteLine("Solution	[ {0}, {1} ]", s.Name, s.Path);
 				foreach(string file	in s.Files)
+{
 					Console.WriteLine("\tFile [	{0}	]",	file);
+}
 
 				foreach(ProjectNode	proj in	s.Projects)
 				{

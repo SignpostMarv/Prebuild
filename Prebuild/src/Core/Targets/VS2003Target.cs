@@ -364,8 +364,6 @@ namespace Prebuild.Core.Targets
 					{
 						ps.WriteLine("                <File");
 						ps.WriteLine("                    RelPath = \"{0}\"", fileName.Substring(0, fileName.LastIndexOf('.')) + ".resx");
-						//Console.WriteLine("Last index: " + fileName.LastIndexOf('\\'));
-						//Console.WriteLine("Length: " + fileName.Length);
 						int slash = fileName.LastIndexOf('\\');
 						if (slash == -1)
 						{
