@@ -523,12 +523,25 @@ namespace Prebuild.Core.Targets
 					//else
 					//{
 						ps.Write( "    <{0} ", project.Files.GetBuildAction( file ) );
-						ps.WriteLine( "Include=\"{0}\">", file.Replace( ".\\", "" ) );
+						//ps.WriteLine( "Include=\"{0}\">", file.Replace( ".\\", "" ) );
+					ps.WriteLine( "Include=\"{0}\">", file);
 					
 						//if (project.Files.GetBuildAction( file ) != BuildAction.None)
 						//{
+					if (project.Files.GetIsLink(file))
+					{
+						ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
+					}
+					else if (project.Files.GetBuildAction(file) != BuildAction.None)
+					{
 						ps.WriteLine( "      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+					}
 						//}
+					if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
+					{
+						ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
+					}
+
 						ps.WriteLine( "    </{0}>", project.Files.GetBuildAction( file ) );
 
 						//                    ps.WriteLine("        <File");

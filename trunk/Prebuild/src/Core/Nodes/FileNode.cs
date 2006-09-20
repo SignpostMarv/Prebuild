@@ -88,6 +88,13 @@ namespace Prebuild.Core.Nodes
 		UserControl
 	}
 
+	public enum CopyToOutput
+	{
+		Never,
+		Always,
+		PreserveNewest
+	}
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -101,6 +108,9 @@ namespace Prebuild.Core.Nodes
 		private BuildAction m_BuildAction = BuildAction.Compile;
 		private bool m_Valid;
 		private SubType m_SubType = SubType.Code;
+		private CopyToOutput m_CopyToOutput = CopyToOutput.Never;
+		private bool m_Link = false;
+
 
 		#endregion
 
@@ -136,6 +146,22 @@ namespace Prebuild.Core.Nodes
 			get
 			{
 				return m_BuildAction;
+			}
+		}
+
+		public CopyToOutput CopyToOutput
+		{
+			get
+			{
+				return this.m_CopyToOutput;
+			}
+		}
+
+		public bool IsLink
+		{
+			get
+			{
+				return this.m_Link;
 			}
 		}
 
@@ -176,6 +202,8 @@ namespace Prebuild.Core.Nodes
 			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
 				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
+			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
+			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
 
 			if( node == null )
 			{
