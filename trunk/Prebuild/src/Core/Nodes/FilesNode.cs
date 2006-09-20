@@ -191,7 +191,6 @@ namespace Prebuild.Core.Nodes
 				{
 					foreach(string file in ((MatchNode)dataNode).Files)
 					{
-						//Console.WriteLine("fileNode: " + file);
 						if (!m_Files.Contains(file))
 						{
 							m_Files.Add(file);
