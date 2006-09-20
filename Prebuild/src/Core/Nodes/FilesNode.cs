@@ -54,6 +54,9 @@ namespace Prebuild.Core.Nodes
 		private Hashtable m_BuildActions;
 		private Hashtable m_SubTypes;
 		private Hashtable m_ResourceNames;
+		private Hashtable m_CopyToOutputs;
+		private Hashtable m_Links;
+
 
 		#endregion
 
@@ -68,6 +71,8 @@ namespace Prebuild.Core.Nodes
 			m_BuildActions = new Hashtable();
 			m_SubTypes = new Hashtable();
 			m_ResourceNames = new Hashtable();
+			m_CopyToOutputs = new Hashtable();
+			m_Links = new Hashtable();
 		}
 
 		#endregion
@@ -102,6 +107,24 @@ namespace Prebuild.Core.Nodes
 			}
 
 			return (BuildAction)m_BuildActions[file];
+		}
+
+		public CopyToOutput GetCopyToOutput(string file)
+		{
+			if (!this.m_CopyToOutputs.ContainsKey(file))
+			{
+				return CopyToOutput.Never;
+			}
+			return (CopyToOutput) this.m_CopyToOutputs[file];
+		}
+
+		public bool GetIsLink(string file)
+		{
+			if (!this.m_Links.ContainsKey(file))
+			{
+				return false;
+			}
+			return (bool) this.m_Links[file];
 		}
 
 		/// <summary>
@@ -158,6 +181,9 @@ namespace Prebuild.Core.Nodes
 							m_BuildActions[fileNode.Path] = fileNode.BuildAction;
 							m_SubTypes[fileNode.Path] = fileNode.SubType;
 							m_ResourceNames[fileNode.Path] = fileNode.ResourceName;
+							this.m_Links[fileNode.Path] = fileNode.IsLink;
+							this.m_CopyToOutputs[fileNode.Path] = fileNode.CopyToOutput;
+
 						}
 					}
 				}
@@ -172,6 +198,9 @@ namespace Prebuild.Core.Nodes
 							m_BuildActions[file] = ((MatchNode)dataNode).BuildAction;
 							m_SubTypes[file] = ((MatchNode)dataNode).SubType;
 							m_ResourceNames[file] = ((MatchNode)dataNode).ResourceName;
+							this.m_Links[file] = ((MatchNode) dataNode).IsLink;
+							this.m_CopyToOutputs[file] = ((MatchNode) dataNode).CopyToOutput;
+
 						}
 					}
 				}

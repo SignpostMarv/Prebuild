@@ -57,6 +57,9 @@ namespace Prebuild.Core.Nodes
 		private BuildAction m_BuildAction = BuildAction.Compile;
 		private SubType m_SubType = SubType.Code;
 		string m_ResourceName = "";
+		private CopyToOutput m_CopyToOutput;
+		private bool m_Link;
+
 
 		#endregion
 
@@ -107,6 +110,22 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		public CopyToOutput CopyToOutput
+		{
+			get
+			{
+				return this.m_CopyToOutput;
+			}
+		}
+
+		public bool IsLink
+		{
+			get
+			{
+				return this.m_Link;
+			}
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -148,9 +167,13 @@ namespace Prebuild.Core.Nodes
 						foreach (string file in files)
 						{
 
+							//if (file == "GlobalAssemblyInfo.cs")
+							//{
+								Console.WriteLine(file);
+							//}
 							if (file.Substring(0,2) == "./" || file.Substring(0,2) == ".\\")
 							{
-								//Console.WriteLine("Hi There!");
+								Console.WriteLine("Hi There!" + file);
 								fileTemp = file.Substring(2);
 								}
 							else
@@ -228,6 +251,9 @@ namespace Prebuild.Core.Nodes
 			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
 				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
+			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
+			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
+
 
 			if(path != null && path.Length == 0)
 			{
