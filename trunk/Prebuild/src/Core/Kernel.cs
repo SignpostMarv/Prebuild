@@ -333,10 +333,20 @@ namespace Prebuild.Core
             
 				
 				XmlTextReader reader = new XmlTextReader(path);
-				
-				Core.Parse.Preprocessor pre = new Core.Parse.Preprocessor();
+
+                Core.Parse.Preprocessor pre = new Core.Parse.Preprocessor();
+
+                //register command line arguments as XML variables
+                IDictionaryEnumerator dict = m_CommandLine.GetEnumerator();
+                while (dict.MoveNext())
+                {
+                    string name = dict.Key.ToString().Trim();
+                    if (name.Length > 0)
+                        pre.RegisterVariable(name, dict.Value.ToString());
+                }
+
 				string xml = pre.Process(reader);//remove script and evaulate pre-proccessing to get schema-conforming XML
-				
+
 				
 				XmlDocument doc = new XmlDocument();
 				try
