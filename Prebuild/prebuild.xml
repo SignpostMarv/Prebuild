@@ -61,6 +61,7 @@
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
 	    </Configuration>
+	    <Reference name="System.EnterpriseServices" />
 	    <Reference name="System.Xml" />
 	    <Reference name="System" />
 	    <Files>
