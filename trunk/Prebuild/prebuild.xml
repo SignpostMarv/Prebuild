@@ -3,10 +3,10 @@
     <Solution name="Prebuild">
 	<Configuration name="Debug">
 	    <Options>
-		<?if OS = "Win32" ?>
-		<CompilerDefines>DEBUG;TRACE;WIN32;NET</CompilerDefines>
+		<?if build = "NET_1_1" ?>
+		<CompilerDefines>DEBUG;TRACE;NET_1_1</CompilerDefines>
 		<?else ?>
-		<CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
+		<CompilerDefines>DEBUG;TRACE</CompilerDefines>
 		<?endif ?>
 		<OptimizeCode>false</OptimizeCode>
 		<OutputPath>bin/Debug</OutputPath>
@@ -17,10 +17,10 @@
 	</Configuration>
 	<Configuration name="Release">
 	    <Options>
-		<?if OS = "Win32" ?>
-		<CompilerDefines>TRACE;WIN32;NET</CompilerDefines>
+		<?if build = "NET_1_1" ?>
+		<CompilerDefines>TRACE;NET_1_1</CompilerDefines>
 		<?else ?>
-		<CompilerDefines>TRACE;POSIX</CompilerDefines>
+		<CompilerDefines>TRACE</CompilerDefines>
 		<?endif ?>
 		<OutputPath>bin/Release</OutputPath>
 		<OptimizeCode>true</OptimizeCode>
@@ -35,28 +35,30 @@
 	<Project name="Prebuild" path="src" language="C#" assemblyName="Prebuild" icon="App.ico" type="Exe" rootNamespace="Prebuild" startupObject="Prebuild.Prebuild">
 	    <Configuration name="Debug">
 		<Options>
-		    <?if OS = "Win32" ?>
-		    <CompilerDefines>DEBUG;TRACE;WIN32;NET</CompilerDefines>
+		    <?if build = "NET_1_1" ?>
+		    <CompilerDefines>DEBUG;TRACE;NET_1_1</CompilerDefines>
 		    <?else ?>
-		    <CompilerDefines>DEBUG;TRACE;POSIX</CompilerDefines>
+		    <CompilerDefines>DEBUG;TRACE</CompilerDefines>
 		    <?endif ?>
 		    <OptimizeCode>false</OptimizeCode>
 		    <OutputPath>bin/Debug</OutputPath>
 		    <DebugInformation>true</DebugInformation>
+		    <KeyFile>../../Prebuild.snk</KeyFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
 	    </Configuration>
 	    <Configuration name="Release">
 		<Options>
-		    <?if OS = "Win32" ?>
-		    <CompilerDefines>TRACE;WIN32;NET</CompilerDefines>
+		    <?if build = "NET_1_1" ?>
+		    <CompilerDefines>TRACE;NET_1_1</CompilerDefines>
 		    <?else ?>
-		    <CompilerDefines>TRACE;POSIX</CompilerDefines>
+		    <CompilerDefines>TRACE</CompilerDefines>
 		    <?endif ?>
 		    <OutputPath>bin/Release</OutputPath>
 		    <OptimizeCode>true</OptimizeCode>
 		    <DebugInformation>false</DebugInformation>
+		    <KeyFile>../../Prebuild.snk</KeyFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>

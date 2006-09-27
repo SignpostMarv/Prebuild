@@ -44,7 +44,6 @@ using System.Resources;
 [assembly: ComVisible(false)]
 [assembly: FileIOPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
 [assembly: CLSCompliant(true)]
-[assembly: AssemblyKeyFile(@"../../Prebuild.snk")]
 
 //
 // General Information about an assembly is controlled through the following 
@@ -60,6 +59,12 @@ using System.Resources;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
+#if NET_1_1
+[assembly: AssemblyKeyFile(@"../../Prebuild.snk")]
+[assembly: AssemblyVersion("1.3.2.*")]
+#else
+[assembly: AssemblyVersion("2.0.0.*")]
+#endif
 
 //
 // Version information for an assembly consists of the following four values:
@@ -71,8 +76,6 @@ using System.Resources;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.3.2.*")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
