@@ -413,6 +413,7 @@ namespace Prebuild.Core.Targets
 				//    ps.WriteLine("        NoStandardLibraries = \"false\"");
 
 				ps.WriteLine( "    <OutputType>{0}</OutputType>", project.Type.ToString() );
+				ps.WriteLine( "    <AppDesignerFolder>{0}</AppDesignerFolder>", project.DesignerFolder );
 				ps.WriteLine( "    <RootNamespace>{0}</RootNamespace>", project.RootNamespace );
 				ps.WriteLine( "    <StartupObject>{0}</StartupObject>", project.StartupObject );
 				//ps.WriteLine("      >");

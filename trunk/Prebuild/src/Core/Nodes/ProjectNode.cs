@@ -90,6 +90,7 @@ namespace Prebuild.Core.Nodes
 		private string m_FullPath = "";
 		private string m_AssemblyName;
 		private string m_AppIcon = "";
+		private string m_DesignerFolder = "";
 		private string m_Language = "C#";
 		private ProjectType m_Type = ProjectType.Exe;
 		private ClrRuntime m_Runtime = ClrRuntime.Microsoft;
@@ -190,6 +191,17 @@ namespace Prebuild.Core.Nodes
 			get 
 			{
 				return m_AppIcon;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string DesignerFolder 
+		{
+			get 
+			{
+				return m_DesignerFolder;
 			}
 		}
 
@@ -388,6 +400,7 @@ namespace Prebuild.Core.Nodes
 			m_Path = Helper.AttributeValue(node, "path", m_Path);
 			m_FilterGroups = Helper.AttributeValue(node, "filterGroups", m_FilterGroups);
 			m_AppIcon = Helper.AttributeValue(node, "icon", m_AppIcon);
+			m_DesignerFolder = Helper.AttributeValue(node, "designerFolder", m_DesignerFolder);
 			m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
 			m_Language = Helper.AttributeValue(node, "language", m_Language);
 			m_Type = (ProjectType)Helper.EnumAttributeValue(node, "type", typeof(ProjectType), m_Type);
