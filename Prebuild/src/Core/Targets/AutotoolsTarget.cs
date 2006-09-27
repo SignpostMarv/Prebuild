@@ -107,17 +107,47 @@ namespace Prebuild.Core.Targets
 					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
 					if (assem != null)
 					{
-						ret += (refr.Name + ".dll");
+						int index = refr.Name.IndexOf(",");
+						if ( index > 0)
+						{
+							ret += assem.Location;
+							//Console.WriteLine("Location1: " + assem.Location);
+						}
+						else
+						{
+							ret += (refr.Name + ".dll");
+							//Console.WriteLine("Location2: " + assem.Location);
+						}
 					}
 					else
 					{
-						ret += (refr.Name + ".dll");
+						int index = refr.Name.IndexOf(",");
+						if ( index > 0)
+						{
+							ret += refr.Name.Substring(0, index) + ".dll";
+							//Console.WriteLine("Location3: " + assem.Location);
+						}
+						else
+						{
+							ret += (refr.Name + ".dll");
+							//Console.WriteLine("Location4: " + assem.Location);
+						}
 					}
 				}
 				catch (System.NullReferenceException e)
 				{
 					e.ToString();
-					ret += refr.Name + ".dll";
+					int index = refr.Name.IndexOf(",");
+					if ( index > 0)
+					{
+						ret += refr.Name.Substring(0, index) + ".dll";
+						//Console.WriteLine("Location5: " + assem.Location);
+					}
+					else
+					{
+						ret += (refr.Name + ".dll");
+						//Console.WriteLine("Location6: " + assem.Location);
+					}
 				}
 			}
 			return ret;
