@@ -43,7 +43,7 @@
 		    <OptimizeCode>false</OptimizeCode>
 		    <OutputPath>bin/Debug</OutputPath>
 		    <DebugInformation>true</DebugInformation>
-		    <KeyFile>../../Prebuild.snk</KeyFile>
+		    <KeyFile>Prebuild.snk</KeyFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
@@ -58,7 +58,7 @@
 		    <OutputPath>bin/Release</OutputPath>
 		    <OptimizeCode>true</OptimizeCode>
 		    <DebugInformation>false</DebugInformation>
-		    <KeyFile>../../Prebuild.snk</KeyFile>
+		    <KeyFile>Prebuild.snk</KeyFile>
 		    <SuppressWarnings>1595</SuppressWarnings>
 		    <PostBuildEvent>copy Prebuild.exe ../../..</PostBuildEvent>
 		</Options>
