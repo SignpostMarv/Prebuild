@@ -278,7 +278,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("\tmkdir -p " + Helper.MakePathRelativeTo(solution.FullPath, project.Path) + "/$(BUILD_DIR)/$(CONFIG)/");
 				foreach(string file in project.Files)
 				{
-					if (project.Files.GetSubType(file).ToString() != "Code")
+					if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
 					{
 						ss.Write("\tresgen ");
 						ss.Write(Helper.NormalizePath(Path.Combine(project.Path, file.Substring(0, file.LastIndexOf('.')) + ".resx "), '/'));
@@ -322,7 +322,7 @@ namespace Prebuild.Core.Targets
 							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/') + "," + file + " \\");
 							break;
 						default:
-							if (project.Files.GetSubType(file).ToString() != "Code")
+							if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
 							{
 								ss.Write("\t\t/resource:");
 								if (project.Files.GetResourceName(file) != "")
