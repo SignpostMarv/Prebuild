@@ -52,7 +52,7 @@ namespace Prebuild.Core.Targets
 		string name;
 		string guid;
 		string fileExtension;
-        string xmlTag;
+		string xmlTag;
 		string importProject;
 
 		/// <summary>
@@ -110,11 +110,11 @@ namespace Prebuild.Core.Targets
 		{
 			get
 			{
-                return xmlTag;
+				return xmlTag;
 			}
 			set
 			{
-                xmlTag = value;
+				xmlTag = value;
 			}
 		}
 
@@ -126,11 +126,11 @@ namespace Prebuild.Core.Targets
 		{
 			get
 			{
-                return importProject;
+				return importProject;
 			}
 			set
 			{
-                importProject = value;
+				importProject = value;
 			}
 		}
 
@@ -141,14 +141,14 @@ namespace Prebuild.Core.Targets
 		/// <param name="guid">The GUID.</param>
 		/// <param name="fileExtension">The file extension.</param>
 		/// <param name="xml">The XML.</param>
-        /// <param name="importProject">The import project.</param>
+		/// <param name="importProject">The import project.</param>
 		public ToolInfo(string name, string guid, string fileExtension, string xml, string importProject)
 		{
 			this.name = name;
 			this.guid = guid;
 			this.fileExtension = fileExtension;
-            this.xmlTag = xml;
-            this.importProject = importProject;
+			this.xmlTag = xml;
+			this.importProject = importProject;
 		}
 
 		/// <summary>
@@ -163,8 +163,8 @@ namespace Prebuild.Core.Targets
 			this.name = name;
 			this.guid = guid;
 			this.fileExtension = fileExtension;
-            this.xmlTag = xml;
-            this.importProject = "$(MSBuildBinPath)\\Microsoft." + xml + ".Targets";
+			this.xmlTag = xml;
+			this.importProject = "$(MSBuildBinPath)\\Microsoft." + xml + ".Targets";
 		}
 
 		/// <summary>
@@ -182,7 +182,7 @@ namespace Prebuild.Core.Targets
 				return false;
                 
 			ToolInfo c = (ToolInfo)obj;
-            return ((this.name == c.name) && (this.guid == c.guid) && (this.fileExtension == c.fileExtension) && (this.importProject == c.importProject));
+			return ((this.name == c.name) && (this.guid == c.guid) && (this.fileExtension == c.fileExtension) && (this.importProject == c.importProject));
 		}
 
 		/// <summary>
@@ -193,7 +193,7 @@ namespace Prebuild.Core.Targets
 		/// <returns>True if toolInfos are equal</returns>
 		public static bool operator== (ToolInfo c1, ToolInfo c2)
 		{
-            return ((c1.name == c2.name) && (c1.guid == c2.guid) && (c1.fileExtension == c2.fileExtension) && (c1.importProject == c2.importProject) && (c1.xmlTag == c2.xmlTag));
+			return ((c1.name == c2.name) && (c1.guid == c2.guid) && (c1.fileExtension == c2.fileExtension) && (c1.importProject == c2.importProject) && (c1.xmlTag == c2.xmlTag));
 		}
 
 		/// <summary>
@@ -213,7 +213,7 @@ namespace Prebuild.Core.Targets
 		/// <returns>Hash code</returns>
 		public override int GetHashCode()
 		{
-            return name.GetHashCode() ^ guid.GetHashCode() ^ this.fileExtension.GetHashCode() ^ this.importProject.GetHashCode() ^ this.xmlTag.GetHashCode();
+			return name.GetHashCode() ^ guid.GetHashCode() ^ this.fileExtension.GetHashCode() ^ this.importProject.GetHashCode() ^ this.xmlTag.GetHashCode();
 
 		}
 	}
@@ -327,8 +327,8 @@ namespace Prebuild.Core.Targets
 			this.tools = new Hashtable();
 
 			this.tools[ "C#" ] = new ToolInfo( "C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP", "$(MSBuildBinPath)\\Microsoft.CSHARP.Targets" );
-            this.tools[ "Boo" ] = new ToolInfo( "Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets" );
-            this.tools[ "VisualBasic" ] = new ToolInfo( "VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets" );
+			this.tools[ "Boo" ] = new ToolInfo( "Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets" );
+			this.tools[ "VisualBasic" ] = new ToolInfo( "VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets" );
 		}
 
 		#endregion
@@ -465,8 +465,8 @@ namespace Prebuild.Core.Targets
 						ps.Write( "    <Reference" );
 						ps.WriteLine( " Include=\"{0}\">", refr.Name );
 						ps.WriteLine( "      <Name>{0}</Name>", refr.Name );
-                        // TODO: Allow reference to *.exe files
-                        ps.WriteLine( "      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo( project.FullPath, refr.Path + "\\" + refr.Name + ".dll" ) );
+						// TODO: Allow reference to *.exe files
+						ps.WriteLine( "      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo( project.FullPath, refr.Path + "\\" + refr.Name + ".dll" ) );
 						ps.WriteLine( "    </Reference>" );
 					}
 				}
@@ -479,7 +479,7 @@ namespace Prebuild.Core.Targets
 					if ( solution.ProjectsTable.ContainsKey( refr.Name ) )
 					{
 						ProjectNode refProject = (ProjectNode)solution.ProjectsTable[ refr.Name ];
-                        // TODO: Allow reference to visual basic projects
+						// TODO: Allow reference to visual basic projects
 						ps.WriteLine( "    <ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo( project.FullPath, Helper.MakeFilePath( refProject.FullPath, refProject.Name, "csproj" ) ) );
 						//<ProjectReference Include="..\..\RealmForge\Utility\RealmForge.Utility.csproj">
 						ps.WriteLine( "      <Name>{0}</Name>", refProject.Name );
@@ -503,11 +503,16 @@ namespace Prebuild.Core.Targets
 				//                ps.WriteLine("      <Include>");
 				foreach ( string file in project.Files )
 				{
-					if (project.Files.GetSubType(file).ToString() != "Code")
+//					if (file == "Properties\\Bind.Designer.cs")
+//					{
+//						Console.WriteLine("Wait a minute!");
+//						Console.WriteLine(project.Files.GetSubType(file).ToString());
+//					}
+
+					if (project.Files.GetSubType(file).ToString() != "Code" && project.Files.GetSubType(file).ToString() != "Settings")
 					{
 						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
-						//						//Console.WriteLine("Last index: " + fileName.LastIndexOf('\\'));
-						//						//Console.WriteLine("Length: " + fileName.Length);
+												
 						int slash = file.LastIndexOf('\\');
 						if (slash == -1)
 						{
@@ -521,27 +526,63 @@ namespace Prebuild.Core.Targets
 						ps.WriteLine("    </EmbeddedResource>");
 						//
 					}
-					//else
-					//{
+					if (project.Files.GetSubType(file).ToString() == "Settings")
+					{
+						//Console.WriteLine("File: " + file);
+						//Console.WriteLine("Last index: " + file.LastIndexOf('.'));
+						//Console.WriteLine("Length: " + file.Length);
+						ps.Write( "    <{0} ", project.Files.GetBuildAction( file ) );
+						ps.WriteLine( "Include=\"{0}\">", file);
+						int slash = file.LastIndexOf('\\');
+						string fileName = file.Substring(slash + 1, file.Length - slash - 1);
+						if (project.Files.GetBuildAction( file ) == BuildAction.None)
+						{
+							ps.WriteLine("      <Generator>SettingsSingleFileGenerator</Generator>");
+							
+							//Console.WriteLine("FileName: " + fileName);
+							//Console.WriteLine("FileNameMain: " + fileName.Substring(0, fileName.LastIndexOf('.')));
+							//Console.WriteLine("FileNameExt: " + fileName.Substring(fileName.LastIndexOf('.'), fileName.Length - fileName.LastIndexOf('.')));
+							if (slash == -1)
+							{
+								ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
+							}
+							else
+							{
+								ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
+							}
+						}
+						else
+						{
+							ps.WriteLine("      <SubType>Code</SubType>");
+							ps.WriteLine("      <AutoGen>True</AutoGen>");
+							ps.WriteLine("      <DesignTimeSharedInput>True</DesignTimeSharedInput>");
+							string fileNameShort = fileName.Substring(0,fileName.LastIndexOf('.'));
+							string fileNameShorter = fileNameShort.Substring(0,fileNameShort.LastIndexOf('.'));
+							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", fileNameShorter + ".settings");
+						}
+						ps.WriteLine( "    </{0}>", project.Files.GetBuildAction( file ) );
+					}
+					else
+					{
 						ps.Write( "    <{0} ", project.Files.GetBuildAction( file ) );
 						//ps.WriteLine( "Include=\"{0}\">", file.Replace( ".\\", "" ) );
-					ps.WriteLine( "Include=\"{0}\">", file);
+						ps.WriteLine( "Include=\"{0}\">", file);
 					
 						//if (project.Files.GetBuildAction( file ) != BuildAction.None)
 						//{
-					if (project.Files.GetIsLink(file))
-					{
-						ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
-					}
-					else if (project.Files.GetBuildAction(file) != BuildAction.None)
-					{
-						ps.WriteLine( "      <SubType>{0}</SubType>", project.Files.GetSubType(file));
-					}
+						if (project.Files.GetIsLink(file))
+						{
+							ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
+						}
+						else if (project.Files.GetBuildAction(file) != BuildAction.None)
+						{
+							ps.WriteLine( "      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+						}
 						//}
-					if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
-					{
-						ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
-					}
+						if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
+						{
+							ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
+						}
 
 						ps.WriteLine( "    </{0}>", project.Files.GetBuildAction( file ) );
 
@@ -550,12 +591,12 @@ namespace Prebuild.Core.Targets
 						//                    ps.WriteLine("          SubType = \"Code\"");
 						//                    ps.WriteLine("          BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
 						//                    ps.WriteLine("        />");
-					//}
+					}
 				}
 				//                ps.WriteLine("      </Include>");
 
 				ps.WriteLine( "  </ItemGroup>" );
-                ps.WriteLine("  <Import Project=\"" + toolInfo.ImportProject + "\" />");
+				ps.WriteLine("  <Import Project=\"" + toolInfo.ImportProject + "\" />");
 				ps.WriteLine( "  <PropertyGroup>" );
 				ps.WriteLine( "    <PreBuildEvent>" );
 				ps.WriteLine( "    </PreBuildEvent>" );
@@ -644,15 +685,15 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine( "EndProject" );
 				}
 
-                if ( solution.Files != null )
-                {
-                    ss.WriteLine( "Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "{468F1D07-AD17-4CC3-ABD0-2CA268E4E1A6}" );
-                    ss.WriteLine( "\tProjectSection(SolutionItems) = preProject" );
-                    foreach ( string file in solution.Files )
-                        ss.WriteLine( "\t\t{0} = {0}", file );
-                    ss.WriteLine( "\tEndProjectSection" );
-                    ss.WriteLine( "EndProject" );
-                }
+				if ( solution.Files != null )
+				{
+					ss.WriteLine( "Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "{468F1D07-AD17-4CC3-ABD0-2CA268E4E1A6}" );
+					ss.WriteLine( "\tProjectSection(SolutionItems) = preProject" );
+					foreach ( string file in solution.Files )
+						ss.WriteLine( "\t\t{0} = {0}", file );
+					ss.WriteLine( "\tEndProjectSection" );
+					ss.WriteLine( "EndProject" );
+				}
 
 				ss.WriteLine( "Global" );
 
