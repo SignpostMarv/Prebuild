@@ -85,6 +85,10 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
+		Settings,
+		/// <summary>
+		/// 
+		/// </summary>
 		UserControl
 	}
 
