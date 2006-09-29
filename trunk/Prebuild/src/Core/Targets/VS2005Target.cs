@@ -509,7 +509,7 @@ namespace Prebuild.Core.Targets
 //						Console.WriteLine(project.Files.GetSubType(file).ToString());
 //					}
 
-					if (project.Files.GetSubType(file).ToString() != "Code" && project.Files.GetSubType(file).ToString() != "Settings")
+					if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
 					{
 						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
 												

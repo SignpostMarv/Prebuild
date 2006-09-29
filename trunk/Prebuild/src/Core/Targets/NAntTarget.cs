@@ -307,7 +307,7 @@ namespace Prebuild.Core.Targets
 							ss.WriteLine("                {0}", "<include name=\"" + Helper.NormalizePath(PrependPath(file), '/') + "\" />");
 							break;
 						default:
-							if (project.Files.GetSubType(file).ToString() != "Code")
+							if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
 							{
 								ss.WriteLine("                <include name=\"{0}\" />", file.Substring(0, file.LastIndexOf('.')) + ".resx"); 
 							}
