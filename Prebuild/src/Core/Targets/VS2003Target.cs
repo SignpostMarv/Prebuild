@@ -360,7 +360,7 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("                    BuildAction = \"{0}\"", project.Files.GetBuildAction(file));
 					ps.WriteLine("                />");
 
-					if (project.Files.GetSubType(file).ToString() != "Code")
+					if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
 					{
 						ps.WriteLine("                <File");
 						ps.WriteLine("                    RelPath = \"{0}\"", fileName.Substring(0, fileName.LastIndexOf('.')) + ".resx");
