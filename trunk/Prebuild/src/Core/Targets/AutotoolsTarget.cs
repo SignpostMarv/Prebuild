@@ -725,7 +725,7 @@ namespace Prebuild.Core.Targets
 		private void CleanProject(ProjectNode project)
 		{
 			m_Kernel.Log.Write("...Cleaning project: {0}", project.Name);
-			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
+			string projectFile = Helper.MakeFilePath(project.FullPath, "Include", "am");
 			Helper.DeleteIfExists(projectFile);
 		}
 
@@ -733,7 +733,19 @@ namespace Prebuild.Core.Targets
 		{
 			m_Kernel.Log.Write("Cleaning Autotools make files for", solution.Name);
 
-			string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "build");
+			string slnFile = Helper.MakeFilePath(solution.FullPath, "Makefile", "am");
+			Helper.DeleteIfExists(slnFile);
+
+			slnFile = Helper.MakeFilePath(solution.FullPath, "Makefile", "in");
+			Helper.DeleteIfExists(slnFile);
+
+			slnFile = Helper.MakeFilePath(solution.FullPath, "configure", "ac");
+			Helper.DeleteIfExists(slnFile);
+
+			slnFile = Helper.MakeFilePath(solution.FullPath, "configure");
+			Helper.DeleteIfExists(slnFile);
+
+			slnFile = Helper.MakeFilePath(solution.FullPath, "Makefile");
 			Helper.DeleteIfExists(slnFile);
 
 			foreach(ProjectNode project in solution.Projects)
