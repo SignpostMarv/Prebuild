@@ -1,0 +1,5 @@
+2006-11-03  C.J. Adams-Collier  <cjcollier@colliertech.org>
+	* Added a TODO file
+	* Added a ChangeLog file
+	* applied some fixes for autotools gac and pkg-config installation
+	problems
