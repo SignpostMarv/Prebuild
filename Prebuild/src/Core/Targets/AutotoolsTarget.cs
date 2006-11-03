@@ -333,7 +333,7 @@ namespace Prebuild.Core.Targets
 					{
 						case BuildAction.EmbeddedResource:
 							ss.Write("\t\t/resource:");
-							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/'));
+							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/') + " \\");
 							break;
 						default:
 							if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
