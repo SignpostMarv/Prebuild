@@ -1,25 +1,39 @@
 #region BSD License
 /*
-Copyright (c) 2004 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
 
-Redistribution and use in source and binary forms, with or without modification, are permitted
-provided that the following conditions are met:
+Copyright (c) 2004 - 2006
+Matthew Holmes        (matthew@wildfiregames.com),
+Dan     Moorehead     (dan05a@gmail.com),
+Dave    Hudson        (jendave@yahoo.com),
+C.J.    Adams-Collier (cjcollier@colliertech.org),
 
-* Redistributions of source code must retain the above copyright notice, this list of conditions 
-  and the following disclaimer. 
-* Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
-  and the following disclaimer in the documentation and/or other materials provided with the 
-  distribution. 
-* The name of the author may not be used to endorse or promote products derived from this software 
-  without specific prior written permission. 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+
+* The name of the author may not be used to endorse or promote
+products derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
 */
 #endregion
 
@@ -319,7 +333,7 @@ namespace Prebuild.Core.Targets
 					{
 						case BuildAction.EmbeddedResource:
 							ss.Write("\t\t/resource:");
-							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/') + "," + file + " \\");
+							ss.WriteLine(Helper.NormalizePath(Path.Combine(project.Path, file), '/'));
 							break;
 						default:
 							if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
@@ -391,8 +405,8 @@ namespace Prebuild.Core.Targets
 				if (project.Type == ProjectType.Library)
 				{
 					ss.WriteLine("install-data-local:");
-					ss.WriteLine("	echo \"$(GACUTIL) /i " + project.Name + " /f $(GACUTIL_FLAGS)\";  \\");
-					ss.WriteLine("	$(GACUTIL) /i " + project.AssemblyName + " /f $(GACUTIL_FLAGS) || exit 1;");
+					ss.WriteLine("	echo \"$(GACUTIL) /i bin/Release/" + project.Name + ".dll /f $(GACUTIL_FLAGS)\";  \\");
+					ss.WriteLine("	$(GACUTIL) /i bin/Release/" + project.Name + ".dll /f $(GACUTIL_FLAGS) || exit 1;");
 					ss.WriteLine();
 					ss.WriteLine("uninstall-local:");
 					ss.WriteLine("	echo \"$(GACUTIL) /u " + project.Name + " $(GACUTIL_FLAGS)\"; \\");
@@ -418,6 +432,13 @@ namespace Prebuild.Core.Targets
 
 		private void WriteCombine(SolutionNode solution)
 		{
+		
+			/* TODO: These vars should be pulled from the prebuild.xml file */
+			string releaseVersion  = "2.0.0";
+			string assemblyVersion = "2.1.0.0";
+			string description     = 
+			  "Tao Framework " + solution.Name + " Binding For .NET";
+		
 			hasLibrary = false;
 			m_Kernel.Log.Write("Creating Autotools make files");
 			foreach(ProjectNode project in solution.Projects)
@@ -465,10 +486,10 @@ namespace Prebuild.Core.Targets
 								sspc.WriteLine("exec_prefix=${prefix}");
 								sspc.WriteLine("libdir=${exec_prefix}/lib");
 								sspc.WriteLine();
-								sspc.WriteLine("Name: {0}", project.Name);
-								sspc.WriteLine("Description: {0}", project.Name);
-								sspc.WriteLine("Version: @VERSION@");
-								sspc.WriteLine("Libs:  -r:${libdir}/mono/" + project.Name + "/" + Helper.AssemblyFullName(project.Name, project.Type));
+								sspc.WriteLine("Name: @PACKAGE_NAME@");
+								sspc.WriteLine("Description: @DESCRIPTION@");
+								sspc.WriteLine("Version: @ASSEMBLY_VERSION@");
+								sspc.WriteLine("Libs:  -r:${libdir}/mono/gac/@PACKAGE_NAME@/@ASSEMBLY_VERSION@__@PUBKEY@/@PACKAGE_NAME@.dll");
 							}
 						}
 					}
@@ -516,7 +537,6 @@ namespace Prebuild.Core.Targets
 			{
 				if (this.hasLibrary)
 				{
-					//bool done = false;
 					foreach(ProjectNode project in solution.ProjectsTableOrder)
 					{
 						if (project.Type == ProjectType.Library)
@@ -532,7 +552,19 @@ namespace Prebuild.Core.Targets
 				}
 				ts.WriteLine("AC_PREREQ(2.53)");
 				ts.WriteLine("AC_CANONICAL_SYSTEM");
-				ts.WriteLine("AM_INIT_AUTOMAKE([" + solution.Name + "],[2.0.0],[])");
+				
+				ts.WriteLine("PACKAGE_NAME={0}", solution.Name);
+				ts.WriteLine("PACKAGE_VERSION={0}", releaseVersion);
+				ts.WriteLine("DESCRIPTION=\"{0}\"", description);
+				ts.WriteLine("AC_SUBST(DESCRIPTION)");
+				ts.WriteLine("AM_INIT_AUTOMAKE([$PACKAGE_NAME],[$PACKAGE_VERSION],[$DESCRIPTION])");
+				
+				ts.WriteLine("ASSEMBLY_VERSION={0}", assemblyVersion);
+				ts.WriteLine("AC_SUBST(ASSEMBLY_VERSION)");
+				
+				ts.WriteLine("PUBKEY=`sn -t $PACKAGE_NAME.snk | grep 'Public Key Token' | awk -F: '{print $2}' | sed -e 's/^ //'`");
+				ts.WriteLine("AC_SUBST(PUBKEY)");
+				
 				ts.WriteLine();
 				ts.WriteLine("AM_MAINTAINER_MODE");
 				ts.WriteLine();
@@ -605,8 +637,8 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine();
 				ts.WriteLine("PKG_CHECK_MODULES(MONO_DEPENDENCY, mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)");
 				ts.WriteLine("BUILD_DIR=\"bin\"");
-				ts.WriteLine("CONFIG=\"Release\"");
 				ts.WriteLine("AC_SUBST(BUILD_DIR)");
+				ts.WriteLine("CONFIG=\"Release\"");
 				ts.WriteLine("AC_SUBST(CONFIG)");
 				ts.WriteLine();
 				ts.WriteLine("if test \"x$has_mono\" = \"xtrue\"; then");
@@ -664,7 +696,7 @@ namespace Prebuild.Core.Targets
 				//					{
 				//					}
 				//				}
-				ts.WriteLine("GACUTIL_FLAGS='/package " + solution.Name + " /gacdir $(DESTDIR)$(prefix)/lib'");
+				ts.WriteLine("GACUTIL_FLAGS='/package $(PACKAGE_NAME) /gacdir $(DESTDIR)$(prefix)'");
 				ts.WriteLine("AC_SUBST(GACUTIL_FLAGS)");
 				ts.WriteLine();
 				ts.WriteLine("winbuild=no");
@@ -697,6 +729,7 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine();
 				ts.WriteLine("AC_OUTPUT([");
 				ts.WriteLine("Makefile");
+				ts.WriteLine("AssemblyInfo.cs");
 				foreach(ProjectNode project in solution.ProjectsTableOrder)
 				{
 					if (project.Type == ProjectType.Library)
@@ -714,11 +747,77 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("echo \"Configuration summary\"");
 				ts.WriteLine("echo \"\"");
 				ts.WriteLine("echo \"   * Installation prefix: $prefix\"");
-				ts.WriteLine("echo \"   * compiler: $CSC\"");
-				ts.WriteLine("echo \"   * Documentation: $enable_monodoc ($MONODOC)\"");
+				ts.WriteLine("echo \"   * compiler:            $CSC\"");
+				ts.WriteLine("echo \"   * Documentation:       $enable_monodoc ($MONODOC)\"");
+				ts.WriteLine("echo \"   * Package Name:        $PACKAGE_NAME\"");
+				ts.WriteLine("echo \"   * Package Name:        $PACKAGE_NAME\"");
+				ts.WriteLine("echo \"   * Version:             $PACKAGE_VERSION\"");
+				ts.WriteLine("echo \"   * Public Key:          $PUBKEY\"");
 				ts.WriteLine("echo \"\"");
 				ts.WriteLine("echo \"---\"");
 				ts.WriteLine();
+			}
+			
+			combFile = Helper.MakeFilePath(solution.FullPath, "AssemblyInfo.cs", "in");
+			StreamWriter ai = new StreamWriter(combFile);
+			ts.NewLine = "\n";
+			using(ai)
+			{
+				ai.WriteLine("#region License");
+				ai.WriteLine("/*");
+				ai.WriteLine("MIT License");
+				ai.WriteLine("Copyright (c)2003-2006 Tao Framework Team");
+				ai.WriteLine("http://www.taoframework.com");
+				ai.WriteLine("All rights reserved.");
+				ai.WriteLine("");
+				ai.WriteLine("Permission is hereby granted, free of charge, to any person obtaining a copy");
+				ai.WriteLine("of this software and associated documentation files (the \"Software\"), to deal");
+				ai.WriteLine("in the Software without restriction, including without limitation the rights");
+				ai.WriteLine("to use, copy, modify, merge, publish, distribute, sublicense, and/or sell");
+				ai.WriteLine("copies of the Software, and to permit persons to whom the Software is");
+				ai.WriteLine("furnished to do so, subject to the following conditions:");
+				ai.WriteLine("");
+				ai.WriteLine("The above copyright notice and this permission notice shall be included in all");
+				ai.WriteLine("copies or substantial portions of the Software.");
+				ai.WriteLine("");
+				ai.WriteLine("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR");
+				ai.WriteLine("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,");
+				ai.WriteLine("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE");
+				ai.WriteLine("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER");
+				ai.WriteLine("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
+				ai.WriteLine("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
+				ai.WriteLine("SOFTWARE.");
+				ai.WriteLine("*/");
+				ai.WriteLine("#endregion License");
+				ai.WriteLine("");
+				ai.WriteLine("using System;");
+				ai.WriteLine("using System.Reflection;");
+				ai.WriteLine("using System.Runtime.InteropServices;");
+				ai.WriteLine("using System.Security;");
+				ai.WriteLine("using System.Security.Permissions;");
+				ai.WriteLine("");
+				ai.WriteLine("[assembly: AllowPartiallyTrustedCallers]");
+				ai.WriteLine("[assembly: AssemblyCompany(\"Tao Framework -- http://www.taoframework.com\")]");
+				ai.WriteLine("[assembly: AssemblyConfiguration(\"Retail\")]");
+				ai.WriteLine("[assembly: AssemblyCopyright(\"Copyright (c)2003-2006 Tao Framework Team.  All rights reserved.\")]");
+				ai.WriteLine("[assembly: AssemblyCulture(\"\")]");
+				ai.WriteLine("[assembly: AssemblyDefaultAlias(\"@PACKAGE_NAME@\")]");
+				ai.WriteLine("[assembly: AssemblyDelaySign(false)]");
+				ai.WriteLine("[assembly: AssemblyDescription(\"@DESCRIPTION@\")]");
+				ai.WriteLine("[assembly: AssemblyFileVersion(\"@ASSEMBLY_VERSION@\")]");
+				ai.WriteLine("[assembly: AssemblyInformationalVersion(\"@ASSEMBLY_VERSION@\")]");
+				ai.WriteLine("[assembly: AssemblyKeyName(\"\")]");
+				ai.WriteLine("[assembly:AssemblyKeyFile(\"{0}.snk\")]", solution.Name);
+				ai.WriteLine("[assembly: AssemblyProduct(\"@PACKAGE_NAME@.dll\")]");
+				ai.WriteLine("[assembly: AssemblyTitle(\"@DESCRIPTION@\")]");
+				ai.WriteLine("[assembly: AssemblyTrademark(\"Tao Framework -- http://www.taoframework.com\")]");
+				ai.WriteLine("[assembly: AssemblyVersion(\"@ASSEMBLY_VERSION@\")]");
+				ai.WriteLine("[assembly: CLSCompliant(true)]");
+				ai.WriteLine("[assembly: ComVisible(false)]");
+				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.Execution)]");
+				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.SkipVerification)]");
+				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.UnmanagedCode)]");
+				
 			}
 		}
 
