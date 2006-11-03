@@ -1,1 +1,3 @@
 * make an autotools install target for .exe files
+* Create a .snk file for strongname signing
+
