@@ -326,7 +326,7 @@ namespace Prebuild.Core.Targets
 					}
 					ss.WriteLine(" \\");
 				}
-
+				ss.WriteLine("\t\tProperties/AssemblyInfo.cs \\");
 				foreach(string file in project.Files)
 				{
 					switch(project.Files.GetBuildAction(file))
@@ -729,7 +729,7 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine();
 				ts.WriteLine("AC_OUTPUT([");
 				ts.WriteLine("Makefile");
-				ts.WriteLine("AssemblyInfo.cs");
+				ts.WriteLine("Properties/AssemblyInfo.cs");
 				foreach(ProjectNode project in solution.ProjectsTableOrder)
 				{
 					if (project.Type == ProjectType.Library)
@@ -750,15 +750,15 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("echo \"   * compiler:            $CSC\"");
 				ts.WriteLine("echo \"   * Documentation:       $enable_monodoc ($MONODOC)\"");
 				ts.WriteLine("echo \"   * Package Name:        $PACKAGE_NAME\"");
-				ts.WriteLine("echo \"   * Package Name:        $PACKAGE_NAME\"");
 				ts.WriteLine("echo \"   * Version:             $PACKAGE_VERSION\"");
 				ts.WriteLine("echo \"   * Public Key:          $PUBKEY\"");
 				ts.WriteLine("echo \"\"");
 				ts.WriteLine("echo \"---\"");
 				ts.WriteLine();
 			}
-			
-			combFile = Helper.MakeFilePath(solution.FullPath, "AssemblyInfo.cs", "in");
+
+			System.IO.Directory.CreateDirectory(Helper.MakePathRelativeTo(solution.FullPath, "Properties"));
+			combFile = Helper.MakeFilePath(solution.FullPath + "/Properties/" , "AssemblyInfo.cs", "in");
 			StreamWriter ai = new StreamWriter(combFile);
 			ts.NewLine = "\n";
 			using(ai)
