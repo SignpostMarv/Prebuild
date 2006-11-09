@@ -606,12 +606,12 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine("  AC_MSG_RESULT([found])");
 				ts.WriteLine("dnl fi");
 				ts.WriteLine();
-				ts.WriteLine("AC_MSG_CHECKING([for gacutil])");
-				ts.WriteLine("if test \"x$GACUTIL\" = \"x\" ; then");
-				ts.WriteLine("  AC_MSG_ERROR([Can't find \"gacutil\" in your PATH])");
-				ts.WriteLine("else");
-				ts.WriteLine("  AC_MSG_RESULT([found])");
-				ts.WriteLine("fi");
+                //ts.WriteLine("AC_MSG_CHECKING([for gacutil])");
+                //ts.WriteLine("if test \"x$GACUTIL\" = \"x\" ; then");
+                //ts.WriteLine("  AC_MSG_ERROR([Can't find \"gacutil\" in your PATH])");
+                //ts.WriteLine("else");
+                //ts.WriteLine("  AC_MSG_RESULT([found])");
+                //ts.WriteLine("fi");
 				ts.WriteLine();
 				ts.WriteLine("AC_SUBST(PATH)");
 				ts.WriteLine("AC_SUBST(LD_LIBRARY_PATH)");
