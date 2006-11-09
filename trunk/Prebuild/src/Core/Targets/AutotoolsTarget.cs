@@ -326,7 +326,8 @@ namespace Prebuild.Core.Targets
 					}
 					ss.WriteLine(" \\");
 				}
-				ss.WriteLine("\t\tProperties/AssemblyInfo.cs \\");
+				ss.WriteLine("\t\tProperties/AssemblyInfo.cs \\");
+
 				foreach(string file in project.Files)
 				{
 					switch(project.Files.GetBuildAction(file))
@@ -807,7 +808,7 @@ namespace Prebuild.Core.Targets
 				ai.WriteLine("[assembly: AssemblyFileVersion(\"@ASSEMBLY_VERSION@\")]");
 				ai.WriteLine("[assembly: AssemblyInformationalVersion(\"@ASSEMBLY_VERSION@\")]");
 				ai.WriteLine("[assembly: AssemblyKeyName(\"\")]");
-				ai.WriteLine("[assembly:AssemblyKeyFile(\"{0}.snk\")]", solution.Name);
+				//ai.WriteLine("[assembly:AssemblyKeyFile(\"{0}.snk\")]", solution.Name);
 				ai.WriteLine("[assembly: AssemblyProduct(\"@PACKAGE_NAME@.dll\")]");
 				ai.WriteLine("[assembly: AssemblyTitle(\"@DESCRIPTION@\")]");
 				ai.WriteLine("[assembly: AssemblyTrademark(\"Tao Framework -- http://www.taoframework.com\")]");
