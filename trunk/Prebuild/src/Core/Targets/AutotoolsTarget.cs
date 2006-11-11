@@ -730,7 +730,8 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine();
 				ts.WriteLine("AC_OUTPUT([");
 				ts.WriteLine("Makefile");
-				ts.WriteLine("Properties/AssemblyInfo.cs");
+                // TODO: this does not work quite right.
+				//ts.WriteLine("Properties/AssemblyInfo.cs");
 				foreach(ProjectNode project in solution.ProjectsTableOrder)
 				{
 					if (project.Type == ProjectType.Library)
@@ -758,69 +759,81 @@ namespace Prebuild.Core.Targets
 				ts.WriteLine();
 			}
 
-			System.IO.Directory.CreateDirectory(Helper.MakePathRelativeTo(solution.FullPath, "Properties"));
-			combFile = Helper.MakeFilePath(solution.FullPath + "/Properties/" , "AssemblyInfo.cs", "in");
-			StreamWriter ai = new StreamWriter(combFile);
-			ts.NewLine = "\n";
-			using(ai)
-			{
-				ai.WriteLine("#region License");
-				ai.WriteLine("/*");
-				ai.WriteLine("MIT License");
-				ai.WriteLine("Copyright (c)2003-2006 Tao Framework Team");
-				ai.WriteLine("http://www.taoframework.com");
-				ai.WriteLine("All rights reserved.");
-				ai.WriteLine("");
-				ai.WriteLine("Permission is hereby granted, free of charge, to any person obtaining a copy");
-				ai.WriteLine("of this software and associated documentation files (the \"Software\"), to deal");
-				ai.WriteLine("in the Software without restriction, including without limitation the rights");
-				ai.WriteLine("to use, copy, modify, merge, publish, distribute, sublicense, and/or sell");
-				ai.WriteLine("copies of the Software, and to permit persons to whom the Software is");
-				ai.WriteLine("furnished to do so, subject to the following conditions:");
-				ai.WriteLine("");
-				ai.WriteLine("The above copyright notice and this permission notice shall be included in all");
-				ai.WriteLine("copies or substantial portions of the Software.");
-				ai.WriteLine("");
-				ai.WriteLine("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR");
-				ai.WriteLine("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,");
-				ai.WriteLine("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE");
-				ai.WriteLine("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER");
-				ai.WriteLine("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
-				ai.WriteLine("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
-				ai.WriteLine("SOFTWARE.");
-				ai.WriteLine("*/");
-				ai.WriteLine("#endregion License");
-				ai.WriteLine("");
-				ai.WriteLine("using System;");
-				ai.WriteLine("using System.Reflection;");
-				ai.WriteLine("using System.Runtime.InteropServices;");
-				ai.WriteLine("using System.Security;");
-				ai.WriteLine("using System.Security.Permissions;");
-				ai.WriteLine("");
-				ai.WriteLine("[assembly: AllowPartiallyTrustedCallers]");
-				ai.WriteLine("[assembly: AssemblyCompany(\"Tao Framework -- http://www.taoframework.com\")]");
-				ai.WriteLine("[assembly: AssemblyConfiguration(\"Retail\")]");
-				ai.WriteLine("[assembly: AssemblyCopyright(\"Copyright (c)2003-2006 Tao Framework Team.  All rights reserved.\")]");
-				ai.WriteLine("[assembly: AssemblyCulture(\"\")]");
-				ai.WriteLine("[assembly: AssemblyDefaultAlias(\"@PACKAGE_NAME@\")]");
-				ai.WriteLine("[assembly: AssemblyDelaySign(false)]");
-				ai.WriteLine("[assembly: AssemblyDescription(\"@DESCRIPTION@\")]");
-				ai.WriteLine("[assembly: AssemblyFileVersion(\"@ASSEMBLY_VERSION@\")]");
-				ai.WriteLine("[assembly: AssemblyInformationalVersion(\"@ASSEMBLY_VERSION@\")]");
-				ai.WriteLine("[assembly: AssemblyKeyName(\"\")]");
-				//ai.WriteLine("[assembly:AssemblyKeyFile(\"{0}.snk\")]", solution.Name);
-				ai.WriteLine("[assembly: AssemblyProduct(\"@PACKAGE_NAME@.dll\")]");
-				ai.WriteLine("[assembly: AssemblyTitle(\"@DESCRIPTION@\")]");
-				ai.WriteLine("[assembly: AssemblyTrademark(\"Tao Framework -- http://www.taoframework.com\")]");
-				ai.WriteLine("[assembly: AssemblyVersion(\"@ASSEMBLY_VERSION@\")]");
-				ai.WriteLine("[assembly: CLSCompliant(true)]");
-				ai.WriteLine("[assembly: ComVisible(false)]");
-				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.Execution)]");
-				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.SkipVerification)]");
-				ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.UnmanagedCode)]");
-				
-			}
+            ts.NewLine = "\n";
+            foreach (ProjectNode project in solution.ProjectsTableOrder)
+            {
+                if (project.GenerateAssemblyInfoFile)
+                {
+                    GenerateAssemblyInfoFile(solution, combFile);
+                }
+            }
 		}
+
+        private static void GenerateAssemblyInfoFile(SolutionNode solution, string combFile)
+        {
+            System.IO.Directory.CreateDirectory(Helper.MakePathRelativeTo(solution.FullPath, "Properties"));
+            combFile = Helper.MakeFilePath(solution.FullPath + "/Properties/", "AssemblyInfo.cs", "in");
+            StreamWriter ai = new StreamWriter(combFile);
+            
+            using (ai)
+            {
+                ai.WriteLine("#region License");
+                ai.WriteLine("/*");
+                ai.WriteLine("MIT License");
+                ai.WriteLine("Copyright (c)2003-2006 Tao Framework Team");
+                ai.WriteLine("http://www.taoframework.com");
+                ai.WriteLine("All rights reserved.");
+                ai.WriteLine("");
+                ai.WriteLine("Permission is hereby granted, free of charge, to any person obtaining a copy");
+                ai.WriteLine("of this software and associated documentation files (the \"Software\"), to deal");
+                ai.WriteLine("in the Software without restriction, including without limitation the rights");
+                ai.WriteLine("to use, copy, modify, merge, publish, distribute, sublicense, and/or sell");
+                ai.WriteLine("copies of the Software, and to permit persons to whom the Software is");
+                ai.WriteLine("furnished to do so, subject to the following conditions:");
+                ai.WriteLine("");
+                ai.WriteLine("The above copyright notice and this permission notice shall be included in all");
+                ai.WriteLine("copies or substantial portions of the Software.");
+                ai.WriteLine("");
+                ai.WriteLine("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR");
+                ai.WriteLine("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,");
+                ai.WriteLine("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE");
+                ai.WriteLine("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER");
+                ai.WriteLine("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
+                ai.WriteLine("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
+                ai.WriteLine("SOFTWARE.");
+                ai.WriteLine("*/");
+                ai.WriteLine("#endregion License");
+                ai.WriteLine("");
+                ai.WriteLine("using System;");
+                ai.WriteLine("using System.Reflection;");
+                ai.WriteLine("using System.Runtime.InteropServices;");
+                ai.WriteLine("using System.Security;");
+                ai.WriteLine("using System.Security.Permissions;");
+                ai.WriteLine("");
+                ai.WriteLine("[assembly: AllowPartiallyTrustedCallers]");
+                ai.WriteLine("[assembly: AssemblyCompany(\"Tao Framework -- http://www.taoframework.com\")]");
+                ai.WriteLine("[assembly: AssemblyConfiguration(\"Retail\")]");
+                ai.WriteLine("[assembly: AssemblyCopyright(\"Copyright (c)2003-2006 Tao Framework Team.  All rights reserved.\")]");
+                ai.WriteLine("[assembly: AssemblyCulture(\"\")]");
+                ai.WriteLine("[assembly: AssemblyDefaultAlias(\"@PACKAGE_NAME@\")]");
+                ai.WriteLine("[assembly: AssemblyDelaySign(false)]");
+                ai.WriteLine("[assembly: AssemblyDescription(\"@DESCRIPTION@\")]");
+                ai.WriteLine("[assembly: AssemblyFileVersion(\"@ASSEMBLY_VERSION@\")]");
+                ai.WriteLine("[assembly: AssemblyInformationalVersion(\"@ASSEMBLY_VERSION@\")]");
+                ai.WriteLine("[assembly: AssemblyKeyName(\"\")]");
+                ai.WriteLine("[assembly: AssemblyProduct(\"@PACKAGE_NAME@.dll\")]");
+                ai.WriteLine("[assembly: AssemblyTitle(\"@DESCRIPTION@\")]");
+                ai.WriteLine("[assembly: AssemblyTrademark(\"Tao Framework -- http://www.taoframework.com\")]");
+                ai.WriteLine("[assembly: AssemblyVersion(\"@ASSEMBLY_VERSION@\")]");
+                ai.WriteLine("[assembly: CLSCompliant(true)]");
+                ai.WriteLine("[assembly: ComVisible(false)]");
+                ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.Execution)]");
+                ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.SkipVerification)]");
+                ai.WriteLine("[assembly: SecurityPermission(SecurityAction.RequestMinimum, Flags = SecurityPermissionFlag.UnmanagedCode)]");
+
+            }
+            //return combFile;
+        }
 
 		private void CleanProject(ProjectNode project)
 		{

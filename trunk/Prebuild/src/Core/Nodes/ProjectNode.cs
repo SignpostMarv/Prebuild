@@ -241,6 +241,23 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+        private bool m_GenerateAssemblyInfoFile = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool GenerateAssemblyInfoFile
+        {
+            get
+            {
+                return m_GenerateAssemblyInfoFile;
+            }
+            set
+            {
+                m_GenerateAssemblyInfoFile = value;
+            }
+        }
+
 		/// <summary>
 		/// Gets the startup object.
 		/// </summary>
@@ -408,6 +425,7 @@ namespace Prebuild.Core.Nodes
 			m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 			m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
 			m_Guid = Guid.NewGuid();
+            m_GenerateAssemblyInfoFile = Helper.ParseBoolean(node, "generateAssemblyInfoFile", false);
             
 			if(m_AssemblyName == null || m_AssemblyName.Length < 1)
 			{
