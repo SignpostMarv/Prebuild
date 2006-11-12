@@ -326,7 +326,7 @@ namespace Prebuild.Core.Targets
 					}
 					ss.WriteLine(" \\");
 				}
-				ss.WriteLine("\t\tProperties/AssemblyInfo.cs \\");
+				//ss.WriteLine("\t\tProperties/AssemblyInfo.cs \\");
 
 				foreach(string file in project.Files)
 				{
