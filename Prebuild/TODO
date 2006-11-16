@@ -1,3 +1,6 @@
+* monodev target should be able to detect whether the project is 1.x
+  or 2.x runtime
+
 * make an autotools install target for .exe files
 
 * Fix the autotools target so that
