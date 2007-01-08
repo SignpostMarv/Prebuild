@@ -308,6 +308,24 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+        [OptionNode("GenerateDocumentation")]
+        private bool m_GenerateDocumentation;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool GenerateDocumentation
+        {
+            get
+            {
+                return m_GenerateDocumentation;
+            }
+            set
+            {
+                m_GenerateDocumentation = value;
+            }
+        }
+
 		[OptionNode("GenerateXmlDocFile")]
 		private bool m_GenerateXmlDocFile;
 

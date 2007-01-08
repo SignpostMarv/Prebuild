@@ -509,7 +509,7 @@ namespace Prebuild.Core.Targets
                     //						Console.WriteLine(project.Files.GetSubType(file).ToString());
                     //					}
 
-                    if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
+                    if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings && project.Files.GetSubType(file) != SubType.Designer)
                     {
                         ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
 
@@ -525,6 +525,19 @@ namespace Prebuild.Core.Targets
                         ps.WriteLine("      <SubType>Designer</SubType>");
                         ps.WriteLine("    </EmbeddedResource>");
                         //
+                    }
+                    if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) == SubType.Designer)
+                    {
+                        ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
+                        ps.WriteLine("      <SubType>" + project.Files.GetSubType(file) + "</SubType>");
+                        ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
+                        ps.WriteLine("      <LastGenOutput>Resources.Designer.cs</LastGenOutput>");
+                        ps.WriteLine("    </EmbeddedResource>");
+                        ps.WriteLine("    <Compile Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs");
+                        ps.WriteLine("      <AutoGen>True</AutoGen>");
+                        ps.WriteLine("      <DesignTime>True</DesignTime>");
+                        ps.WriteLine("      <DependentUpon>Resources.resx</DependentUpon>");
+                        ps.WriteLine("    </Compile>");
                     }
                     if (project.Files.GetSubType(file).ToString() == "Settings")
                     {
@@ -562,7 +575,7 @@ namespace Prebuild.Core.Targets
                         }
                         ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
                     }
-                    else
+                    else if (project.Files.GetSubType(file) != SubType.Designer)
                     {
                         ps.Write("    <{0} ", project.Files.GetBuildAction(file));
                         ps.WriteLine("Include=\"{0}\">", file);

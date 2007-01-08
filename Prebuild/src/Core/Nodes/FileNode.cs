@@ -78,6 +78,10 @@ namespace Prebuild.Core.Nodes
 		/// 
 		/// </summary>
 		Component,
+        /// <summary>
+        /// 
+        /// </summary>
+        Designer,
 		/// <summary>
 		/// 
 		/// </summary>
