@@ -334,7 +334,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("        <if test=\"${platform::is-unix()}\">");
 					ss.WriteLine("            <property name=\"doc.target\" value=\"Web\" />");
 					ss.WriteLine("        </if>");
-					ss.WriteLine("        <ndoc failonerror=\"true\" verbose=\"true\">");
+					ss.WriteLine("        <ndoc failonerror=\"false\" verbose=\"true\">");
 					ss.WriteLine("            <assemblies basedir=\"${project::get-base-directory()}\">");
 					ss.Write("                <include name=\"${build.dir}/${project::get-name()}");
 					if (project.Type == ProjectType.Library)
