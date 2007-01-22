@@ -592,7 +592,10 @@ namespace Prebuild.Core.Targets
                         }
                         else if (project.Files.GetBuildAction(file) != BuildAction.None)
                         {
-                            ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+                            if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
+                            {
+                                ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+                            }
                         }
                         if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
                         {
