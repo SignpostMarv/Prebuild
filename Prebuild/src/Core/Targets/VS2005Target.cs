@@ -501,6 +501,7 @@ namespace Prebuild.Core.Targets
                 ps.WriteLine("  <ItemGroup>");
 
                 //                ps.WriteLine("      <Include>");
+                ArrayList list = new ArrayList();
                 foreach (string file in project.Files)
                 {
                     //					if (file == "Properties\\Bind.Designer.cs")
@@ -526,6 +527,7 @@ namespace Prebuild.Core.Targets
                         ps.WriteLine("    </EmbeddedResource>");
                         //
                     }
+                    
                     if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) == SubType.Designer)
                     {
                         ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
@@ -538,6 +540,7 @@ namespace Prebuild.Core.Targets
                         ps.WriteLine("      <DesignTime>True</DesignTime>");
                         ps.WriteLine("      <DependentUpon>Resources.resx</DependentUpon>");
                         ps.WriteLine("    </Compile>");
+                        list.Add(file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs");
                     }
                     if (project.Files.GetSubType(file).ToString() == "Settings")
                     {
@@ -577,33 +580,35 @@ namespace Prebuild.Core.Targets
                     }
                     else if (project.Files.GetSubType(file) != SubType.Designer)
                     {
-                        ps.Write("    <{0} ", project.Files.GetBuildAction(file));
-                        ps.WriteLine("Include=\"{0}\">", file);
+                        if (!list.Contains(file))
+                        {
+                            ps.Write("    <{0} ", project.Files.GetBuildAction(file));
+                            ps.WriteLine("Include=\"{0}\">", file);
 
 
-                        if (file.Contains("Designer.cs"))
-                        {
-                            ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(0, file.IndexOf(".Designer.cs")) + ".cs");
-                        }
-
-                        if (project.Files.GetIsLink(file))
-                        {
-                            ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
-                        }
-                        else if (project.Files.GetBuildAction(file) != BuildAction.None)
-                        {
-                            if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
+                            if (file.Contains("Designer.cs"))
                             {
-                                ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(0, file.IndexOf(".Designer.cs")) + ".cs");
                             }
-                        }
-                        if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
-                        {
-                            ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
-                        }
 
-                        ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
+                            if (project.Files.GetIsLink(file))
+                            {
+                                ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
+                            }
+                            else if (project.Files.GetBuildAction(file) != BuildAction.None)
+                            {
+                                if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
+                                {
+                                    ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+                                }
+                            }
+                            if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
+                            {
+                                ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
+                            }
 
+                            ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
+                        }
                     }
                 }
                 //                ps.WriteLine("      </Include>");
