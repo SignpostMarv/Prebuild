@@ -275,6 +275,27 @@ namespace Prebuild.Core.Targets
 					ss.Write(" win32icon=\"{0}\"", Helper.NormalizePath(project.AppIcon,'/'));
 				}
 				ss.WriteLine(">");
+                ss.WriteLine("            <resources prefix=\"{0}\" dynamicprefix=\"true\" >", project.RootNamespace);
+                foreach (string file in project.Files)
+                {
+                    switch (project.Files.GetBuildAction(file))
+                    {
+                        case BuildAction.EmbeddedResource:
+                            ss.WriteLine("                {0}", "<include name=\"" + Helper.NormalizePath(PrependPath(file), '/') + "\" />");
+                            break;
+                        default:
+                            if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
+                            {
+                                ss.WriteLine("                <include name=\"{0}\" />", file.Substring(0, file.LastIndexOf('.')) + ".resx");
+                            }
+                            break;
+                    }
+                }
+                //if (project.Files.GetSubType(file).ToString() != "Code")
+                //{
+                //	ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
+
+                ss.WriteLine("            </resources>");
 				ss.WriteLine("            <sources failonempty=\"true\">");
 				foreach(string file in project.Files)
 				{
@@ -298,27 +319,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("                <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr))+"\" />", '/'));
 				}
 				ss.WriteLine("            </references>");
-				ss.WriteLine("            <resources>");
-				foreach(string file in project.Files)
-				{
-					switch(project.Files.GetBuildAction(file))
-					{
-						case BuildAction.EmbeddedResource:
-							ss.WriteLine("                {0}", "<include name=\"" + Helper.NormalizePath(PrependPath(file), '/') + "\" />");
-							break;
-						default:
-							if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings)
-							{
-								ss.WriteLine("                <include name=\"{0}\" />", file.Substring(0, file.LastIndexOf('.')) + ".resx"); 
-							}
-							break;
-					}
-				}
-				//if (project.Files.GetSubType(file).ToString() != "Code")
-				//{
-				//	ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");                 
-						
-				ss.WriteLine("            </resources>");
+                
 				ss.WriteLine("        </csc>");
 				ss.WriteLine("    </target>");
 
