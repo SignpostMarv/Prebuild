@@ -364,7 +364,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("            </referencepaths>");
 					ss.WriteLine("            <documenters>");
 					ss.WriteLine("                <documenter name=\"MSDN\">");
-					ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/\" />");
+                    ss.WriteLine("                    <property name=\"OutputDirectory\" value=\"${project::get-base-directory()}/${build.dir}/doc/${project::get-name()}\" />");
 					ss.WriteLine("                    <property name=\"OutputTarget\" value=\"${doc.target}\" />");
 					ss.WriteLine("                    <property name=\"HtmlHelpName\" value=\"${project::get-name()}\" />");
 					ss.WriteLine("                    <property name=\"IncludeFavorites\" value=\"False\" />");
