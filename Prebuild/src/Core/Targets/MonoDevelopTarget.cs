@@ -178,7 +178,7 @@ namespace Prebuild.Core.Targets
 			using(ss)
 			{
 				ss.WriteLine(
-					"<Project name=\"{0}\" description=\"\" standardNamespace=\"{1}\" newfilesearch=\"None\" enableviewstate=\"True\" fileversion=\"2.0\" language=\"C#\" ctype=\"DotNetProject\">",
+					"<Project name=\"{0}\" description=\"\" standardNamespace=\"{1}\" newfilesearch=\"None\" enableviewstate=\"True\" fileversion=\"2.0\" language=\"C#\" clr-version=\"Net_2_0\" ctype=\"DotNetProject\">",
 					project.Name,
 					project.RootNamespace
 					);
