@@ -232,6 +232,7 @@ namespace Prebuild.Core.Targets
 					ss.Write(" runwithwarnings=\"True\"");
 					ss.Write(" consolepause=\"True\"");
 					ss.Write(" runtime=\"{0}\"", netRuntime);
+                    ss.Write(" clr-version=\"Net_2_0\"");
 					ss.WriteLine(" />");
 					
 					ss.Write("      <CodeGeneration");
