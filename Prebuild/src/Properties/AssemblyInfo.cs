@@ -59,12 +59,7 @@ using System.Resources;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
-#if NET_1_1
-[assembly: AssemblyKeyFile(@"../../Prebuild.snk")]
-[assembly: AssemblyVersion("1.3.2.*")]
-#else
 [assembly: AssemblyVersion("2.0.0.*")]
-#endif
 
 //
 // Version information for an assembly consists of the following four values:
