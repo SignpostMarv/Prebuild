@@ -452,7 +452,7 @@ namespace Prebuild.Core.Utilities
 				ret += "." + ext;
 			}
             
-			foreach(char c in Path.InvalidPathChars)
+			foreach(char c in Path.GetInvalidPathChars())
 			{
 				ret = ret.Replace(c, '_');
 			}
@@ -476,8 +476,8 @@ namespace Prebuild.Core.Utilities
 			}
 
 			ret += name;
-            
-			foreach(char c in Path.InvalidPathChars)
+
+            foreach (char c in Path.GetInvalidPathChars())
 			{
 				ret = ret.Replace(c, '_');
 			}
@@ -493,8 +493,8 @@ namespace Prebuild.Core.Utilities
 		public static string MakeReferencePath(string path)
 		{
 			string ret = EndPath(NormalizePath(path));
-            
-			foreach(char c in Path.InvalidPathChars)
+
+            foreach (char c in Path.GetInvalidPathChars())
 			{
 				ret = ret.Replace(c, '_');
 			}

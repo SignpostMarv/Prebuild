@@ -106,7 +106,7 @@ namespace Prebuild.Core.Targets
 				ret += " refto=\"";
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					Assembly assem = Assembly.Load(refr.Name);
 					ret += assem.FullName;
 				}
 				catch (System.NullReferenceException e)

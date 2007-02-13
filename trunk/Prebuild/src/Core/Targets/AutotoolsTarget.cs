@@ -118,23 +118,23 @@ namespace Prebuild.Core.Targets
 
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
-					if (assem != null)
-					{
-						int index = refr.Name.IndexOf(",");
-						if ( index > 0)
-						{
-							ret += assem.Location;
-							//Console.WriteLine("Location1: " + assem.Location);
-						}
-						else
-						{
-							ret += (refr.Name + ".dll");
-							//Console.WriteLine("Location2: " + assem.Location);
-						}
-					}
-					else
-					{
+					//Assembly assem = Assembly.Load(refr.Name);
+                    //if (assem != null)
+                    //{
+                    //    int index = refr.Name.IndexOf(",");
+                    //    if ( index > 0)
+                    //    {
+                    //        ret += assem.Location;
+                    //        //Console.WriteLine("Location1: " + assem.Location);
+                    //    }
+                    //    else
+                    //    {
+                    //        ret += (refr.Name + ".dll");
+                    //        //Console.WriteLine("Location2: " + assem.Location);
+                    //    }
+                    //}
+                    //else
+                    //{
 						int index = refr.Name.IndexOf(",");
 						if ( index > 0)
 						{
@@ -146,7 +146,7 @@ namespace Prebuild.Core.Targets
 							ret += (refr.Name + ".dll");
 							//Console.WriteLine("Location4: " + assem.Location);
 						}
-					}
+					//}
 				}
 				catch (System.NullReferenceException e)
 				{
@@ -192,7 +192,7 @@ namespace Prebuild.Core.Targets
 
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					Assembly assem = Assembly.Load(refr.Name);
 					if (assem != null)
 					{
 						ret += "";

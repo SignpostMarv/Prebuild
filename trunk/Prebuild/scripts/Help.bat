@@ -1,2 +1,2 @@
 cd ..
-Prebuild /usage /pause
+Prebuild.exe /usage /pause

@@ -102,15 +102,15 @@ namespace Prebuild.Core.Targets
 
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
-					if (assem != null)
-					{
+                    //Assembly assem = Assembly.Load(refr.Name);
+                    //if (assem != null)
+                    //{
+						//ret += (refr.Name + ".dll");
+					//}
+					//else
+					//{
 						ret += (refr.Name + ".dll");
-					}
-					else
-					{
-						ret += (refr.Name + ".dll");
-					}
+					//}
 				}
 				catch (System.NullReferenceException e)
 				{
@@ -146,7 +146,7 @@ namespace Prebuild.Core.Targets
 
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					Assembly assem = Assembly.Load(refr.Name);
 					if (assem != null)
 					{
 						ret += "";
