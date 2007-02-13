@@ -104,8 +104,8 @@ namespace Prebuild.Core.Targets
 				ret += "Gac\" refto=\"";
 				try
 				{
-					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
-					ret += assem.FullName;
+					//Assembly assem = Assembly.Load(refr.Name);
+                    ret += refr.Name;// assem.FullName;
 				}
 				catch (System.NullReferenceException e)
 				{
