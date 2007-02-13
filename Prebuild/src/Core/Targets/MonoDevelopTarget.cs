@@ -106,8 +106,9 @@ namespace Prebuild.Core.Targets
 				ret += " refto=\"";
 				try
 				{
-					Assembly assem = Assembly.Load(refr.Name);
-					ret += assem.FullName;
+					//Assembly assem = Assembly.Load(refr.Name);
+					//ret += assem.FullName;
+                    ret += refr.Name;
 				}
 				catch (System.NullReferenceException e)
 				{
