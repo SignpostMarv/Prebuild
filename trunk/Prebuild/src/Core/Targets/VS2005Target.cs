@@ -463,8 +463,17 @@ namespace Prebuild.Core.Targets
                     if (!solution.ProjectsTable.ContainsKey(refr.Name))
                     {
                         ps.Write("    <Reference");
-                        ps.WriteLine(" Include=\"{0}\">", refr.Name);
-                        ps.WriteLine("      <Name>{0}</Name>", refr.Name);
+                        ps.Write(" Include=\"");
+                        ps.Write(refr.Name);
+
+                        if (!string.IsNullOrEmpty(refr.Version))
+                        {
+                            ps.Write(", Version=");
+                            ps.Write(refr.Version);
+                        }
+
+                        ps.WriteLine("\" >");
+
                         // TODO: Allow reference to *.exe files
                         ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
                         ps.WriteLine("    </Reference>");
