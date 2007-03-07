@@ -54,6 +54,7 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="activeConfig" type="xs:string" default="Debug" />
 			<xs:attribute name="path" type="xs:string" default="" />
+			<xs:attribute name="version" type="xs:string" default="1.0.0" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Project">
@@ -66,7 +67,7 @@
 						<xs:attribute name="name" type="xs:string" use="required" />
 						<xs:attribute name="path" type="xs:string" />
 						<xs:attribute name="localCopy" type="xs:boolean" />
-						<xs:attribute name="version" type="xs:string" />
+						<xs:attribute name="version" type="xs:string" default="1.0.0"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element ref="Files" />

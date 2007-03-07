@@ -1,3 +1,7 @@
+2007-03-07  C.J. Adams-Collier <cjcollier@colliertech.org>
+	* src/data/prebuild-1.7.xsd
+	- added version attribute to Solution and Project elements
+
 2006-11-04T00:38  C.J. Adams-Collier <cjcollier@colliertech.org>
 	* placing AssemblyInfo.cs into Properties/
 	* Fixed double-mention of the package name
