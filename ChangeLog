@@ -1,3 +1,11 @@
+2007-03-22	C.J. Adams-Collier <cjac@colliertech.org>
+	* prebuild.xml
+	- added autotools.xml created at https://svn.colliertech.org/mono/dnpbAutotools/dnpbAutotools/autotools.xml
+	* src/data/autotools.xml
+	- the same
+	* src/Core/Targets/MonoDevelopTarget.cs
+	- fixed bug introduced in r206
+	
 2007-03-07  C.J. Adams-Collier <cjcollier@colliertech.org>
 	* src/data/prebuild-1.7.xsd
 	- added version attribute to Solution and Project elements
