@@ -1,6 +1,10 @@
 #region BSD License
 /*
-Copyright (c) 2004-2005 Matthew Holmes (matthew@wildfiregames.com), Dan Moorehead (dan05a@gmail.com)
+Copyright (c) 2004-2007
+Matthew Holmes (matthew@wildfiregames.com),
+Dan Moorehead (dan05a@gmail.com),
+Rob Loach (http://www.robloach.net),
+C.J. Adams-Collier (cjac@colliertech.org)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -91,6 +95,7 @@ namespace Prebuild.Core
 		string m_Clean;
 		string[] m_RemoveDirectories;
 		string m_CurrentFile;
+		XmlDocument m_CurrentDoc;
 		bool m_PauseAfterFinish;
 		string[] m_ProjectGroups;
 		StringCollection m_Refs;
@@ -201,6 +206,19 @@ namespace Prebuild.Core
 			get
 			{
 				return m_Solutions;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the XmlDocument object representing the prebuild.xml
+		/// being processed
+		/// </summary>
+		/// <value>The XmlDocument object</value>
+		public XmlDocument CurrentDoc
+		{
+			get
+			{
+				return m_CurrentDoc;
 			}
 		}
 
@@ -330,7 +348,6 @@ namespace Prebuild.Core
 
 				m_CurrentFile = path;
 				Helper.SetCurrentDir(Path.GetDirectoryName(path));
-            
 				
 				XmlTextReader reader = new XmlTextReader(path);
 
@@ -348,7 +365,7 @@ namespace Prebuild.Core
 				string xml = pre.Process(reader);//remove script and evaulate pre-proccessing to get schema-conforming XML
 
 				
-				XmlDocument doc = new XmlDocument();
+				m_CurrentDoc = new XmlDocument();
 				try
 				{
 					XmlValidatingReader validator = new XmlValidatingReader(new XmlTextReader(new StringReader(xml)));
@@ -358,7 +375,7 @@ namespace Prebuild.Core
 					{
 						validator.Schemas.Add(schema);
 					}
-					doc.Load(validator);
+					m_CurrentDoc.Load(validator);
 				} 
 				catch(XmlException e) 
 				{
@@ -394,7 +411,7 @@ namespace Prebuild.Core
 					return;
 				}
 				//start reading the xml config file
-				XmlElement rootNode = doc.DocumentElement;
+				XmlElement rootNode = m_CurrentDoc.DocumentElement;
 				//string suggestedVersion = Helper.AttributeValue(rootNode,"version","1.0");
 				Helper.CheckForOSVariables = Helper.ParseBoolean(rootNode,"checkOsVars",false);
 
