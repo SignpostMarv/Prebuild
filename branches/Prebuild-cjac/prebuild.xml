@@ -50,6 +50,7 @@
 	    <Files>
 		<Match pattern="App.ico" buildAction="EmbeddedResource"/>
 		<Match path="data" pattern="prebuild-1.7.xsd" buildAction="EmbeddedResource"/>
+		<Match path="data" pattern="autotools.xml" buildAction="EmbeddedResource"/>
 		<Match pattern="*.cs" recurse="true"/>			
 	    </Files>
 	</Project>
