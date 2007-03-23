@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Autotools>
 	<ProjectAutogenSh>
 		<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -73,7 +73,6 @@ grep "^AM_GNU_GETTEXT" $srcdir/configure.ac >/dev/null &amp;&amp; {
   DIE=1
   NO_AUTOMAKE=yes
 }
-
 
 # if no automake, don't bother testing for aclocal
 test -n "$NO_AUTOMAKE" || (aclocal --version) &lt; /dev/null > /dev/null 2>&amp;1 || {

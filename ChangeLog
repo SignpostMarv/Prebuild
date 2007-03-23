@@ -1,3 +1,24 @@
+2007-03-23T04:31	C.J. Adams-Collier <cjac@colliertech.org>
+	Merged code from my stripped-down test
+	Adding support for the /Prebuild/Solution/Project/Author element
+	* prebuild.xml
+	- added Author elements
+	- cleaned up the really long Project element
+	* src/Core/Nodes/ProjectNode.cs
+	- added Author tag processing code
+	* src/Core/Nodes/AuthorNode.cs
+	- Created to process Author elements
+	- based off of ReferencePathNode.cs
+	* src/Core/Targets/AutotoolsTarget.cs
+	- merged code from https://svn.colliertech.org/mono/dnpbAutotools/dnpbAutotools/test.cs
+	- renamed old WriteCombine to WriteCombineOld
+	- renamed old WriteProject to WriteProjectOld
+	* src/data/prebuild-1.7.xsd
+	- added Author element to Project
+	* src/data/autotools.xml
+	- lower-cased utf
+
+
 2007-03-22T13:58	C.J. Adams-Collier <cjac@colliertech.org>
 	Exposing an XmlDocument that represents the prebuild.xml file
 	passed to the program

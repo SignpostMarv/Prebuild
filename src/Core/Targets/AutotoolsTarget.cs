@@ -5,7 +5,7 @@ Copyright (c) 2004 - 2006
 Matthew Holmes        (matthew@wildfiregames.com),
 Dan     Moorehead     (dan05a@gmail.com),
 Dave    Hudson        (jendave@yahoo.com),
-C.J.    Adams-Collier (cjcollier@colliertech.org),
+C.J.    Adams-Collier (cjac@colliertech.org),
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -53,6 +53,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Xsl;
+using System.Net;
 
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
@@ -71,11 +74,88 @@ namespace Prebuild.Core.Targets
 		#region Fields
 
 		private Kernel m_Kernel;
-
+		private XmlDocument autotoolsDoc;
+		private XmlUrlResolver xr;
+		private System.Security.Policy.Evidence e;
+		
 		#endregion
 
 		#region Private Methods
+		
+		private void mkStubFiles(string dirName, ArrayList fileNames)
+		{
+			for(int i = 0; i < fileNames.Count; i++){
+				string tmpFile = dirName + "/" + (string) fileNames[i];
+				
+				FileStream tmpFileStream =
+					new FileStream(tmpFile,FileMode.Create);
 
+				StreamWriter sw = new StreamWriter(tmpFileStream);
+				sw.WriteLine("These are not the files you are looking for.");
+				tmpFileStream.Close();
+			}	
+		}
+		
+		private void chkMkDir(string dirName)
+		{
+			System.IO.DirectoryInfo di =
+				new System.IO.DirectoryInfo(dirName);
+				
+			if(!di.Exists){
+				di.Create();
+			}	
+		}
+		
+		private void transformToFile(string filename, XsltArgumentList argList, string nodeName)
+		{
+			// Create an XslTransform for this file
+			XslTransform templateTransformer =
+				new XslTransform();
+
+			// Load up the template
+			XmlNode templateNode = autotoolsDoc.SelectSingleNode(nodeName+"/*");			
+			templateTransformer.Load(templateNode.CreateNavigator(), xr, e);
+
+			// Create a writer for the transformed template
+			XmlTextWriter templateWriter =
+				new XmlTextWriter(filename, null);
+
+			// Perform transformation, writing the file
+			templateTransformer.Transform
+				(m_Kernel.CurrentDoc, argList, templateWriter, xr);
+		}
+		
+		private void WriteCombine(SolutionNode solution)
+		{
+	#region "Create Solution directory if it doesn't exist"
+			string pwd = System.Environment.GetEnvironmentVariable("PWD");
+			string rootDir = Path.Combine(pwd, "autotools");
+			string solutionDir = Path.Combine(rootDir, solution.Name);
+			chkMkDir(solutionDir);			
+	#endregion
+
+	#region "Write Solution-level files"			
+			// $solutionDir is $rootDir/$solutionName
+			transformToFile(Path.Combine(solutionDir, "configure.ac"), null, "/Autotools/SolutionConfigureAc");
+			transformToFile(Path.Combine(solutionDir, "Makefile.am"), null, "/Autotools/SolutionMakefileAm");
+			transformToFile(Path.Combine(solutionDir,"autogen.sh"), null, "/Autotools/SolutionAutogenSh");
+				
+			// Create stubs for files required by automake		
+			// NEWS, README, AUTHORS, ChangeLog
+			ArrayList al = new ArrayList();
+			al.Add( "NEWS" );
+			al.Add( "README" );
+			al.Add( "AUTHORS" );
+			al.Add( "ChangeLog" );
+			
+			mkStubFiles(solutionDir, al);
+	#endregion
+
+			foreach(ProjectNode project in solution.ProjectsTableOrder)
+			{
+				WriteProject(solution, project);
+			}
+		}
 		private static string PrependPath(string path)
 		{
 			string tmpPath = Helper.NormalizePath(path, '/');
@@ -276,8 +356,67 @@ namespace Prebuild.Core.Targets
 			}
 			return tmpPath.ToString();
 		}
-
+		
 		private void WriteProject(SolutionNode solution, ProjectNode project)
+		{
+			// Add the project name to the list of transformation
+			// parameters
+			XsltArgumentList argList = new XsltArgumentList();			
+			argList.AddParam("projectName", "",  project.Name);
+
+			// $projectDir is $rootDir/$solutionName/$projectName
+			string pwd = System.Environment.GetEnvironmentVariable("PWD");
+			string rootDir = Path.Combine(pwd, "autotools");
+			string solutionDir = Path.Combine(rootDir, solution.Name);
+
+			string projectDir = Path.Combine(solutionDir, project.Name);
+            chkMkDir(projectDir);
+
+			// Transform the templates
+			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
+			transformToFile(Path.Combine(projectDir, "Makefile.am"), argList, "/Autotools/ProjectMakefileAm");
+			transformToFile(Path.Combine(projectDir, "autogen.sh"), argList, "/Autotools/ProjectAutogenSh");
+
+			if(project.Type == Core.Nodes.ProjectType.Library)
+				transformToFile(Path.Combine(projectDir, project.Name + ".pc.in"),argList,"/Autotools/ProjectPcIn");
+
+			// Copy the files from the source directory to the project's build directory
+			string projectSourceDir =
+				Path.Combine(pwd, project.Path);
+
+			foreach(string filename in project.Files)
+			{
+				Console.WriteLine(Path.Combine(projectSourceDir, filename));
+			}
+			
+			// Create stubs for NEWS, README, ChangeLog
+			// These are required by automake
+			ArrayList automakeFiles = new ArrayList();
+			automakeFiles.Add( "NEWS" );
+			automakeFiles.Add( "README" );
+			automakeFiles.Add( "ChangeLog" );
+
+			mkStubFiles(projectDir, automakeFiles);
+
+			// Populate the AUTHORS file from the list of authors
+			// This is also required by automake
+			FileStream authorsFileStream =
+				new FileStream(Path.Combine(projectDir, "AUTHORS"),FileMode.Create);
+
+			StreamWriter authorsWriter =
+				new StreamWriter(authorsFileStream);
+
+			foreach(AuthorNode author in project.Authors){
+				authorsWriter.WriteLine(author.Signature);
+			}
+
+			authorsWriter.Flush();
+				
+			authorsFileStream.Close();
+			
+		}
+
+		private void WriteProjectOld(SolutionNode solution, ProjectNode project)
 		{
 			string projFile = Helper.MakeFilePath(project.FullPath, "Include", "am");
 			StreamWriter ss = new StreamWriter(projFile);
@@ -431,7 +570,7 @@ namespace Prebuild.Core.Targets
 		}
 		bool hasLibrary = false;
 
-		private void WriteCombine(SolutionNode solution)
+		private void WriteCombineOld(SolutionNode solution)
 		{
 		
 			/* TODO: These vars should be pulled from the prebuild.xml file */
@@ -884,6 +1023,27 @@ namespace Prebuild.Core.Targets
 				throw new ArgumentNullException("kern");
 			}
 			m_Kernel = kern;
+			// Retrieve stream for the autotools template XML
+			Stream autotoolsStream = Assembly.GetExecutingAssembly()
+				.GetManifestResourceStream("autotools.xml");
+					
+			// Create an XML URL Resolver with default credentials
+			xr = new System.Xml.XmlUrlResolver();
+			xr.Credentials = CredentialCache.DefaultCredentials;
+
+			// Create a default evidence - no need to limit access
+			e =	new System.Security.Policy.Evidence();
+			
+			// Load the autotools XML
+			autotoolsDoc = new XmlDocument();
+			autotoolsDoc.Load(autotoolsStream);
+			
+			// rootDir is the filesystem location where the Autotools build
+			// tree will be created - for now we'll make it $PWD/autotools
+			string pwd = System.Environment.GetEnvironmentVariable("PWD");
+			string rootDir = Path.Combine(pwd, "autotools");
+			chkMkDir(rootDir);			
+
 			foreach(SolutionNode solution in kern.Solutions)
 			{
 				WriteCombine(solution);
