@@ -1,3 +1,24 @@
+2007-03-23T08:33	C.J. Adams-Collier <cjac@colliertech.org>
+	Added version attribute handling code for Property element
+	Added description element handling code
+	* prebuild.xml
+	- added /Prebuild/Solution/Property/@version attribute
+	- added /Prebuild/Solution/Property/Description element
+	* src/Core/Nodes/ProjectNode.cs
+	- added some docs where they were missing and obvious
+	- added code to handle @version
+	* src/Core/Nodes/DescriptionNode.cs
+	- new file.  Used to handle /Prebuild/Solution/Property/Description
+	* src/Core/Targets/AutotoolsTarget.cs
+	- added mkdirDashP(), a recursive directory creation method
+	- WriteProject() now copies the files to autotools/
+	* src/data/prebuild-1.7.xsd
+	- added /Prebuild/Solution/Property/Description element
+	- added /Prebuild/Solution/Property/@version attribute
+	* src/data/autotools.xml
+	- removed excess <xsl:value-of select="$projectName"/>
+	- explicitly using dnpb: prefix
+
 2007-03-23T04:31	C.J. Adams-Collier <cjac@colliertech.org>
 	Merged code from my stripped-down test
 	Adding support for the /Prebuild/Solution/Project/Author element

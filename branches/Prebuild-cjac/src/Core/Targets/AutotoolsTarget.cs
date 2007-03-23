@@ -82,6 +82,20 @@ namespace Prebuild.Core.Targets
 
 		#region Private Methods
 		
+		private void mkdirDashP(string dirName)
+		{
+			DirectoryInfo di = new DirectoryInfo(dirName);
+			if(di.Exists)
+				return;
+
+			string parentDirName = System.IO.Path.GetDirectoryName(dirName);
+			DirectoryInfo parentDi = new DirectoryInfo(parentDirName);
+			if(!parentDi.Exists)
+				mkdirDashP(parentDirName);
+
+			di.Create();
+		}
+		
 		private void mkStubFiles(string dirName, ArrayList fileNames)
 		{
 			for(int i = 0; i < fileNames.Count; i++){
@@ -113,7 +127,8 @@ namespace Prebuild.Core.Targets
 				new XslTransform();
 
 			// Load up the template
-			XmlNode templateNode = autotoolsDoc.SelectSingleNode(nodeName+"/*");			
+			XmlNode templateNode =
+				autotoolsDoc.SelectSingleNode(nodeName+"/*");
 			templateTransformer.Load(templateNode.CreateNavigator(), xr, e);
 
 			// Create a writer for the transformed template
@@ -384,11 +399,6 @@ namespace Prebuild.Core.Targets
 			string projectSourceDir =
 				Path.Combine(pwd, project.Path);
 
-			foreach(string filename in project.Files)
-			{
-				Console.WriteLine(Path.Combine(projectSourceDir, filename));
-			}
-			
 			// Create stubs for NEWS, README, ChangeLog
 			// These are required by automake
 			ArrayList automakeFiles = new ArrayList();
@@ -406,14 +416,25 @@ namespace Prebuild.Core.Targets
 			StreamWriter authorsWriter =
 				new StreamWriter(authorsFileStream);
 
-			foreach(AuthorNode author in project.Authors){
+			foreach(AuthorNode author in project.Authors)
 				authorsWriter.WriteLine(author.Signature);
-			}
 
 			authorsWriter.Flush();
-				
 			authorsFileStream.Close();
-			
+
+			// Copy files into the autotools tree
+			foreach(string filename in project.Files)
+			{
+				string source = Path.Combine(projectSourceDir, filename);
+				string dest = Path.Combine(Path.Combine(projectDir, project.Path), filename);
+				mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+
+				try{
+					System.IO.File.Copy(source, dest, true);
+				}catch(System.IO.IOException e){
+					Console.WriteLine(e.Message);
+				}
+			}
 		}
 
 		private void WriteProjectOld(SolutionNode solution, ProjectNode project)
@@ -1037,7 +1058,7 @@ namespace Prebuild.Core.Targets
 			// Load the autotools XML
 			autotoolsDoc = new XmlDocument();
 			autotoolsDoc.Load(autotoolsStream);
-			
+
 			// rootDir is the filesystem location where the Autotools build
 			// tree will be created - for now we'll make it $PWD/autotools
 			string pwd = System.Environment.GetEnvironmentVariable("PWD");

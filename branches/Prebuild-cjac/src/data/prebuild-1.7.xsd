@@ -60,7 +60,8 @@
 	<xs:element name="Project">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Author" type="xs:string" minOccurs="0" maxOccurs="unbounded" />			
+				<xs:element name="Author" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="Configuration" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="ReferencePath" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="Reference" minOccurs="0" maxOccurs="unbounded">
@@ -78,7 +79,8 @@
 			<xs:attribute name="filterGroups" type="xs:string" default="" />
 			<xs:attribute name="path" type="xs:string" default="" />
 			<xs:attribute name="icon" type="xs:string" default="" />
-			<xs:attribute name="language" default="C#">
+			<xs:attribute name="version" type="xs:string" default="1.0.0" />
+			<xs:attribute name="language" default="C#">			
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="C#" />
