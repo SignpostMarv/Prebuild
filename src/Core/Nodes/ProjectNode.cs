@@ -44,20 +44,20 @@ using Prebuild.Core.Utilities;
 namespace Prebuild.Core.Nodes
 {
 	/// <summary>
-	/// 
+	/// A set of values that the Project's type can be
 	/// </summary>
 	public enum ProjectType
 	{
 		/// <summary>
-		/// 
+		/// The project is a console executable
 		/// </summary>
 		Exe,
 		/// <summary>
-		/// 
+		/// The project is a windows executable
 		/// </summary>
 		WinExe,
 		/// <summary>
-		/// 
+		/// The project is a library
 		/// </summary>
 		Library
 	}
@@ -78,7 +78,7 @@ namespace Prebuild.Core.Nodes
 	}
 
 	/// <summary>
-	/// 
+	/// The Node object representing /Prebuild/Solution/Project elements
 	/// </summary>
 	[DataNode("Project")]
 	public class ProjectNode : DataNode
@@ -97,6 +97,7 @@ namespace Prebuild.Core.Nodes
 		private string m_StartupObject = "";
 		private string m_RootNamespace;
 		private string m_FilterGroups = "";
+		private string m_Version = "";
 		private Guid m_Guid;
 
 		private Hashtable m_Configurations;
@@ -159,6 +160,18 @@ namespace Prebuild.Core.Nodes
 				return m_FilterGroups; 
 			} 
 		}
+
+		/// <summary>
+		/// Gets the project's version
+		/// </summary>
+		/// <value>The project's version.</value>
+		public string Version 
+		{ 
+			get 
+			{ 
+				return m_Version; 
+			} 
+		}		
 
 		/// <summary>
 		/// Gets the full path.
@@ -430,6 +443,7 @@ namespace Prebuild.Core.Nodes
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
 			m_Path = Helper.AttributeValue(node, "path", m_Path);
 			m_FilterGroups = Helper.AttributeValue(node, "filterGroups", m_FilterGroups);
+			m_Version = Helper.AttributeValue(node, "version", m_Version);
 			m_AppIcon = Helper.AttributeValue(node, "icon", m_AppIcon);
 			m_DesignerFolder = Helper.AttributeValue(node, "designerFolder", m_DesignerFolder);
 			m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);

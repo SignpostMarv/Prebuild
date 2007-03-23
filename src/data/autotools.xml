@@ -155,16 +155,14 @@ fi
 				>
 	<xsl:param name="projectName" />
 	<xsl:template match="/">
-<xsl:value-of select="$projectName"/>
-
-<xsl:for-each select="//Project[@name=$projectName]">
+<xsl:for-each select="//dnpb:Project[@name=$projectName]">
 
 AC_INIT(ChangeLog)
 AC_PREREQ(2.53)
 AC_CANONICAL_SYSTEM
 PROJECT_NAME=<xsl:value-of select="@name" />
 PROJECT_VERSION=<xsl:value-of select="@version" />
-PROJECT_DESCRIPTION="<xsl:value-of select="Description/text()" />"
+PROJECT_DESCRIPTION="<xsl:value-of select="dnpb:Description/text()" />"
 PROJECT_TYPE="<xsl:value-of select="@type" />"
 
 AC_SUBST(PROJECT_NAME)
@@ -186,8 +184,8 @@ AC_SUBST(ASSEMBLY_EXTENSION)
 AM_INIT_AUTOMAKE([$PROJECT_NAME],[$PROJECT_VERSION],[$PROJECT_DESCRIPTION])
 
 AC_OUTPUT([
-Makefile
-<xsl:if test="@type=Library"><xsl:value-of select="@name" />.pc</xsl:if>
+Makefile<xsl:if test="@type=Library">
+<xsl:value-of select="@name" />.pc</xsl:if>
 ])
 </xsl:for-each>	
 
@@ -202,8 +200,6 @@ Makefile
 				>
 <xsl:template match="/">
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
-
-
 
 all:
 	echo $(ASSEMBLY)
@@ -369,7 +365,7 @@ automake --add-missing --gnu $am_opt ||
 echo "Running autoconf ..."
 autoconf || { echo "**Error**: autoconf failed."; exit 1; }
 </xsl:text>
-<xsl:for-each select="/Prebuild/Solution/Project">
+<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project">
 echo Running <xsl:value-of select="@name" />/autogen.sh ...
 (cd $srcdir/<xsl:value-of select="@name" /> ; NOCONFIGURE=1  /bin/sh ./autogen.sh "$@")
 echo Done running <xsl:value-of select="@name" />/autogen.sh ...
@@ -401,9 +397,9 @@ fi
 	<xsl:template match="/">AC_INIT(ChangeLog)
 AC_PREREQ(2.53)
 AC_CANONICAL_SYSTEM
-SOLUTION_NAME=<xsl:value-of select="/Prebuild/Solution/@name" />
-SOLUTION_VERSION=<xsl:value-of select="/Prebuild/Solution/@version" />
-SOLUTION_DESCRIPTION="<xsl:value-of select="/Prebuild/Solution/Description" />"
+SOLUTION_NAME=<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/@name" />
+SOLUTION_VERSION=<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/@version" />
+SOLUTION_DESCRIPTION="<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/dnpb:Description" />"
 <xsl:text disable-output-escaping="yes">
 AC_SUBST(DESCRIPTION)
 AM_INIT_AUTOMAKE([$SOLUTION_NAME],[$SOLUTION_VERSION],[$SOLUTION_DESCRIPTION])
@@ -521,7 +517,7 @@ case "$host" in
 esac
 AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
 </xsl:text>
-AC_CONFIG_SUBDIRS(<xsl:for-each select="/Prebuild/Solution/Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
+AC_CONFIG_SUBDIRS(<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
 </xsl:for-each>)
 <xsl:text disable-output-escaping="yes">
 
@@ -537,7 +533,7 @@ echo "   * compiler:            $CSC"
 echo "   * Documentation:       $enable_monodoc ($MONODOC)"
 echo "   * Solution Name:       $SOLUTION_NAME"
 echo "   * Packages:"</xsl:text>
-<xsl:for-each select="/Prebuild/Solution/Project">echo "    - <xsl:value-of select="@name" />"
+<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project">echo "    - <xsl:value-of select="@name" />"
 </xsl:for-each><xsl:text disable-output-escaping="yes">echo "   * Version:             $PACKAGE_VERSION"
 echo ""
 echo "- - -"
@@ -552,7 +548,7 @@ echo "- - -"
 				exclude-result-prefixes="dnpb"
 				xml:space="preserve"
 				>
-	<xsl:template match="/">SUBDIRS =<xsl:for-each select="/Prebuild/Solution/Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" /></xsl:for-each>
+	<xsl:template match="/">SUBDIRS =<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" /></xsl:for-each>
 </xsl:template>
 </xsl:stylesheet>
 	</SolutionMakefileAm>
