@@ -23,7 +23,19 @@
 	    <File>prebuild.xml</File>
 	    <File>prebuild</File>
 	</Files>
-	<Project name="Prebuild" path="src" language="C#" assemblyName="prebuild" icon="App.ico" type="Exe" rootNamespace="Prebuild" startupObject="Prebuild.Prebuild">
+	<Project name="Prebuild"
+                 path="src"
+                 language="C#"
+                 assemblyName="prebuild"
+                 icon="App.ico"
+                 type="Exe"
+                 rootNamespace="Prebuild"
+                 startupObject="Prebuild.Prebuild">
+	    <Author>Matthew Holmes (matthew@wildfiregames.com)</Author>
+	    <Author>Dan Moorehead (dan05a@gmail.com)</Author>
+	    <Author>Dave Hudson (jendave@yahoo.com)</Author>
+	    <Author>Rob Loach (http://robloach.net)</Author>
+	    <Author>C.J. Adams-Collier (cjac@colliertech.org)</Author>
 	    <Configuration name="Debug">
 		<Options>
 		    <CompilerDefines>DEBUG;TRACE</CompilerDefines>

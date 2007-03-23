@@ -102,6 +102,7 @@ namespace Prebuild.Core.Nodes
 		private Hashtable m_Configurations;
 		private ArrayList m_ReferencePaths;
 		private ArrayList m_References;
+		private ArrayList m_Authors;
 		private FilesNode m_Files;
 
 		#endregion
@@ -116,6 +117,7 @@ namespace Prebuild.Core.Nodes
 			m_Configurations = new Hashtable();
 			m_ReferencePaths = new ArrayList();
 			m_References = new ArrayList();
+			m_Authors = new ArrayList();
 		}
 
 		#endregion
@@ -329,6 +331,18 @@ namespace Prebuild.Core.Nodes
 				return m_References;
 			}
 		}
+		
+		/// <summary>
+		/// Gets the Authors list.
+		/// </summary>
+		/// <value>The list of the project's authors.</value>
+		public ArrayList Authors
+		{
+			get
+			{
+				return m_Authors;
+			}
+		}
 
 		/// <summary>
 		/// Gets the files.
@@ -471,6 +485,10 @@ namespace Prebuild.Core.Nodes
 					else if(dataNode is ReferenceNode)
 					{
 						m_References.Add(dataNode);
+					}
+					else if(dataNode is AuthorNode)
+					{
+						m_Authors.Add(dataNode);
 					}
 					else if(dataNode is FilesNode)
 					{
