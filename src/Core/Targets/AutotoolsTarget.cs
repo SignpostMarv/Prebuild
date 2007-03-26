@@ -387,8 +387,61 @@ namespace Prebuild.Core.Targets
 			string projectDir = Path.Combine(solutionDir, project.Name);
             chkMkDir(projectDir);
 
+			ArrayList compiledFiles = new ArrayList();
+			ArrayList contentFiles = new ArrayList();
+			ArrayList embeddedFiles = new ArrayList();
+
+			// Copy files into the autotools tree
+			foreach(string filename in project.Files)
+			{
+				string source = Path.Combine(Path.Combine(pwd, project.Path), filename);
+				string dest = Path.Combine(Path.Combine(projectDir, project.Path), filename);
+
+				// Tell the user if there's a problem copying the file
+				try{
+					mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+					System.IO.File.Copy(source, dest, true);
+				}catch(System.IO.IOException e){
+					Console.WriteLine(e.Message);
+				}
+				
+				switch(project.Files.GetBuildAction(filename))
+				{
+					case BuildAction.Compile:
+						compiledFiles.Add(Path.Combine(project.Path, filename));
+						break;
+					case BuildAction.Content:
+						contentFiles.Add(Path.Combine(project.Path, filename));
+						break;
+					case BuildAction.EmbeddedResource:
+						embeddedFiles.Add(Path.Combine(project.Path, filename));
+						break;
+				}
+			}
+
 			// Transform the templates
 			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
+
+			string lineSep = " \\\n\t";
+			string compiledFilesString = "";
+			if(compiledFiles.Count > 0)
+				compiledFilesString =
+					lineSep + string.Join(lineSep, (string[])compiledFiles.ToArray(typeof(string)));
+			
+			string embeddedFilesString = "";
+			if(embeddedFiles.Count > 0)
+				embeddedFilesString =
+					lineSep + string.Join(lineSep, (string[])embeddedFiles.ToArray(typeof(string)));
+
+			string contentFilesString = "";
+			if(contentFiles.Count > 0)
+				contentFilesString =
+					lineSep + string.Join(lineSep, (string[])contentFiles.ToArray(typeof(string)));
+					
+			argList.AddParam("compiledFiles", "",  compiledFilesString);
+			argList.AddParam("embeddedFiles", "",  embeddedFilesString);
+			argList.AddParam("contentFiles", "", contentFilesString);
+			
 			transformToFile(Path.Combine(projectDir, "Makefile.am"), argList, "/Autotools/ProjectMakefileAm");
 			transformToFile(Path.Combine(projectDir, "autogen.sh"), argList, "/Autotools/ProjectAutogenSh");
 
@@ -422,19 +475,6 @@ namespace Prebuild.Core.Targets
 			authorsWriter.Flush();
 			authorsFileStream.Close();
 
-			// Copy files into the autotools tree
-			foreach(string filename in project.Files)
-			{
-				string source = Path.Combine(projectSourceDir, filename);
-				string dest = Path.Combine(Path.Combine(projectDir, project.Path), filename);
-				mkdirDashP(System.IO.Path.GetDirectoryName(dest));
-
-				try{
-					System.IO.File.Copy(source, dest, true);
-				}catch(System.IO.IOException e){
-					Console.WriteLine(e.Message);
-				}
-			}
 		}
 
 		private void WriteProjectOld(SolutionNode solution, ProjectNode project)

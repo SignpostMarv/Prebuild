@@ -1,3 +1,20 @@
+2007-03-26T08:41	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- now creating list of source files in managed code and passing
+	  them to the template via <xsl:param>s
+	* src/data/prebuild-1.7.xsd
+	- updated the header comment to 2007
+	* src/data/autotools.xml
+	! <ProjectConfigureAc>
+	- copied checks from Solution-level configure.ac
+	- copied solution-level config status
+	! <ProjectMakefileAm>
+	- added <xsl:param> elements for file list to be passed through
+	- made a temporary target for the assembly we're building
+	- added this target to the deps of "all:"
+	! <SolutionConfigureAc>
+	- changed status header/footer from "- - -" to "==="
+
 2007-03-23T08:33	C.J. Adams-Collier <cjac@colliertech.org>
 	Added version attribute handling code for Property element
 	Added description element handling code
