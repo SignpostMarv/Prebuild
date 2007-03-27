@@ -304,6 +304,7 @@ Makefile</xsl:text><xsl:if test="@type=Library">
 ])
 
 echo "==="
+echo ""
 echo "Project configuration summary"
 echo ""
 echo "   * Installation prefix: $prefix"
@@ -327,15 +328,26 @@ echo "==="
 <xsl:param name="embeddedFiles" />
 <xsl:param name="compiledFiles" />
 <xsl:param name="contentFiles" />
+<xsl:param name="sourceLibs" />
+<xsl:param name="binaryLibs" />
+<xsl:param name="gacLibs" />
 <xsl:template match="/">
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
 
+SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
+BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
+GAC_LIBS =<xsl:value-of select="$gacLibs" />
 RESOURCES =<xsl:value-of select="$embeddedFiles" />
-
 SOURCES =<xsl:value-of select="$compiledFiles" />
 
 $(ASSEMBLY): $(RESOURCES) $(SOURCES)
-	echo $(CSC)
+	$(CSC) /out:$(ASSEMBLY) \
+		$(addprefix /resource:, $(RESOURCES)) \
+		$(addprefix /r:, $(GAC_LIBS)) \
+		$(addprefix /r../:, $(SOURCE_LIBS)) \
+		$(addprefix /r../:, $(BINARY_LIBS)) \
+		$(REFERENCES) \
+		$(SOURCES)
 
 all: $(ASSEMBLY)
 	echo $(ASSEMBLY)
@@ -651,6 +663,7 @@ case "$host" in
                ;;
 esac
 AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
+<!-- TODO: Ensure that these SUBDIRS are processed in dependency order -->
 </xsl:text>
 AC_CONFIG_SUBDIRS(<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
 </xsl:for-each>)
@@ -661,16 +674,13 @@ Makefile
 ])
 
 echo "==="
+echo ""
 echo "Solution configuration summary"
 echo ""
-echo "   * Installation prefix: $prefix"
-echo "   * compiler:            $CSC"
-echo "   * Documentation:       $enable_monodoc ($MONODOC)"
 echo "   * Solution Name:       $SOLUTION_NAME"
 echo "   * Packages:"</xsl:text>
 <xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project">echo "    - <xsl:value-of select="@name" />"
-</xsl:for-each><xsl:text disable-output-escaping="yes">echo "   * Version:             $PACKAGE_VERSION"
-echo ""
+</xsl:for-each><xsl:text disable-output-escaping="yes">echo ""
 echo "==="
 </xsl:text>
 </xsl:template>

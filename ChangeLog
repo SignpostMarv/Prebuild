@@ -1,3 +1,16 @@
+2007-03-26T20:18	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- creating new template arguments to contain the list of libs to
+	  reference: source, binary & GAC
+	- source libs are included as part of this solution (untested)
+	- binary libs are distributed with the source (untested)
+	- GAC libs are assumed to be in the GAC or other lib path (tested)
+	* src/data/autotools.xml
+	- created new params through which to accept reference info
+	- created a working $(CSC) line
+	- added a TODO item for ordering project dependency for
+	  AC_CONFIG_SUBDIRS code
+
 2007-03-26T08:41	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- now creating list of source files in managed code and passing
