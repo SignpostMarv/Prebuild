@@ -161,6 +161,19 @@ fi
 	<xsl:for-each select="//dnpb:Project[@name=$projectName]">AC_INIT(ChangeLog)
 AC_PREREQ(2.53)
 AC_CANONICAL_SYSTEM
+AM_MAINTAINER_MODE
+dnl AC_PROG_INTLTOOL([0.25])
+AC_PROG_INSTALL
+
+BUILD_DIR="bin"
+CONFIG="Release"
+dnl CSFLAGS="-debug -nowarn:1574"
+CSFLAGS=""
+
+AC_SUBST(BUILD_DIR)
+AC_SUBST(CONFIG)
+AC_SUBST(CSFLAGS)
+
 PROJECT_NAME=<xsl:value-of select="@name" />
 PROJECT_VERSION=<xsl:value-of select="@version" />
 PROJECT_DESCRIPTION="<xsl:value-of select="dnpb:Description/text()" />"
@@ -172,6 +185,7 @@ AC_SUBST(DESCRIPTION)
 
 AM_INIT_AUTOMAKE([$PROJECT_NAME],[$PROJECT_VERSION],[$PROJECT_DESCRIPTION])
 
+AC_MSG_CHECKING([assembly type])
 case $PROJECT_TYPE in
 	*Exe)
 		ASSEMBLY_EXTENSION=exe
@@ -181,16 +195,12 @@ case $PROJECT_TYPE in
 		PKGCONFIG_FILE=$PROJECT_NAME.pc
 		;;
 	*)
-		AC_MSG_WARN([*** Please add support for project type $PROJECT_TYPE to configure.ac checks!])
+		AC_MSG_ERROR([*** Please add support for project type $PROJECT_TYPE to configure.ac checks!])
 		;;
 esac
+AC_MSG_RESULT([$PROJECT_TYPE])
+
 AC_SUBST(ASSEMBLY_EXTENSION)
-
-AM_MAINTAINER_MODE
-
-dnl AC_PROG_INTLTOOL([0.25])
-
-AC_PROG_INSTALL
 
 AC_MSG_CHECKING([whether we're compiling from an RCS])
 if test -f "$srcdir/.cvs_version" ; then
@@ -205,44 +215,9 @@ fi
 
 AC_MSG_RESULT($from_rcs)
 
-AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(GMCS, gmcs)
-AC_PATH_PROG(GACUTIL, gacutil)
-
-AC_MSG_CHECKING([for mono])
-dnl if test "x$MONO" = "x" ; then
-dnl  AC_MSG_ERROR([Can't find "mono" in your PATH])
-dnl else
-  AC_MSG_RESULT([found])
-dnl fi
-
-AC_MSG_CHECKING([for gmcs])
-dnl if test "x$GMCS" = "x" ; then
-dnl  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
-dnl else
-  AC_MSG_RESULT([found])
-dnl fi
-
-AC_SUBST(PATH)
-AC_SUBST(LD_LIBRARY_PATH)
-
-dnl CSFLAGS="-debug -nowarn:1574"
-CSFLAGS=""
-AC_SUBST(CSFLAGS)
-
-dnl Find pkg-config
-AC_PATH_PROG(PKGCONFIG, pkg-config, no)
-if test "x$PKG_CONFIG" = "xno"; then
-        AC_MSG_ERROR([You need to install pkg-config])
-fi
-
 MONO_REQUIRED_VERSION=1.1
 
 PKG_CHECK_MODULES(MONO_DEPENDENCY, mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
-BUILD_DIR="bin"
-AC_SUBST(BUILD_DIR)
-CONFIG="Release"
-AC_SUBST(CONFIG)
 
 if test "x$has_mono" = "xtrue"; then
   AC_PATH_PROG(RUNTIME, mono, no)
@@ -264,6 +239,17 @@ else
     LIB_SUFFIX=
   fi
 fi
+
+AC_PATH_PROG(GACUTIL, gacutil)
+if test "x$GACUTIL" = "xno" ; then
+	AC_MSG_ERROR([No gacutil tool found])
+fi
+
+GACUTIL_FLAGS='/package <xsl:value-of select="$packageName" /> /gacdir $(DESTDIR)$(prefix)/lib'
+AC_SUBST(GACUTIL_FLAGS)
+
+AC_SUBST(PATH)
+AC_SUBST(LD_LIBRARY_PATH)
 
 AC_SUBST(LIB_PREFIX)
 AC_SUBST(LIB_SUFFIX)
@@ -332,6 +318,7 @@ echo "==="
 <xsl:param name="binaryLibs" />
 <xsl:param name="gacLibs" />
 <xsl:template match="/">
+bin_SCRIPTS=`echo $(PROJECT_NAME) | perl -e 't/[A-Z]/[a-z]/g'`
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
 
 SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
@@ -558,7 +545,7 @@ dnl AC_PROG_INTLTOOL([0.25])
 
 AC_PROG_INSTALL
 
-AC_MSG_CHECKING([whether we're compiling from an RCS])
+AC_MSG_CHECKING([whether we're building from an RCS])
 if test -f "$srcdir/.cvs_version" ; then
         from_rcs=cvs
 else
@@ -571,98 +558,8 @@ fi
 
 AC_MSG_RESULT($from_rcs)
 
-AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(GMCS, gmcs)
-AC_PATH_PROG(GACUTIL, gacutil)
-
-AC_MSG_CHECKING([for mono])
-dnl if test "x$MONO" = "x" ; then
-dnl  AC_MSG_ERROR([Can't find "mono" in your PATH])
-dnl else
-  AC_MSG_RESULT([found])
-dnl fi
-
-AC_MSG_CHECKING([for gmcs])
-dnl if test "x$GMCS" = "x" ; then
-dnl  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
-dnl else
-  AC_MSG_RESULT([found])
-dnl fi
-
-AC_SUBST(PATH)
-AC_SUBST(LD_LIBRARY_PATH)
-
-dnl CSFLAGS="-debug -nowarn:1574"
-CSFLAGS=""
-AC_SUBST(CSFLAGS)
-
-dnl Find pkg-config
-AC_PATH_PROG(PKGCONFIG, pkg-config, no)
-if test "x$PKG_CONFIG" = "xno"; then
-        AC_MSG_ERROR([You need to install pkg-config])
-fi
-
-MONO_REQUIRED_VERSION=1.1
-
-PKG_CHECK_MODULES(MONO_DEPENDENCY, mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
-BUILD_DIR="bin"
-AC_SUBST(BUILD_DIR)
 CONFIG="Release"
 AC_SUBST(CONFIG)
-
-if test "x$has_mono" = "xtrue"; then
-  AC_PATH_PROG(RUNTIME, mono, no)
-  AC_PATH_PROG(CSC, gmcs, no)
-  if test `uname -s` = "Darwin"; then
-        LIB_PREFIX=
-        LIB_SUFFIX=.dylib
-  else
-        LIB_PREFIX=.so
-        LIB_SUFFIX=
-  fi
-else
-  AC_PATH_PROG(CSC, csc.exe, no)
-  if test x$CSC = "xno"; then
-        AC_MSG_ERROR([You need to install either mono or .Net])
-  else
-    RUNTIME=
-    LIB_PREFIX=
-    LIB_SUFFIX=
-  fi
-fi
-
-AC_SUBST(LIB_PREFIX)
-AC_SUBST(LIB_SUFFIX)
-AC_SUBST(RUNTIME)
-AC_SUBST(CSC)
-
-AC_SUBST(BASE_DEPENDENCIES_CFLAGS)
-AC_SUBST(BASE_DEPENDENCIES_LIBS)
-
-dnl Find monodoc
-MONODOC_REQUIRED_VERSION=1.0
-AC_SUBST(MONODOC_REQUIRED_VERSION)
-PKG_CHECK_MODULES(MONODOC_DEPENDENCY, monodoc >= $MONODOC_REQUIRED_VERSION, enable_monodoc=yes, enable_monodoc=no)
-
-if test "x$enable_monodoc" = "xyes"; then
-        AC_PATH_PROG(MONODOC, monodoc, no)
-        if test x$MONODOC = xno; then
-           enable_monodoc=no
-        fi
-else
-        MONODOC=
-fi
-
-AC_SUBST(MONODOC)
-AM_CONDITIONAL(ENABLE_MONODOC, test "x$enable_monodoc" = "xyes")
-
-winbuild=no
-case "$host" in
-       *-*-mingw*|*-*-cygwin*)
-               winbuild=yes
-               ;;
-esac
-AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
 <!-- TODO: Ensure that these SUBDIRS are processed in dependency order -->
 </xsl:text>
 AC_CONFIG_SUBDIRS(<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
@@ -697,4 +594,28 @@ echo "==="
 </xsl:template>
 </xsl:stylesheet>
 	</SolutionMakefileAm>
+	<ProjectWrapperScriptIn>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:dnpb="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd"
+				exclude-result-prefixes="dnpb"
+				xml:space="preserve"
+				>
+	<!-- Removes the xml version header in the generated file -->
+	<xsl:output method="text"/>
+	<xsl:param name="projectName" />
+	<xsl:template match="/">
+	<xsl:for-each select="//dnpb:Project[@name=$projectName]">#! /bin/sh
+
+PACKAGE=<xsl:value-of select="$projectName" />
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+# %%$@%$# why oh why isn't it $sharedir/$PACKAGE
+packagedir=$prefix/lib/$PACKAGE
+
+exec @RUNTIME@ $packagedir/$PACKAGE.exe "$@"
+</xsl:for-each>
+</xsl:template>
+</xsl:stylesheet>
+	</ProjectWrapperScriptIn>
 </Autotools>
