@@ -310,7 +310,9 @@ echo "==="
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 				xmlns:dnpb="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd"
 				exclude-result-prefixes="dnpb"
+				xml:space="preserve"
 				>
+<xsl:param name="projectName" />
 <xsl:param name="embeddedFiles" />
 <xsl:param name="compiledFiles" />
 <xsl:param name="contentFiles" />
@@ -318,8 +320,11 @@ echo "==="
 <xsl:param name="binaryLibs" />
 <xsl:param name="gacLibs" />
 <xsl:template match="/">
-bin_SCRIPTS=`echo $(PROJECT_NAME) | perl -e 't/[A-Z]/[a-z]/g'`
+
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
+<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />dir = $(prefix)/lib/<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
+<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />_DATA = $(ASSEMBLY)
+bin_SCRIPTS=<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
 
 SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />

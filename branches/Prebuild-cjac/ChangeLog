@@ -1,3 +1,10 @@
+2007-03-27T08:39	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/data/autotools.xml
+	! <ProjectMakefileAm />
+	- added whitespace-preservation
+	- added the missing projectName param
+	- replaced bin_SCRIPTS with something that worked
+
 2007-03-27T07:56	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/data/autotools.xml
 	! <ProjectConfigureAc />
