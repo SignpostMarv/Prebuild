@@ -1,3 +1,16 @@
+2007-03-27T09:33	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/data/autotools.xml
+	! <ProjectConfigureAc />
+	* added a lcProjectName which is $projectName lower-cased
+	* moved autoconf template specifier near AC_OUTPUT
+	* AC_OUTPUT with args is deprecated.  now using AC_CONFIG_FILES
+	* placed AC_CONFIG_FILES() calls for wrapper script or pkg-config
+	  file in xslt project type checks
+	! <ProjectMakefileAm />
+	* commented out bin_SCRIPTS
+	* added a lcProjectName which is $projectName lower-cased
+	* using $lcProjectName instead of the longer version
+
 2007-03-27T08:39	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/data/autotools.xml
 	! <ProjectMakefileAm />
