@@ -390,6 +390,9 @@ namespace Prebuild.Core.Targets
 			ArrayList compiledFiles = new ArrayList();
 			ArrayList contentFiles = new ArrayList();
 			ArrayList embeddedFiles = new ArrayList();
+			ArrayList binaryLibs = new ArrayList();
+			ArrayList sourceLibs = new ArrayList();
+			ArrayList gacLibs = new ArrayList();
 
 			// Copy files into the autotools tree
 			foreach(string filename in project.Files)
@@ -418,12 +421,45 @@ namespace Prebuild.Core.Targets
 						break;
 				}
 			}
+			
+			if (project.References.Count > 0)
+			{
+				for(int refNum = 0; refNum < project.References.Count; refNum++)
+				{
+					ReferenceNode refr = (ReferenceNode)project.References[refNum];
 
-			// Transform the templates
-			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
+					if(solution.ProjectsTable.ContainsKey(refr.Name))
+					{
+						// If the referenced assembly is part of the solution...
+						ProjectNode sourcePrj = ((ProjectNode)(solution.ProjectsTable[refr.Name]));
+						sourceLibs.Add(Path.Combine(project.Name, refr.Name + ".dll"));
+					}else{
+						string fileRef = FindFileReference(refr.Name, (ProjectNode)refr.Parent);
+
+						if(refr.Path != null || fileRef != null)
+						{
+							// If the .dll is distributed with prebuild package 
+							string finalPath = String.Empty;
+							if(refr.Path == null)
+								finalPath = fileRef;
+							else
+								finalPath = Helper.NormalizePath(refr.Path + "/" + refr.Name + ".dll", '/');
+
+							binaryLibs.Add(Path.Combine(project.Path, finalPath));
+						}else{
+							// Else, let's assume it's in the GAC or the lib path
+							int index = refr.Name.IndexOf(",");
+							if ( index > 0)
+								gacLibs.Add(refr.Name.Substring(0, index));
+							else
+								gacLibs.Add(refr.Name);
+						}
+					}
+				}				
+			}			
 
 			string lineSep = " \\\n\t";
-			string compiledFilesString = "";
+			string compiledFilesString = string.Empty;
 			if(compiledFiles.Count > 0)
 				compiledFilesString =
 					lineSep + string.Join(lineSep, (string[])compiledFiles.ToArray(typeof(string)));
@@ -437,11 +473,31 @@ namespace Prebuild.Core.Targets
 			if(contentFiles.Count > 0)
 				contentFilesString =
 					lineSep + string.Join(lineSep, (string[])contentFiles.ToArray(typeof(string)));
+			
+			string sourceLibsString = "";
+			if(sourceLibs.Count > 0)
+				sourceLibsString =
+					lineSep + string.Join(lineSep, (string[])sourceLibs.ToArray(typeof(string)));
+			
+			string binaryLibsString = "";
+			if(binaryLibs.Count > 0)
+				binaryLibsString =
+					lineSep + string.Join(lineSep, (string[])binaryLibs.ToArray(typeof(string)));
 					
+			string gacLibsString = "";
+			if(gacLibs.Count > 0)
+				gacLibsString =
+					lineSep + string.Join(lineSep, (string[])gacLibs.ToArray(typeof(string)));
+			
 			argList.AddParam("compiledFiles", "",  compiledFilesString);
 			argList.AddParam("embeddedFiles", "",  embeddedFilesString);
 			argList.AddParam("contentFiles", "", contentFilesString);
+			argList.AddParam("sourceLibs", "", sourceLibsString);
+			argList.AddParam("binaryLibs", "", binaryLibsString);
+			argList.AddParam("gacLibs", "", gacLibsString);
 			
+			// Transform the templates
+			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
 			transformToFile(Path.Combine(projectDir, "Makefile.am"), argList, "/Autotools/ProjectMakefileAm");
 			transformToFile(Path.Combine(projectDir, "autogen.sh"), argList, "/Autotools/ProjectAutogenSh");
 
