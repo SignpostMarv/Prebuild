@@ -1,3 +1,20 @@
+2007-03-27T07:56	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/data/autotools.xml
+	! <ProjectConfigureAc />
+	- cleaned up duplicate checks
+	- placed initialization macros above system check macros
+	- added some more messages about what's going on
+	- added GACUTIL_FLAGS variable including /package option
+	! <ProjectMakefileAm />
+	- added an incomplete bin_SCRIPTS
+	- RCS check says "building" instead of "compiling"
+	! <SolutionConfigureAc />
+	- removed macros that are useful only for projects
+	! <ProjectWrapperScriptIn />
+	- created this element on this revision
+	- this is a wrapper shell script that lives in the $PATH and runs
+	  the CIL assembly
+
 2007-03-26T20:18	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- creating new template arguments to contain the list of libs to
