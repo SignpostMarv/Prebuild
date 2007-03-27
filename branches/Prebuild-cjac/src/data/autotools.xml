@@ -157,6 +157,7 @@ fi
 	<!-- Removes the xml version header in the generated file -->
 	<xsl:output method="text"/>
 	<xsl:param name="projectName" />
+	<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
 	<xsl:template match="/">
 	<xsl:for-each select="//dnpb:Project[@name=$projectName]">AC_INIT(ChangeLog)
 AC_PREREQ(2.53)
@@ -192,7 +193,6 @@ case $PROJECT_TYPE in
 		;;
 	*Library)
 		ASSEMBLY_EXTENSION=dll
-		PKGCONFIG_FILE=$PROJECT_NAME.pc
 		;;
 	*)
 		AC_MSG_ERROR([*** Please add support for project type $PROJECT_TYPE to configure.ac checks!])
@@ -284,10 +284,13 @@ case "$host" in
 esac
 AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
 
-AC_OUTPUT([
-Makefile</xsl:text><xsl:if test="@type=Library">
-<xsl:value-of select="@name" />.pc</xsl:if><xsl:text disable-output-escaping="yes"> 
-])
+</xsl:text>
+<xsl:if test="@type=Exe or @type=WinExe">AC_CONFIG_FILES(<xsl:value-of select="$lcProjectName" />)</xsl:if>
+<xsl:if test="@type=Library">AC_CONFIG_FILES(<xsl:value-of select="$projectName" />).pc</xsl:if>
+<xsl:text disable-output-escaping="yes">
+
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT
 
 echo "==="
 echo ""
@@ -313,6 +316,7 @@ echo "==="
 				xml:space="preserve"
 				>
 <xsl:param name="projectName" />
+<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
 <xsl:param name="embeddedFiles" />
 <xsl:param name="compiledFiles" />
 <xsl:param name="contentFiles" />
@@ -322,9 +326,11 @@ echo "==="
 <xsl:template match="/">
 
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
-<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />dir = $(prefix)/lib/<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
-<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />_DATA = $(ASSEMBLY)
-bin_SCRIPTS=<xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" />
+
+# TODO: generate the wrapper script
+# <xsl:value-of select="$lcProjectName" />dir = $(prefix)/lib/<xsl:value-of select="$lcProjectName" />
+# <xsl:value-of select="$lcProjectName" />_DATA = $(ASSEMBLY)
+# bin_SCRIPTS=<xsl:value-of select="$lcProjectName" />
 
 SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
