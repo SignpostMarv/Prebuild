@@ -503,6 +503,8 @@ namespace Prebuild.Core.Targets
 
 			if(project.Type == Core.Nodes.ProjectType.Library)
 				transformToFile(Path.Combine(projectDir, project.Name + ".pc.in"),argList,"/Autotools/ProjectPcIn");
+			if(project.Type == Core.Nodes.ProjectType.Exe || project.Type == Core.Nodes.ProjectType.WinExe)
+				transformToFile(Path.Combine(projectDir, project.Name.ToLower() + ".in"),argList,"/Autotools/ProjectWrapperScriptIn");
 
 			// Copy the files from the source directory to the project's build directory
 			string projectSourceDir =
