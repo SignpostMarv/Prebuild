@@ -160,6 +160,7 @@ fi
 	<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
 	<xsl:template match="/">
 	<xsl:for-each select="//dnpb:Project[@name=$projectName]">AC_INIT(ChangeLog)
+	
 AC_PREREQ(2.53)
 AC_CANONICAL_SYSTEM
 AM_MAINTAINER_MODE
@@ -179,7 +180,7 @@ PROJECT_NAME=<xsl:value-of select="@name" />
 PROJECT_VERSION=<xsl:value-of select="@version" />
 PROJECT_DESCRIPTION="<xsl:value-of select="dnpb:Description/text()" />"
 PROJECT_TYPE="<xsl:value-of select="@type" />"
-<xsl:text disable-output-escaping="yes">
+
 AC_SUBST(PROJECT_NAME)
 AC_SUBST(PROJECT_VERSION)
 AC_SUBST(DESCRIPTION)
@@ -216,9 +217,9 @@ fi
 AC_MSG_RESULT($from_rcs)
 
 MONO_REQUIRED_VERSION=1.1
-
+<xsl:text disable-output-escaping="yes">
 PKG_CHECK_MODULES(MONO_DEPENDENCY, mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
-
+</xsl:text>
 if test "x$has_mono" = "xtrue"; then
   AC_PATH_PROG(RUNTIME, mono, no)
   AC_PATH_PROG(CSC, gmcs, no)
@@ -245,7 +246,7 @@ if test "x$GACUTIL" = "xno" ; then
 	AC_MSG_ERROR([No gacutil tool found])
 fi
 
-GACUTIL_FLAGS='/package <xsl:value-of select="$packageName" /> /gacdir $(DESTDIR)$(prefix)/lib'
+GACUTIL_FLAGS='/package <xsl:value-of select="$projectName" /> /gacdir $(DESTDIR)$(prefix)/lib'
 AC_SUBST(GACUTIL_FLAGS)
 
 AC_SUBST(PATH)
@@ -262,8 +263,9 @@ AC_SUBST(BASE_DEPENDENCIES_LIBS)
 dnl Find monodoc
 MONODOC_REQUIRED_VERSION=1.0
 AC_SUBST(MONODOC_REQUIRED_VERSION)
+<xsl:text disable-output-escaping="yes">
 PKG_CHECK_MODULES(MONODOC_DEPENDENCY, monodoc >= $MONODOC_REQUIRED_VERSION, enable_monodoc=yes, enable_monodoc=no)
-
+</xsl:text>
 if test "x$enable_monodoc" = "xyes"; then
         AC_PATH_PROG(MONODOC, monodoc, no)
         if test x$MONODOC = xno; then
@@ -284,10 +286,8 @@ case "$host" in
 esac
 AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
 
-</xsl:text>
-<xsl:if test="@type=Exe or @type=WinExe">AC_CONFIG_FILES(<xsl:value-of select="$lcProjectName" />)</xsl:if>
-<xsl:if test="@type=Library">AC_CONFIG_FILES(<xsl:value-of select="$projectName" />).pc</xsl:if>
-<xsl:text disable-output-escaping="yes">
+<xsl:if test="@type='Exe' or @type='WinExe'">AC_CONFIG_FILES(<xsl:value-of select="$lcProjectName" />)</xsl:if>
+<xsl:if test="@type='Library'">AC_CONFIG_FILES(<xsl:value-of select="$projectName" />).pc</xsl:if>
 
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
@@ -303,7 +303,7 @@ echo "   * Project Name:        $PROJECT_NAME"
 echo "   * Version:             $PROJECT_VERSION"
 echo ""
 echo "==="
-</xsl:text>
+
 </xsl:for-each>
 </xsl:template>
 </xsl:stylesheet>
@@ -327,10 +327,9 @@ echo "==="
 
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
 
-# TODO: generate the wrapper script
-# <xsl:value-of select="$lcProjectName" />dir = $(prefix)/lib/<xsl:value-of select="$lcProjectName" />
-# <xsl:value-of select="$lcProjectName" />_DATA = $(ASSEMBLY)
-# bin_SCRIPTS=<xsl:value-of select="$lcProjectName" />
+<xsl:value-of select="$lcProjectName" />dir = $(prefix)/lib/<xsl:value-of select="$lcProjectName" />
+<xsl:value-of select="$lcProjectName" />_DATA = $(ASSEMBLY)
+bin_SCRIPTS=<xsl:value-of select="$lcProjectName" />
 
 SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
@@ -614,15 +613,15 @@ echo "==="
 	<!-- Removes the xml version header in the generated file -->
 	<xsl:output method="text"/>
 	<xsl:param name="projectName" />
-	<xsl:template match="/">
-	<xsl:for-each select="//dnpb:Project[@name=$projectName]">#! /bin/sh
+	<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
+<xsl:template match="/"><xsl:for-each select="//dnpb:Project[@name=$projectName]">#! /bin/sh
 
 PACKAGE=<xsl:value-of select="$projectName" />
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 
-# %%$@%$# why oh why isn't it $sharedir/$PACKAGE
-packagedir=$prefix/lib/$PACKAGE
+# %%$@%$# why oh why isn't it $sharedir/<xsl:value-of select="$lcProjectName" />
+packagedir=$prefix/lib/<xsl:value-of select="$lcProjectName" />
 
 exec @RUNTIME@ $packagedir/$PACKAGE.exe "$@"
 </xsl:for-each>

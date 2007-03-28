@@ -1,4 +1,19 @@
 2007-03-27T09:33	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- now processing the wrapper script if type is "Exe" or "WinExe"
+	* src/data/autotools.xml
+	! <ProjectConfigureAc />
+	- being more exact about where text escaping is used
+	- using the correct variable name for the GACUTIL_FLAGS template
+	- using correct test="" for the AC_CONFIG_FILES macros
+	! <ProjectMakefileAm />
+	- uncommented the bin_SCRIPTS section now that the script is being
+	  generated correctly
+	! <ProjectWrapperScriptIn />
+	- fixed whitespace at beginning of file, before #!
+	- using lower-case packageName to indicate installation location
+
+2007-03-27T09:33	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/data/autotools.xml
 	! <ProjectConfigureAc />
 	* added a lcProjectName which is $projectName lower-cased
