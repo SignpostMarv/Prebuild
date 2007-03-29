@@ -287,7 +287,7 @@ esac
 AM_CONDITIONAL(WINBUILD, test x$winbuild = xyes)
 
 <xsl:if test="@type='Exe' or @type='WinExe'">AC_CONFIG_FILES(<xsl:value-of select="$lcProjectName" />)</xsl:if>
-<xsl:if test="@type='Library'">AC_CONFIG_FILES(<xsl:value-of select="$projectName" />).pc</xsl:if>
+<xsl:if test="@type='Library'">AC_CONFIG_FILES(<xsl:value-of select="$projectName" />.pc)</xsl:if>
 
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
@@ -316,6 +316,7 @@ echo "==="
 				xml:space="preserve"
 				>
 <xsl:param name="projectName" />
+<xsl:param name="solutionName" />
 <xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
 <xsl:param name="embeddedFiles" />
 <xsl:param name="compiledFiles" />
@@ -323,13 +324,23 @@ echo "==="
 <xsl:param name="sourceLibs" />
 <xsl:param name="binaryLibs" />
 <xsl:param name="gacLibs" />
+
 <xsl:template match="/">
+<xsl:for-each select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]">
+<xsl:variable name="lcType"><xsl:value-of select="translate(@type, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" /></xsl:variable>
 
 ASSEMBLY=$(PROJECT_NAME).$(ASSEMBLY_EXTENSION)
 
+<xsl:if test="@type='Exe' or @type='WinExe'">
 <xsl:value-of select="$lcProjectName" />dir = $(prefix)/lib/<xsl:value-of select="$lcProjectName" />
 <xsl:value-of select="$lcProjectName" />_DATA = $(ASSEMBLY)
 bin_SCRIPTS=<xsl:value-of select="$lcProjectName" />
+</xsl:if><xsl:if test="@type='Library'">
+pkgconfigdir = $(prefix)/lib/pkgconfig
+pkgconfig_DATA = <xsl:value-of select="$projectName" />.pc
+
+noinst_DATA = $(ASSEMBLY)
+</xsl:if>
 
 SOURCE_LIBS =<xsl:value-of select="$sourceLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
@@ -337,18 +348,41 @@ GAC_LIBS =<xsl:value-of select="$gacLibs" />
 RESOURCES =<xsl:value-of select="$embeddedFiles" />
 SOURCES =<xsl:value-of select="$compiledFiles" />
 
-$(ASSEMBLY): $(RESOURCES) $(SOURCES)
-	$(CSC) /out:$(ASSEMBLY) \
+<xsl:for-each select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]/dnpb:Configuration">
+<xsl:value-of select="dnpb:Options/dnpb:OutputPath/text()"/>/$(ASSEMBLY): $(RESOURCES) $(SOURCES) <xsl:value-of select="dnpb:Options/dnpb:KeyFile/text()" />
+	mkdir -p <xsl:value-of select="dnpb:Options/dnpb:OutputPath/text()"/><xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> $(CSC) /out:$@ \
+		/target:<xsl:value-of select="$lcType" /> \
 		$(addprefix /resource:, $(RESOURCES)) \
 		$(addprefix /r:, $(GAC_LIBS)) \
-		$(addprefix /r../:, $(SOURCE_LIBS)) \
-		$(addprefix /r../:, $(BINARY_LIBS)) \
+		$(addprefix /r:../, $(SOURCE_LIBS)) \
+		$(addprefix /r:../, $(BINARY_LIBS)) \
 		$(REFERENCES) \
-		$(SOURCES)
+		$(SOURCES) \<xsl:if test="dnpb:Options/dnpb:KeyFile/text()!=''">
+		/keyfile:<xsl:value-of select="dnpb:Options/dnpb:KeyFile/text()" /> \</xsl:if><xsl:text disable-output-escaping="yes">
+	&amp;&amp; rm -f $(ASSEMBLY) \
+	&amp;&amp; ln $@ $(ASSEMBLY)</xsl:text>
+
+<xsl:value-of select="@name" />: <xsl:value-of select="dnpb:Options/dnpb:OutputPath/text()"/>/$(ASSEMBLY)<xsl:text disable-output-escaping="yes">
+	rm -f $(ASSEMBLY) \
+	&amp;&amp;</xsl:text> ln <xsl:value-of select="dnpb:Options/dnpb:OutputPath/text()"/>/$(ASSEMBLY) $(ASSEMBLY)
+
+</xsl:for-each>
+
+$(ASSEMBLY): <xsl:value-of select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]/dnpb:Configuration/@name" />
 
 all: $(ASSEMBLY)
-	echo $(ASSEMBLY)
 
+<xsl:if test="@type='Library'">
+install-data-local:
+	echo "$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS)";  \
+	$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;
+
+uninstall-local:
+	echo "$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS)"; \
+	$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS) || exit 1;
+</xsl:if>
+
+</xsl:for-each>
 </xsl:template>
 </xsl:stylesheet>
 	</ProjectMakefileAm>
@@ -357,13 +391,14 @@ all: $(ASSEMBLY)
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 				xmlns:dnpb="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd"
 				exclude-result-prefixes="dnpb"
+				xml:space="preserve"
 				>
+	<!-- Removes the xml version header in the generated file -->
+	<xsl:output method="text"/>
 	<xsl:param name="projectName" />
-	<xsl:template match="/">
-<xsl:value-of select="$projectName"/>
-
-<xsl:for-each select="//Project[@name=$projectName]">
-prefix=@prefix@
+	<xsl:param name="solutionName" />
+	<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
+<xsl:template match="/"><xsl:for-each select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]">prefix=@prefix@
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/mono/@PROJECT_NAME@
 
@@ -384,6 +419,7 @@ Libs: -r:${libdir}/@PROJECT_NAME@.dll
 				xmlns:dnpb="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd"
 				exclude-result-prefixes="dnpb"
 				>
+	<xsl:param name="solutionName" />
 	<xsl:template match="/"><xsl:text disable-output-escaping="yes">#!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 # Ripped off from Mono, which ripped off from GNOME macros version
@@ -510,7 +546,7 @@ automake --add-missing --gnu $am_opt ||
 echo "Running autoconf ..."
 autoconf || { echo "**Error**: autoconf failed."; exit 1; }
 </xsl:text>
-<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project">
+<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/dnpb:Project">
 echo Running <xsl:value-of select="@name" />/autogen.sh ...
 (cd $srcdir/<xsl:value-of select="@name" /> ; NOCONFIGURE=1  /bin/sh ./autogen.sh "$@")
 echo Done running <xsl:value-of select="@name" />/autogen.sh ...
@@ -538,13 +574,13 @@ fi
 				>
 	<!-- Removes the xml version header in the generated file -->
 	<xsl:output method="text"/>
-
+	<xsl:param name="solutionName" />
 	<xsl:template match="/">AC_INIT(ChangeLog)
 AC_PREREQ(2.53)
 AC_CANONICAL_SYSTEM
-SOLUTION_NAME=<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/@name" />
-SOLUTION_VERSION=<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/@version" />
-SOLUTION_DESCRIPTION="<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution/dnpb:Description" />"
+SOLUTION_NAME=<xsl:value-of select="$solutionName" />
+SOLUTION_VERSION=<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/@version" />
+SOLUTION_DESCRIPTION="<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/dnpb:Description" />"
 <xsl:text disable-output-escaping="yes">
 AC_SUBST(DESCRIPTION)
 AM_INIT_AUTOMAKE([$SOLUTION_NAME],[$SOLUTION_VERSION],[$SOLUTION_DESCRIPTION])
@@ -572,7 +608,7 @@ CONFIG="Release"
 AC_SUBST(CONFIG)
 <!-- TODO: Ensure that these SUBDIRS are processed in dependency order -->
 </xsl:text>
-AC_CONFIG_SUBDIRS(<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
+AC_CONFIG_SUBDIRS(<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" />
 </xsl:for-each>)
 <xsl:text disable-output-escaping="yes">
 
@@ -586,7 +622,7 @@ echo "Solution configuration summary"
 echo ""
 echo "   * Solution Name:       $SOLUTION_NAME"
 echo "   * Packages:"</xsl:text>
-<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project">echo "    - <xsl:value-of select="@name" />"
+<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/dnpb:Project">echo "    - <xsl:value-of select="@name" />"
 </xsl:for-each><xsl:text disable-output-escaping="yes">echo ""
 echo "==="
 </xsl:text>
@@ -600,7 +636,8 @@ echo "==="
 				exclude-result-prefixes="dnpb"
 				xml:space="preserve"
 				>
-	<xsl:template match="/">SUBDIRS =<xsl:for-each select="/dnpb:Prebuild/dnpb:Solution/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" /></xsl:for-each>
+	<xsl:param name="solutionName" />
+	<xsl:template match="/">SUBDIRS =<xsl:for-each select="//dnpb:Solution[@name=$solutionName]/dnpb:Project"><xsl:text disable-output-escaping="yes"> </xsl:text><xsl:value-of select="@name" /></xsl:for-each>
 </xsl:template>
 </xsl:stylesheet>
 	</SolutionMakefileAm>
@@ -613,8 +650,9 @@ echo "==="
 	<!-- Removes the xml version header in the generated file -->
 	<xsl:output method="text"/>
 	<xsl:param name="projectName" />
+	<xsl:param name="solutionName" />
 	<xsl:variable name="lcProjectName"><xsl:value-of select="translate($projectName, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:variable>
-<xsl:template match="/"><xsl:for-each select="//dnpb:Project[@name=$projectName]">#! /bin/sh
+<xsl:template match="/"><xsl:for-each select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]">#! /bin/sh
 
 PACKAGE=<xsl:value-of select="$projectName" />
 prefix=@prefix@

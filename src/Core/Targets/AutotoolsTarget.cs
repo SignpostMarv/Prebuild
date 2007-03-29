@@ -143,17 +143,17 @@ namespace Prebuild.Core.Targets
 		private void WriteCombine(SolutionNode solution)
 		{
 	#region "Create Solution directory if it doesn't exist"
-			string pwd = System.Environment.GetEnvironmentVariable("PWD");
-			string rootDir = Path.Combine(pwd, "autotools");
-			string solutionDir = Path.Combine(rootDir, solution.Name);
+			string solutionDir = Path.Combine(solution.FullPath, Path.Combine("autotools", solution.Name));
 			chkMkDir(solutionDir);			
 	#endregion
 
-	#region "Write Solution-level files"			
+	#region "Write Solution-level files"
+			XsltArgumentList argList = new XsltArgumentList();
+			argList.AddParam("solutionName", "",  solution.Name);
 			// $solutionDir is $rootDir/$solutionName
-			transformToFile(Path.Combine(solutionDir, "configure.ac"), null, "/Autotools/SolutionConfigureAc");
-			transformToFile(Path.Combine(solutionDir, "Makefile.am"), null, "/Autotools/SolutionMakefileAm");
-			transformToFile(Path.Combine(solutionDir,"autogen.sh"), null, "/Autotools/SolutionAutogenSh");
+			transformToFile(Path.Combine(solutionDir, "configure.ac"), argList, "/Autotools/SolutionConfigureAc");
+			transformToFile(Path.Combine(solutionDir, "Makefile.am"), argList, "/Autotools/SolutionMakefileAm");
+			transformToFile(Path.Combine(solutionDir,"autogen.sh"), argList, "/Autotools/SolutionAutogenSh");
 				
 			// Create stubs for files required by automake		
 			// NEWS, README, AUTHORS, ChangeLog
@@ -374,16 +374,7 @@ namespace Prebuild.Core.Targets
 		
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
-			// Add the project name to the list of transformation
-			// parameters
-			XsltArgumentList argList = new XsltArgumentList();			
-			argList.AddParam("projectName", "",  project.Name);
-
-			// $projectDir is $rootDir/$solutionName/$projectName
-			string pwd = System.Environment.GetEnvironmentVariable("PWD");
-			string rootDir = Path.Combine(pwd, "autotools");
-			string solutionDir = Path.Combine(rootDir, solution.Name);
-
+			string solutionDir = Path.Combine(solution.FullPath, Path.Combine("autotools", solution.Name));			
 			string projectDir = Path.Combine(solutionDir, project.Name);
             chkMkDir(projectDir);
 
@@ -393,11 +384,28 @@ namespace Prebuild.Core.Targets
 			ArrayList binaryLibs = new ArrayList();
 			ArrayList sourceLibs = new ArrayList();
 			ArrayList gacLibs = new ArrayList();
+			
+			// Copy snk file into the autotools tree
+			foreach(ConfigurationNode conf in project.Configurations)
+			{
+				if(conf.Options.KeyFile != string.Empty){
+					string source = Path.Combine(project.FullPath, conf.Options.KeyFile);
+					string dest = Path.Combine(projectDir, conf.Options.KeyFile);
+
+					// Tell the user if there's a problem copying the file
+					try{
+						mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+						System.IO.File.Copy(source, dest, true);
+					}catch(System.IO.IOException e){
+						Console.WriteLine(e.Message);
+					}
+				}
+			}
 
 			// Copy files into the autotools tree
 			foreach(string filename in project.Files)
 			{
-				string source = Path.Combine(Path.Combine(pwd, project.Path), filename);
+				string source = Path.Combine(project.FullPath, filename);
 				string dest = Path.Combine(Path.Combine(projectDir, project.Path), filename);
 
 				// Tell the user if there's a problem copying the file
@@ -427,12 +435,32 @@ namespace Prebuild.Core.Targets
 				for(int refNum = 0; refNum < project.References.Count; refNum++)
 				{
 					ReferenceNode refr = (ReferenceNode)project.References[refNum];
+					
+					if(refr.LocalCopy){
+						string filename;
+						if(refr.Path != null)
+							filename = Path.Combine(refr.Path, refr.Name + ".dll");
+						else
+							filename = refr.Name + ".dll";
+						
+						string source = Path.Combine(project.FullPath, filename);
+						string dest = Path.Combine(projectDir, filename);
+
+						mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+
+						try {
+							System.IO.File.Copy(source, dest, true);
+						}catch(System.IO.IOException){
+							Console.WriteLine("Local copy of '{0}' doesn't exist...", refr.Name);
+						}
+					}
+					
 
 					if(solution.ProjectsTable.ContainsKey(refr.Name))
 					{
 						// If the referenced assembly is part of the solution...
 						ProjectNode sourcePrj = ((ProjectNode)(solution.ProjectsTable[refr.Name]));
-						sourceLibs.Add(Path.Combine(project.Name, refr.Name + ".dll"));
+						sourceLibs.Add(Path.Combine(sourcePrj.Name, refr.Name + ".dll"));
 					}else{
 						string fileRef = FindFileReference(refr.Name, (ProjectNode)refr.Parent);
 
@@ -448,11 +476,38 @@ namespace Prebuild.Core.Targets
 							binaryLibs.Add(Path.Combine(project.Path, finalPath));
 						}else{
 							// Else, let's assume it's in the GAC or the lib path
+							string assemName = string.Empty;
 							int index = refr.Name.IndexOf(",");
 							if ( index > 0)
-								gacLibs.Add(refr.Name.Substring(0, index));
+								assemName = refr.Name.Substring(0, index);
 							else
+								assemName = refr.Name;
+								
+							try
+							{
+								/*
+								Day changed to 28 Mar 2007
+								...
+								08:09 < cj> is there anything that replaces Assembly.LoadFromPartialName() ?
+								08:09 < jonp> no
+								08:10 < jonp> in their infinite wisdom [sic], microsoft decided that the 
+								              ability to load any assembly version by-name was an inherently 
+								              bad idea
+								08:11 < cj> I'm thinking of a bunch of four-letter words right now...
+								08:11 < cj> security through making it difficult for the developer!!!
+								08:12 < jonp> just use the Obsolete API
+								08:12 < jonp> it should still work
+								08:12 < cj> alrighty.
+								08:12 < jonp> you just get warnings when using it
+								*/
+								Assembly assem = Assembly.LoadWithPartialName(assemName);
+								gacLibs.Add(assem.Location);
+							}
+							catch (System.NullReferenceException e)
+							{
+								e.ToString();
 								gacLibs.Add(refr.Name);
+							}
 						}
 					}
 				}				
@@ -489,6 +544,11 @@ namespace Prebuild.Core.Targets
 				gacLibsString =
 					lineSep + string.Join(lineSep, (string[])gacLibs.ToArray(typeof(string)));
 			
+			// Add the project name to the list of transformation
+			// parameters
+			XsltArgumentList argList = new XsltArgumentList();			
+			argList.AddParam("projectName", "",  project.Name);
+			argList.AddParam("solutionName", "",  solution.Name);
 			argList.AddParam("compiledFiles", "",  compiledFilesString);
 			argList.AddParam("embeddedFiles", "",  embeddedFilesString);
 			argList.AddParam("contentFiles", "", contentFilesString);
@@ -505,10 +565,6 @@ namespace Prebuild.Core.Targets
 				transformToFile(Path.Combine(projectDir, project.Name + ".pc.in"),argList,"/Autotools/ProjectPcIn");
 			if(project.Type == Core.Nodes.ProjectType.Exe || project.Type == Core.Nodes.ProjectType.WinExe)
 				transformToFile(Path.Combine(projectDir, project.Name.ToLower() + ".in"),argList,"/Autotools/ProjectWrapperScriptIn");
-
-			// Copy the files from the source directory to the project's build directory
-			string projectSourceDir =
-				Path.Combine(pwd, project.Path);
 
 			// Create stubs for NEWS, README, ChangeLog
 			// These are required by automake
