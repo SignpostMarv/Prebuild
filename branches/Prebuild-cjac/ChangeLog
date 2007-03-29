@@ -1,3 +1,44 @@
+2007-03-28T19:46	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/MonoDevelopTarget.cs
+	! CleanProject()
+	- using Assembly.LoadWithPartialName to locate the assembly
+	* src/Core/Targets/AutotoolsTarget.cs
+	! WriteCombine()
+	- no longer using $PWD to determine a project's source dir; this
+	  doesn't work with <Process /> elements
+	- passing the solution name to all templates - fixes
+	  multi-solution prebuild systems
+	! WriteProject()
+	- no longer using $PWD to determine a project's source dir; this
+	  doesn't work with <Process /> elements
+	- passing the solution name to all templates - fixes
+	  multi-solution prebuild systems
+	- copying strongname key to the autotools directory
+	- using Assembly.LoadWithPartialName to locate assemblies
+	* src/data/autotools.xml
+	! <ProjectConfigureAc />
+	- fixed the .pc AC_CONFIG_FILES macro
+	! <ProjectMakefileAm />
+	- added solution name param
+	- wrapping if type=exe check around script install macro
+	- added type=lib check and .pc file install macro
+	- added support for Configuration-specific builds (Debug, Release, etc)
+	- added strongname keyfile code
+	- TODO: support non-strongnamed library installation
+	! <ProjectWrapperScriptIn />
+	- added space preservation attribute to stylesheet element
+	- added a lower-case project name variable
+	- added solution name param
+	- made for-each template more specific
+	! <SolutionAutogenSh />
+	- added solution name param
+	! <SolutionConfigureAc />
+	- added solution name param
+	! <SolutionMakefileAm />
+	- added solution name param
+	! <ProjectPcIn />
+	- added solution name param
+	
 2007-03-27T09:33	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- now processing the wrapper script if type is "Exe" or "WinExe"
