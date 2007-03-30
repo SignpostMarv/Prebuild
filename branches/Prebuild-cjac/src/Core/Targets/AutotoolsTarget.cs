@@ -383,7 +383,8 @@ namespace Prebuild.Core.Targets
 			ArrayList embeddedFiles = new ArrayList();
 			ArrayList binaryLibs = new ArrayList();
 			ArrayList sourceLibs = new ArrayList();
-			ArrayList gacLibs = new ArrayList();
+			ArrayList systemLibs = new ArrayList();
+			ArrayList runtimeLibs = new ArrayList();
 			
 			// Copy snk file into the autotools tree
 			foreach(ConfigurationNode conf in project.Configurations)
@@ -435,7 +436,7 @@ namespace Prebuild.Core.Targets
 				for(int refNum = 0; refNum < project.References.Count; refNum++)
 				{
 					ReferenceNode refr = (ReferenceNode)project.References[refNum];
-					
+					runtimeLibs.Add(refr.Name);
 					if(refr.LocalCopy){
 						string filename;
 						if(refr.Path != null)
@@ -501,12 +502,12 @@ namespace Prebuild.Core.Targets
 								08:12 < jonp> you just get warnings when using it
 								*/
 								Assembly assem = Assembly.LoadWithPartialName(assemName);
-								gacLibs.Add(assem.Location);
+								systemLibs.Add(assem.Location);
 							}
 							catch (System.NullReferenceException e)
 							{
 								e.ToString();
-								gacLibs.Add(refr.Name);
+								systemLibs.Add(refr.Name);
 							}
 						}
 					}
@@ -539,10 +540,15 @@ namespace Prebuild.Core.Targets
 				binaryLibsString =
 					lineSep + string.Join(lineSep, (string[])binaryLibs.ToArray(typeof(string)));
 					
-			string gacLibsString = "";
-			if(gacLibs.Count > 0)
-				gacLibsString =
-					lineSep + string.Join(lineSep, (string[])gacLibs.ToArray(typeof(string)));
+			string systemLibsString = "";
+			if(systemLibs.Count > 0)
+				systemLibsString =
+					lineSep + string.Join(lineSep, (string[])systemLibs.ToArray(typeof(string)));
+			
+			string monoPath = "";
+			foreach( string runtimeLib in runtimeLibs ){
+				monoPath += ":`pkg-config --variable=libdir " + runtimeLib + "`";
+			}
 			
 			// Add the project name to the list of transformation
 			// parameters
@@ -554,7 +560,8 @@ namespace Prebuild.Core.Targets
 			argList.AddParam("contentFiles", "", contentFilesString);
 			argList.AddParam("sourceLibs", "", sourceLibsString);
 			argList.AddParam("binaryLibs", "", binaryLibsString);
-			argList.AddParam("gacLibs", "", gacLibsString);
+			argList.AddParam("systemLibs", "", systemLibsString);
+			argList.AddParam("monoPath", "", monoPath);
 			
 			// Transform the templates
 			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
