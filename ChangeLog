@@ -1,3 +1,18 @@
+2007-03-29T18:03	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	! WriteProject()
+	- re-named incorrectly-named variable gacLibs to systemLibs
+	- added another reference list, runtimeLibs which contains the
+	  libs we will need at runtime.  we use this to build a MONO_PATH
+	- added monoPath to the xslt args list
+	* src/data/autotools.xml
+	! <ProjectMakefileAm />
+	- renamed gacLibs to systemLibs
+	- added the sources to the dist list
+	- added logic to install libs that aren't strongnamed
+	! <ProjectWrapperScriptIn />
+	- accepting a param to update the MONO_PATH
+
 2007-03-28T19:46	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/MonoDevelopTarget.cs
 	! CleanProject()
