@@ -1,3 +1,66 @@
+2007-04-03T21:56	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- added a using for System.Diagnostics
+	- added enum ClrVersion for use with the pkg-config parser
+	- added class SystemPackage for use with the pkg-config parser
+	- removed explicit "private" property of members since it is implied
+	- flushing the stream-writer before it's closed
+	- removed excess braces around an if statement
+	! NormalizeAsmName(), AddAssembly(), GetAssembliesWithLibInfo(),
+	  GetAssembliesWithoutLibInfo(), ProcessPiece(),
+	  GetVariableFromPkgConfig(), ParsePCFile(),
+	  RegisterSystemAssemblies(), RunInitialization()
+	- pulled the above from MonoDevelop to parse the system pkgconfig
+	  files and determine /pkg: arguments.  Original sources are here:
+	  http://svn.myrealbox.com/source/trunk/monodevelop/Core/src/MonoDevelop.Core/MonoDevelop.Core/SystemAssemblyService.cs
+	  http://svn.myrealbox.com/source/trunk/monodevelop/Core/src/MonoDevelop.Core/MonoDevelop.Core/ClrVersion.cs
+	! WriteProject()
+	- now gathering project version from AssemblyInfo.cs if it is part
+	  of the project
+	- changed the declaration of the ArrayList's in the method
+	- now copying assembly .config files to the project, distributing,
+	  installing
+	- making sure all needed files live under the Project directory
+	- copying strongname keys to project directory
+	- parsing AssemblyInfo.cs to determine assembly version
+	- removing all references to ".."
+	- removed superfluous if(project.References.Count > 0) around
+	  for(int refNum = 0; refNum < project.References.Count; refNum++)
+	- removed use of runtimeLibs
+	- adding hook to copy sibling project's generated assemblies to
+	  this project during Make time
+	- added extra dist target to ensure all files required to build
+	  get distributed during "make dist"
+	- added new xslt processing args:
+	-- assemblyName
+	-- extraDistFiles
+	-- pkgLibs (/pkg:foo)
+	-- localCopyTargets (to copy sibling assemblies at Make time)
+	-- projectVersion (if determined from AssemblyInfo.cs)
+	-- hasAssemblyConfig (if there's a assembly.exe.config present)
+	! Write()
+	- calling RunInitialization() to gather pkg-config data
+	* src/data/autotools.xml
+	- accepting new args passed from AutotoolsTarget.cs
+	- modernized configure.ac a bit
+	- using a version of tar that allows >99-char filenames
+	- added ASSEMBLY_NAME variable
+	- using assembly name rather than project name for gac installation
+	- generated assembly is now assembly name and not project name
+	- accepting /pkg: flags gathered from AutotoolsTarget.cs
+	- adding Makefile targets to copy sibling project assemblies to .
+	- fixed Debug, Release targets
+	- adding support for strongname key signing
+	- adding /unsafe support
+	- adding a clean make target
+	- only running gacutil /u if the assembly being uninstalled is in gac
+	- added some templates to determine each Configuration's .snk
+	- added explanation as to why .exe assemblies live in $prefix/lib
+	* src/Properties/AssemblyInfo.cs
+	- bumped assembly version
+	* prebuild.xml
+	- bumped assembly version
+
 2007-03-29T18:03	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	! WriteProject()
