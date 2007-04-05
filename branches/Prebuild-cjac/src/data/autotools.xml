@@ -167,6 +167,7 @@ fi
 
 AC_PREREQ(2.60)
 AC_CANONICAL_SYSTEM
+AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 dnl AC_PROG_INTLTOOL([0.25])
@@ -352,7 +353,7 @@ SYSTEM_LIBS =<xsl:value-of select="$systemLibs" />
 RESOURCES =<xsl:value-of select="$embeddedFiles" />
 SOURCES =<xsl:value-of select="$compiledFiles" />
 
-EXTRA_DIST=$(SOURCES) $(BINARY_LIBS) <xsl:value-of select="$extraDistFiles" />
+EXTRA_DIST=$(SOURCES) $(BINARY_LIBS) install-sh missing <xsl:value-of select="$extraDistFiles" />
 
 CLEANFILES=$(ASSEMBLY)
 
@@ -364,13 +365,13 @@ CLEANFILES=$(ASSEMBLY)
 <xsl:value-of select="$outputPath"/>/$(ASSEMBLY): $(RESOURCES) $(SOURCES) $(BINARY_LIBS) <xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template>
 	mkdir -p <xsl:value-of select="$outputPath" /> <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> $(CSC) /out:$@ \
 		/target:<xsl:value-of select="$lcType" /> \
-		$(addprefix /resource:, $(RESOURCES)) \
+		$(addprefix /resource:$(srcdir)/, $(RESOURCES)) \
 		$(addprefix /pkg:, $(PACKAGES)) \
 		$(addprefix /r:, $(SYSTEM_LIBS)) \
-		$(addprefix /r:, $(BINARY_LIBS)) \
+		$(addprefix /r:$(srcdir)/, $(BINARY_LIBS)) \
 		$(REFERENCES) \
-		$(SOURCES) \<xsl:if test="$keyFile!=''">
-		/keyfile:<xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template> \</xsl:if><xsl:if test="dnpb:Options/dnpb:AllowUnsafe/text()='true'">
+		$(addprefix $(srcdir)/, $(SOURCES)) \<xsl:if test="$keyFile!=''">
+		/keyfile:$(srcdir)/<xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template> \</xsl:if><xsl:if test="dnpb:Options/dnpb:AllowUnsafe/text()='true'">
 		/unsafe \</xsl:if><xsl:text disable-output-escaping="yes">
 	&amp;&amp; rm -f $(ASSEMBLY) \
 	&amp;&amp; ln $@ $(ASSEMBLY)</xsl:text>
@@ -392,7 +393,7 @@ CLEANFILES+=<xsl:value-of select="$outputPath"/>/$(ASSEMBLY)
 	$(GACUTIL) /i <xsl:value-of select="$outputPath"/>/$(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;
 
 <xsl:value-of select="@name" />_uninstall-local:
-	if [`gacutil -l <xsl:value-of select="$projectName" /> | grep "Number" | awk -F= '{print $2}'` -gt "0"] ; \
+	if [`gacutil -l <xsl:value-of select="$projectName" /> | grep "Number" | awk -F= '{print $$2}'` -gt "0" ] ; \
 	then \
 		echo "$(GACUTIL) /u $(PROJECT_NAME) $(GACUTIL_FLAGS)"; \
 		$(GACUTIL) /u $(PROJECT_NAME) $(GACUTIL_FLAGS) || exit 1; \
@@ -659,8 +660,9 @@ fi
 	<xsl:param name="solutionName" />
 <xsl:template match="/"
 >AC_INIT([<xsl:value-of select="$solutionName" />]-solution,[<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/@version" />])
+AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
-
+EXTRA_DIST=install-sh missing
 SOLUTION_NAME=<xsl:value-of select="$solutionName" />
 SOLUTION_VERSION=$VERSION
 SOLUTION_DESCRIPTION="<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/dnpb:Description" />"

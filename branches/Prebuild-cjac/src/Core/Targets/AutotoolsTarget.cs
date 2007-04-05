@@ -679,9 +679,6 @@ namespace Prebuild.Core.Targets
 			if(project.AssemblyName != null)
 				projectAssemblyName = project.AssemblyName;
 
-			Console.WriteLine("project '{0}'s assembly config name is: '{1}'",
-				project.Name, Path.Combine(project.FullPath, projectAssemblyName) + ".dll.config");
-
 			if(File.Exists(Path.Combine(project.FullPath, projectAssemblyName) + ".dll.config")){
 				hasAssemblyConfig = true;
 				System.IO.File.Copy(Path.Combine(project.FullPath, projectAssemblyName + ".dll.config"), Path.Combine(projectDir, projectAssemblyName + ".dll.config"), true);

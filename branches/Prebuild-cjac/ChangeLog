@@ -1,3 +1,13 @@
+2007-04-04T22:12	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- removed debugging Console.WriteLine()
+	* src/data/autotools.xml
+	- ensuring that install-sh and missing get distributed
+	- explicitly stating that the sources, snk, resources and binary
+	  references live under $(srcdir)
+	- corrected uninstall target
+	- verified distcheck completes successfully
+	
 2007-04-03T21:56	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- added a using for System.Diagnostics
