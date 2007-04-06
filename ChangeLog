@@ -1,3 +1,10 @@
+2007-04-06T12:42	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/data/autotools.xml
+	- added support for /doc: output when XmlDocFile is not empty
+	- not printing \t \\n on lines that have no content
+	- gacutil now installs the root assembly instead of the one under
+	  bin/Debug or whatever
+
 2007-04-04T22:12	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- removed debugging Console.WriteLine()
