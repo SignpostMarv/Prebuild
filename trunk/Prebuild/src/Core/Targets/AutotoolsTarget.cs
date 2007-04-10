@@ -5,7 +5,7 @@ Copyright (c) 2004 - 2006
 Matthew Holmes        (matthew@wildfiregames.com),
 Dan     Moorehead     (dan05a@gmail.com),
 Dave    Hudson        (jendave@yahoo.com),
-C.J.    Adams-Collier (cjcollier@colliertech.org),
+C.J.    Adams-Collier (cjac@colliertech.org),
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -53,6 +53,10 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Xsl;
+using System.Net;
+using System.Diagnostics;
 
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
@@ -62,6 +66,66 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
 {
+	public enum ClrVersion
+	{
+		Default,
+		Net_1_1,
+		Net_2_0
+	}
+
+	public class SystemPackage
+	{
+		string name;
+		string version;
+		string description;
+		string[] assemblies;
+		bool isInternal;
+		ClrVersion targetVersion;
+		
+		public void Initialize (string name, string version, string description, string[] assemblies, ClrVersion targetVersion, bool isInternal)
+		{
+			this.isInternal = isInternal;
+			this.name = name;
+			this.version = version;
+			this.assemblies = assemblies;
+			this.description = description;
+			this.targetVersion = targetVersion;
+		}
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public string Version {
+			get { return version; }
+		}
+		
+		public string Description {
+			get { return description; }
+		}
+		
+		public ClrVersion TargetVersion {
+			get { return targetVersion; }
+		}
+		
+		// The package is part of the mono SDK
+		public bool IsCorePackage {
+			get { return name == "mono"; }
+		}
+		
+		// The package has been registered by an add-in, and is not installed
+		// in the system.
+		public bool IsInternalPackage {
+			get { return isInternal; }
+		}
+		
+		public string[] Assemblies {	
+			get { return assemblies; }
+		}		
+
+	}
+
+	
 	/// <summary>
 	/// 
 	/// </summary>
@@ -70,12 +134,322 @@ namespace Prebuild.Core.Targets
 	{
 		#region Fields
 
-		private Kernel m_Kernel;
-
+		Kernel m_Kernel;
+		XmlDocument autotoolsDoc;
+		XmlUrlResolver xr;
+		System.Security.Policy.Evidence e;
+		Hashtable assemblyPathToPackage = new Hashtable ();
+		Hashtable assemblyFullNameToPath = new Hashtable ();
+		Hashtable packagesHash = new Hashtable ();
+		ArrayList packages = new ArrayList ();
+		ClrVersion currentVersion;
+		
 		#endregion
 
 		#region Private Methods
+		
+		private void mkdirDashP(string dirName)
+		{
+			DirectoryInfo di = new DirectoryInfo(dirName);
+			if(di.Exists)
+				return;
 
+			string parentDirName = System.IO.Path.GetDirectoryName(dirName);
+			DirectoryInfo parentDi = new DirectoryInfo(parentDirName);
+			if(!parentDi.Exists)
+				mkdirDashP(parentDirName);
+
+			di.Create();
+		}
+		
+		private void mkStubFiles(string dirName, ArrayList fileNames)
+		{
+			for(int i = 0; i < fileNames.Count; i++){
+				string tmpFile = dirName + "/" + (string) fileNames[i];
+				
+				FileStream tmpFileStream =
+					new FileStream(tmpFile,FileMode.Create);
+
+				StreamWriter sw = new StreamWriter(tmpFileStream);
+				sw.WriteLine("These are not the files you are looking for.");
+				sw.Flush();
+				tmpFileStream.Close();
+			}	
+		}
+		
+		private void chkMkDir(string dirName)
+		{
+			System.IO.DirectoryInfo di =
+				new System.IO.DirectoryInfo(dirName);
+				
+			if(!di.Exists)
+				di.Create();
+		}
+		
+		private void transformToFile(string filename, XsltArgumentList argList, string nodeName)
+		{
+			// Create an XslTransform for this file
+			XslTransform templateTransformer =
+				new XslTransform();
+
+			// Load up the template
+			XmlNode templateNode =
+				autotoolsDoc.SelectSingleNode(nodeName+"/*");
+			templateTransformer.Load(templateNode.CreateNavigator(), xr, e);
+
+			// Create a writer for the transformed template
+			XmlTextWriter templateWriter =
+				new XmlTextWriter(filename, null);
+
+			// Perform transformation, writing the file
+			templateTransformer.Transform
+				(m_Kernel.CurrentDoc, argList, templateWriter, xr);
+		}
+		
+		string NormalizeAsmName (string name)
+		{
+			int i = name.IndexOf (", PublicKeyToken=null");
+			if (i != -1)
+				return name.Substring (0, i).Trim ();
+			else
+				return name;
+		}
+
+		private void AddAssembly (string assemblyfile, SystemPackage package)
+		{
+			if (!File.Exists (assemblyfile))
+				return;
+
+			try {
+				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyfile);
+				assemblyFullNameToPath[NormalizeAsmName (an.FullName)] = assemblyfile;
+				assemblyPathToPackage[assemblyfile] = package;
+			} catch {
+			}
+		}
+
+		private ArrayList GetAssembliesWithLibInfo (string line, string file)
+		{
+			ArrayList references = new ArrayList ();
+			ArrayList libdirs = new ArrayList ();
+			ArrayList retval = new ArrayList ();
+			foreach (string piece in line.Split (' ')) {
+				if (piece.ToLower ().Trim ().StartsWith ("/r:") || piece.ToLower ().Trim ().StartsWith ("-r:")) {
+					references.Add (ProcessPiece (piece.Substring (3).Trim (), file));
+				} else if (piece.ToLower ().Trim ().StartsWith ("/lib:") || piece.ToLower ().Trim ().StartsWith ("-lib:")) {
+					libdirs.Add (ProcessPiece (piece.Substring (5).Trim (), file));
+				}
+			}
+	
+			foreach (string refrnc in references) {
+				foreach (string libdir in libdirs) {
+					if (File.Exists (libdir + Path.DirectorySeparatorChar + refrnc)) {
+						retval.Add (libdir + Path.DirectorySeparatorChar + refrnc);
+					}
+				}
+			}
+	
+			return retval;
+		}
+	
+		private ArrayList GetAssembliesWithoutLibInfo (string line, string file)
+		{
+			ArrayList references = new ArrayList ();
+			foreach (string reference in line.Split (' ')) {
+				if (reference.ToLower ().Trim ().StartsWith ("/r:") || reference.ToLower ().Trim ().StartsWith ("-r:")) {
+					string final_ref = reference.Substring (3).Trim ();
+					references.Add (ProcessPiece (final_ref, file));
+				}
+			}
+			return references;
+		}
+	
+		private string ProcessPiece (string piece, string pcfile)
+		{
+			int start = piece.IndexOf ("${");
+			if (start == -1)
+				return piece;
+	
+			int end = piece.IndexOf ("}");
+			if (end == -1)
+				return piece;
+	
+			string variable = piece.Substring (start + 2, end - start - 2);
+			string interp = GetVariableFromPkgConfig (variable, Path.GetFileNameWithoutExtension (pcfile));
+			return ProcessPiece (piece.Replace ("${" + variable + "}", interp), pcfile);
+		}
+	
+		private string GetVariableFromPkgConfig (string var, string pcfile)
+		{
+			ProcessStartInfo psi = new ProcessStartInfo ("pkg-config");
+			psi.RedirectStandardOutput = true;
+			psi.UseShellExecute = false;
+			psi.Arguments = String.Format ("--variable={0} {1}", var, pcfile);
+			Process p = new Process ();
+			p.StartInfo = psi;
+			p.Start ();
+			string ret = p.StandardOutput.ReadToEnd ().Trim ();
+			p.WaitForExit ();
+			if (String.IsNullOrEmpty (ret))
+				return String.Empty;
+			return ret;
+		}
+
+		private void ParsePCFile (string pcfile)
+		{
+			// Don't register the package twice
+			string pname = Path.GetFileNameWithoutExtension (pcfile);
+			if (packagesHash.Contains (pname))
+				return;
+
+			ArrayList fullassemblies = null;
+			string version = "";
+			string desc = "";
+			
+			SystemPackage package = new SystemPackage ();
+			
+			using (StreamReader reader = new StreamReader (pcfile)) {
+				string line;
+				while ((line = reader.ReadLine ()) != null) {
+					string lowerLine = line.ToLower ();
+					if (lowerLine.StartsWith ("libs:") && lowerLine.IndexOf (".dll") != -1) {
+						string choppedLine = line.Substring (5).Trim ();
+						if (choppedLine.IndexOf ("-lib:") != -1 || choppedLine.IndexOf ("/lib:") != -1) {
+							fullassemblies = GetAssembliesWithLibInfo (choppedLine, pcfile);
+						} else {
+							fullassemblies = GetAssembliesWithoutLibInfo (choppedLine, pcfile);
+						}
+					}
+					else if (lowerLine.StartsWith ("version:")) {
+						version = line.Substring (8).Trim ();
+					}
+					else if (lowerLine.StartsWith ("description:")) {
+						desc = line.Substring (12).Trim ();
+					}
+				}
+			}
+	
+			if (fullassemblies == null)
+				return;
+
+			foreach (string assembly in fullassemblies) {
+				AddAssembly (assembly, package);
+			}
+
+			package.Initialize (pname, version, desc, (string[]) fullassemblies.ToArray (typeof(string)), ClrVersion.Default, false);
+			packages.Add (package);
+			packagesHash [pname] = package;
+		}
+
+		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
+		{
+			SystemPackage package = new SystemPackage ();
+			ArrayList list = new ArrayList ();
+			
+			string dir = Path.Combine (prefix, version);
+			if(!Directory.Exists(dir)) {
+				return;
+			}
+
+			foreach (string assembly in Directory.GetFiles (dir, "*.dll")) {
+				AddAssembly (assembly, package);
+				list.Add (assembly);
+			}
+
+			package.Initialize ("mono", version, "The Mono runtime", (string[]) list.ToArray (typeof(string)), ver, false);
+			packages.Add (package);
+		}
+
+		void RunInitialization ()
+		{
+			string versionDir;
+			
+			if (Environment.Version.Major == 1) {
+				versionDir = "1.0";
+				currentVersion = ClrVersion.Net_1_1;
+			} else {
+				versionDir = "2.0";
+				currentVersion = ClrVersion.Net_2_0;
+			}
+
+			//Pull up assemblies from the installed mono system.
+			string prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
+
+			if (prefix.IndexOf ( Path.Combine("mono", versionDir)) == -1)
+				prefix = Path.Combine (prefix, "mono");
+			else
+				prefix = Path.GetDirectoryName (prefix);
+			
+			RegisterSystemAssemblies (prefix, "1.0", ClrVersion.Net_1_1);
+			RegisterSystemAssemblies (prefix, "2.0", ClrVersion.Net_2_0);
+
+			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
+			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
+
+			if (String.IsNullOrEmpty (libpath)) {
+				string path_dirs = Environment.GetEnvironmentVariable ("PATH");
+				foreach (string pathdir in path_dirs.Split (Path.PathSeparator)) {
+					if (pathdir == null)
+						continue;
+					if (File.Exists (pathdir + Path.DirectorySeparatorChar + "pkg-config")) {
+						libpath = Path.Combine(pathdir,"..");
+						libpath = Path.Combine(libpath,"lib");
+						libpath = Path.Combine(libpath,"pkgconfig");
+						break;
+					}
+				}
+			}
+			search_dirs += Path.PathSeparator + libpath;
+			if (search_dirs != null && search_dirs.Length > 0) {
+				ArrayList scanDirs = new ArrayList ();
+				foreach (string potentialDir in search_dirs.Split (Path.PathSeparator)) {
+					if (!scanDirs.Contains (potentialDir))
+						scanDirs.Add (potentialDir);
+				}
+				foreach (string pcdir in scanDirs) {
+					if (pcdir == null)
+						continue;
+	
+					if (Directory.Exists (pcdir)) {
+							foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
+								ParsePCFile (pcfile);
+							}
+					}
+				}
+			}
+		}
+		
+		private void WriteCombine(SolutionNode solution)
+		{
+	#region "Create Solution directory if it doesn't exist"
+			string solutionDir = Path.Combine(solution.FullPath, Path.Combine("autotools", solution.Name));
+			chkMkDir(solutionDir);			
+	#endregion
+
+	#region "Write Solution-level files"
+			XsltArgumentList argList = new XsltArgumentList();
+			argList.AddParam("solutionName", "",  solution.Name);
+			// $solutionDir is $rootDir/$solutionName
+			transformToFile(Path.Combine(solutionDir, "configure.ac"), argList, "/Autotools/SolutionConfigureAc");
+			transformToFile(Path.Combine(solutionDir, "Makefile.am"), argList, "/Autotools/SolutionMakefileAm");
+			transformToFile(Path.Combine(solutionDir,"autogen.sh"), argList, "/Autotools/SolutionAutogenSh");
+				
+			// Create stubs for files required by automake		
+			// NEWS, README, AUTHORS, ChangeLog
+			ArrayList al = new ArrayList();
+			al.Add( "NEWS" );
+			al.Add( "README" );
+			al.Add( "AUTHORS" );
+			al.Add( "ChangeLog" );
+			
+			mkStubFiles(solutionDir, al);
+	#endregion
+
+			foreach(ProjectNode project in solution.ProjectsTableOrder)
+			{
+				WriteProject(solution, project);
+			}
+		}
 		private static string PrependPath(string path)
 		{
 			string tmpPath = Helper.NormalizePath(path, '/');
@@ -276,8 +650,305 @@ namespace Prebuild.Core.Targets
 			}
 			return tmpPath.ToString();
 		}
-
+		
 		private void WriteProject(SolutionNode solution, ProjectNode project)
+		{
+			string solutionDir = Path.Combine(solution.FullPath, Path.Combine("autotools", solution.Name));			
+			string projectDir = Path.Combine(solutionDir, project.Name);
+			string projectVersion = project.Version;
+			bool hasAssemblyConfig = false;
+            chkMkDir(projectDir);
+            
+			ArrayList
+				compiledFiles = new ArrayList(),
+				contentFiles = new ArrayList(),
+				embeddedFiles = new ArrayList(),
+				
+				binaryLibs = new ArrayList(),
+				pkgLibs = new ArrayList(),
+				systemLibs = new ArrayList(),
+				runtimeLibs = new ArrayList(),
+				
+				extraDistFiles = new ArrayList(),
+				localCopyTargets = new ArrayList();
+			
+            // If there exists a .config file for this assembly, copy it to the project folder 
+			// TODO: Support copying .config.osx files
+			// TODO: support processing the .config file for native library deps
+			string projectAssemblyName = project.Name;
+			if(project.AssemblyName != null)
+				projectAssemblyName = project.AssemblyName;
+
+			if(File.Exists(Path.Combine(project.FullPath, projectAssemblyName) + ".dll.config")){
+				hasAssemblyConfig = true;
+				System.IO.File.Copy(Path.Combine(project.FullPath, projectAssemblyName + ".dll.config"), Path.Combine(projectDir, projectAssemblyName + ".dll.config"), true);
+				extraDistFiles.Add(project.AssemblyName + ".dll.config");
+			}            
+
+			foreach(ConfigurationNode conf in project.Configurations)
+			{
+				if(conf.Options.KeyFile != string.Empty){
+					// Copy snk file into the project's directory
+					// Use the snk from the project directory directly
+					string source = Path.Combine(project.FullPath, conf.Options.KeyFile);
+					string keyFile = conf.Options.KeyFile;
+					Regex re = new Regex(".*/");
+					keyFile = re.Replace(keyFile, "");
+					
+					string dest = Path.Combine(projectDir, keyFile);
+					// Tell the user if there's a problem copying the file
+					try{
+						mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+						System.IO.File.Copy(source, dest, true);
+					}catch(System.IO.IOException e){
+						Console.WriteLine(e.Message);
+					}
+				}
+			}
+
+			// Copy compiled, embedded and content files into the project's directory
+			foreach(string filename in project.Files)
+			{
+				string source = Path.Combine(project.FullPath, filename);
+				string dest = Path.Combine(projectDir, filename);
+				
+				if(filename.Contains("AssemblyInfo.cs")){
+					// If we've got an AssemblyInfo.cs, pull the version number from it
+					string[] sources = { source };
+					string[] args = { "" };
+					Microsoft.CSharp.CSharpCodeProvider cscp =
+						new Microsoft.CSharp.CSharpCodeProvider();
+
+					string tempAssemblyFile = Path.Combine(Path.GetTempPath(), project.Name + "-temp.dll");
+					System.CodeDom.Compiler.CompilerParameters cparam = 
+						new System.CodeDom.Compiler.CompilerParameters (args, tempAssemblyFile);
+
+					System.CodeDom.Compiler.CompilerResults cr =
+						cscp.CompileAssemblyFromFile(cparam, sources);
+
+					foreach(System.CodeDom.Compiler.CompilerError error in cr.Errors)
+						Console.WriteLine("Error! '{0}'", error.ErrorText);
+						
+					string projectFullName = cr.CompiledAssembly.FullName;
+					Regex verRegex = new Regex("Version=([\\d\\.]+)");
+					Match verMatch = verRegex.Match(projectFullName);
+					if(verMatch.Success)
+						projectVersion = verMatch.Groups[1].Value;
+					
+					// Clean up the temp file
+					if(File.Exists(tempAssemblyFile))
+						File.Delete(tempAssemblyFile);
+				}
+
+				// Tell the user if there's a problem copying the file
+				try{
+					mkdirDashP(System.IO.Path.GetDirectoryName(dest));
+					System.IO.File.Copy(source, dest, true);
+				}catch(System.IO.IOException e){
+					Console.WriteLine(e.Message);
+				}
+				
+				switch(project.Files.GetBuildAction(filename))
+				{
+					case BuildAction.Compile:
+						compiledFiles.Add(filename);
+						break;
+					case BuildAction.Content:
+						contentFiles.Add(filename);
+						extraDistFiles.Add(filename);
+						break;
+					case BuildAction.EmbeddedResource:
+						embeddedFiles.Add(filename);
+						extraDistFiles.Add(filename);
+						break;
+				}
+			}
+
+			// Set up references
+			for(int refNum = 0; refNum < project.References.Count; refNum++)
+			{
+				ReferenceNode refr = (ReferenceNode)project.References[refNum];
+				Assembly refAssembly = Assembly.LoadWithPartialName(refr.Name);
+
+				// Determine which pkg-config (.pc) file refers to this assembly 
+				string assemblyFullName = string.Empty;
+				if(refAssembly != null)
+					assemblyFullName = refAssembly.FullName;
+
+				string assemblyFileName = string.Empty;
+				if(assemblyFullName != string.Empty && assemblyFullNameToPath.Contains(assemblyFileName))
+					assemblyFileName = (string)assemblyFullNameToPath[assemblyFullName];
+
+				SystemPackage package = null;
+				if(assemblyFileName != string.Empty && assemblyPathToPackage.Contains(assemblyFileName))
+					package = (SystemPackage)assemblyPathToPackage[assemblyFileName];
+				
+				// If we know the .pc file and it is not "mono" (already in the path), add a -pkg: argument 
+				if(package != null && package.Name != "mono" && !pkgLibs.Contains(package.Name))
+					pkgLibs.Add(package.Name);
+				
+				string fileRef = FindFileReference(refr.Name, (ProjectNode)refr.Parent);
+				
+				if(refr.LocalCopy ||
+					solution.ProjectsTable.ContainsKey(refr.Name) ||
+					fileRef != null ||
+					refr.Path != null
+					){
+					// Attempt to copy the referenced lib to the project's directory
+					string filename = refr.Name + ".dll";
+					string source = filename;
+					if(refr.Path != null)
+						source = Path.Combine(refr.Path, source);
+					source = Path.Combine(project.FullPath, source);
+					string dest = Path.Combine(projectDir, filename);
+					
+					/* Since we depend on this binary dll to build, we will add a compile-
+					 * time dependency on the copied dll, and add the dll to the list of files
+					 * distributed with this package
+					 */
+
+					binaryLibs.Add(refr.Name + ".dll");
+					extraDistFiles.Add(refr.Name + ".dll");				
+
+					// TODO: Support copying .config.osx files
+					// TODO: Support for determining native dependencies
+					if(File.Exists(source + ".config")){
+						System.IO.File.Copy(source + ".config", Path.GetDirectoryName(dest), true);
+						extraDistFiles.Add(refr.Name + ".dll.config");
+					}
+
+					try {
+						System.IO.File.Copy(source, dest, true);
+					}catch(System.IO.IOException){
+						/* If a file is referenced and marked for local copy, but does not exist, 
+						 * let's assume it will be built some time between now and when this
+						 * project is built.
+						 * 
+						 * We put a hook into the Makefile.am to copy the dll to this project's
+						 * directory
+						 */
+						
+						ProjectNode sourcePrj = ((ProjectNode)(solution.ProjectsTable[refr.Name]));
+						string target =
+							filename + ":\n\tcp ../" + Path.Combine(sourcePrj.Name, filename) + " $@\n";
+
+						if(solution.ProjectsTable.ContainsKey(refr.Name))
+							localCopyTargets.Add(target);
+					}
+				}else{
+					// Else, let's assume it's in the GAC or the lib path
+					string assemName = string.Empty;
+					int index = refr.Name.IndexOf(",");
+
+					if ( index > 0)
+						assemName = refr.Name.Substring(0, index);
+					else
+						assemName = refr.Name;
+						
+					systemLibs.Add(assemName);
+				}
+			}		
+
+			string lineSep = " \\\n\t";
+			string compiledFilesString = string.Empty;
+			if(compiledFiles.Count > 0)
+				compiledFilesString =
+					lineSep + string.Join(lineSep, (string[])compiledFiles.ToArray(typeof(string)));
+			
+			string embeddedFilesString = "";
+			if(embeddedFiles.Count > 0)
+				embeddedFilesString =
+					lineSep + string.Join(lineSep, (string[])embeddedFiles.ToArray(typeof(string)));
+
+			string contentFilesString = "";
+			if(contentFiles.Count > 0)
+				contentFilesString =
+					lineSep + string.Join(lineSep, (string[])contentFiles.ToArray(typeof(string)));
+					
+			string extraDistFilesString = "";
+			if(extraDistFiles.Count > 0)
+				extraDistFilesString =
+					lineSep + string.Join(lineSep, (string[])extraDistFiles.ToArray(typeof(string)));
+
+			string pkgLibsString = "";
+			if(pkgLibs.Count > 0)
+				pkgLibsString =
+					lineSep + string.Join(lineSep, (string[])pkgLibs.ToArray(typeof(string)));
+			
+			string binaryLibsString = "";
+			if(binaryLibs.Count > 0)
+				binaryLibsString =
+					lineSep + string.Join(lineSep, (string[])binaryLibs.ToArray(typeof(string)));
+					
+			string systemLibsString = "";
+			if(systemLibs.Count > 0)
+				systemLibsString =
+					lineSep + string.Join(lineSep, (string[])systemLibs.ToArray(typeof(string)));
+			
+			string localCopyTargetsString = "";
+			if(localCopyTargets.Count > 0)
+				localCopyTargetsString =
+					string.Join("\n", (string[])localCopyTargets.ToArray(typeof(string)));
+
+			string monoPath = "";
+			foreach( string runtimeLib in runtimeLibs ){
+				monoPath += ":`pkg-config --variable=libdir " + runtimeLib + "`";
+			}
+
+			// Add the project name to the list of transformation
+			// parameters
+			XsltArgumentList argList = new XsltArgumentList();
+			argList.AddParam("projectName", "",  project.Name);
+			argList.AddParam("solutionName", "",  solution.Name);
+			argList.AddParam("assemblyName", "",  projectAssemblyName);
+			argList.AddParam("compiledFiles", "",  compiledFilesString);
+			argList.AddParam("embeddedFiles", "",  embeddedFilesString);
+			argList.AddParam("contentFiles", "", contentFilesString);
+			argList.AddParam("extraDistFiles", "", extraDistFilesString);
+			argList.AddParam("pkgLibs", "", pkgLibsString);
+			argList.AddParam("binaryLibs", "", binaryLibsString);
+			argList.AddParam("systemLibs", "", systemLibsString);
+			argList.AddParam("monoPath", "", monoPath);
+			argList.AddParam("localCopyTargets", "", localCopyTargetsString);
+			argList.AddParam("projectVersion", "", projectVersion);
+			argList.AddParam("hasAssemblyConfig", "", hasAssemblyConfig ? "true" : "");
+			
+			// Transform the templates
+			transformToFile(Path.Combine(projectDir, "configure.ac"), argList, "/Autotools/ProjectConfigureAc");
+			transformToFile(Path.Combine(projectDir, "Makefile.am"), argList, "/Autotools/ProjectMakefileAm");
+			transformToFile(Path.Combine(projectDir, "autogen.sh"), argList, "/Autotools/ProjectAutogenSh");
+
+			if(project.Type == Core.Nodes.ProjectType.Library)
+				transformToFile(Path.Combine(projectDir, project.Name + ".pc.in"),argList,"/Autotools/ProjectPcIn");
+			if(project.Type == Core.Nodes.ProjectType.Exe || project.Type == Core.Nodes.ProjectType.WinExe)
+				transformToFile(Path.Combine(projectDir, project.Name.ToLower() + ".in"),argList,"/Autotools/ProjectWrapperScriptIn");
+
+			// Create stubs for NEWS, README, ChangeLog
+			// These are required by automake
+			ArrayList automakeFiles = new ArrayList();
+			automakeFiles.Add( "NEWS" );
+			automakeFiles.Add( "README" );
+			automakeFiles.Add( "ChangeLog" );
+
+			mkStubFiles(projectDir, automakeFiles);
+
+			// Populate the AUTHORS file from the list of authors
+			// This is also required by automake
+			FileStream authorsFileStream =
+				new FileStream(Path.Combine(projectDir, "AUTHORS"),FileMode.Create);
+
+			StreamWriter authorsWriter =
+				new StreamWriter(authorsFileStream);
+
+			foreach(AuthorNode author in project.Authors)
+				authorsWriter.WriteLine(author.Signature);
+
+			authorsWriter.Flush();
+			authorsFileStream.Close();
+
+		}
+
+		private void WriteProjectOld(SolutionNode solution, ProjectNode project)
 		{
 			string projFile = Helper.MakeFilePath(project.FullPath, "Include", "am");
 			StreamWriter ss = new StreamWriter(projFile);
@@ -431,7 +1102,7 @@ namespace Prebuild.Core.Targets
 		}
 		bool hasLibrary = false;
 
-		private void WriteCombine(SolutionNode solution)
+		private void WriteCombineOld(SolutionNode solution)
 		{
 		
 			/* TODO: These vars should be pulled from the prebuild.xml file */
@@ -884,6 +1555,30 @@ namespace Prebuild.Core.Targets
 				throw new ArgumentNullException("kern");
 			}
 			m_Kernel = kern;
+			
+			RunInitialization();			
+			
+			// Retrieve stream for the autotools template XML
+			Stream autotoolsStream = Assembly.GetExecutingAssembly()
+				.GetManifestResourceStream("autotools.xml");
+					
+			// Create an XML URL Resolver with default credentials
+			xr = new System.Xml.XmlUrlResolver();
+			xr.Credentials = CredentialCache.DefaultCredentials;
+
+			// Create a default evidence - no need to limit access
+			e =	new System.Security.Policy.Evidence();
+			
+			// Load the autotools XML
+			autotoolsDoc = new XmlDocument();
+			autotoolsDoc.Load(autotoolsStream);
+
+			// rootDir is the filesystem location where the Autotools build
+			// tree will be created - for now we'll make it $PWD/autotools
+			string pwd = System.Environment.GetEnvironmentVariable("PWD");
+			string rootDir = Path.Combine(pwd, "autotools");
+			chkMkDir(rootDir);			
+
 			foreach(SolutionNode solution in kern.Solutions)
 			{
 				WriteCombine(solution);

@@ -106,9 +106,24 @@ namespace Prebuild.Core.Targets
 				ret += " refto=\"";
 				try
 				{
-					//Assembly assem = Assembly.Load(refr.Name);
-					//ret += assem.FullName;
-                    ret += refr.Name;
+					/*
+					Day changed to 28 Mar 2007
+					...
+					08:09 < cj> is there anything that replaces Assembly.LoadFromPartialName() ?
+					08:09 < jonp> no
+					08:10 < jonp> in their infinite wisdom [sic], microsoft decided that the 
+					              ability to load any assembly version by-name was an inherently 
+					              bad idea
+					08:11 < cj> I'm thinking of a bunch of four-letter words right now...
+					08:11 < cj> security through making it difficult for the developer!!!
+					08:12 < jonp> just use the Obsolete API
+					08:12 < jonp> it should still work
+					08:12 < cj> alrighty.
+					08:12 < jonp> you just get warnings when using it
+					*/
+					Assembly assem = Assembly.LoadWithPartialName(refr.Name);
+					ret += assem.FullName;
+                    //ret += refr.Name;
 				}
 				catch (System.NullReferenceException e)
 				{
