@@ -55,11 +55,11 @@ using System.Resources;
 [assembly: AssemblyConfiguration(".NET CLR")]
 [assembly: AssemblyCompany("The Prebuild Project")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright  2004-2006 Matthew Holmes, Dan Moorehead and David Hudson")]
+[assembly: AssemblyCopyright("Copyright  2004-2007 Matthew Holmes, Dan Moorehead and David Hudson")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
-[assembly: AssemblyVersion("2.0.1.*")]
+[assembly: AssemblyVersion("2.0.2.*")]
 
 //
 // Version information for an assembly consists of the following four values:
