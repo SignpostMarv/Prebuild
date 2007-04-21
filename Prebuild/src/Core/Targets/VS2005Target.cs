@@ -36,6 +36,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
+using System.Text;
 
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
@@ -465,14 +466,17 @@ namespace Prebuild.Core.Targets
                         ps.Write("    <Reference");
                         ps.Write(" Include=\"");
                         ps.Write(refr.Name);
+                        ps.WriteLine("\">");
+                        ps.Write("        <Name>");
+                        ps.Write(refr.Name);
+                        ps.WriteLine("</Name>");
 
-                        if (!string.IsNullOrEmpty(refr.Version))
-                        {
-                            ps.Write(", Version=");
-                            ps.Write(refr.Version);
-                        }
+                        //if (!string.IsNullOrEmpty(refr.Version))
+                        //{
+                        //    ps.Write(", Version=");
+                        //    ps.Write(refr.Version);
+                        //}
 
-                        ps.WriteLine("\" >");
 
                         // TODO: Allow reference to *.exe files
                         ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
@@ -592,12 +596,14 @@ namespace Prebuild.Core.Targets
                         if (!list.Contains(file))
                         {
                             ps.Write("    <{0} ", project.Files.GetBuildAction(file));
-                            ps.WriteLine("Include=\"{0}\">", file);
+                            ps.WriteLine("Include=\"{0}\">", Helper.NormalizePath(file));
 
 
                             if (file.Contains("Designer.cs"))
                             {
-                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(0, file.IndexOf(".Designer.cs")) + ".cs");
+                                string d = ".Designer.cs";
+                                int index = file.Contains("\\") ? file.IndexOf("\\") + 1 : 0;
+                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(index, file.Length - index - d.Length) + ".cs");
                             }
 
                             if (project.Files.GetIsLink(file))
