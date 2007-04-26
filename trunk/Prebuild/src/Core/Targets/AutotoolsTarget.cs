@@ -1560,7 +1560,7 @@ namespace Prebuild.Core.Targets
 			
 			// Retrieve stream for the autotools template XML
 			Stream autotoolsStream = Assembly.GetExecutingAssembly()
-				.GetManifestResourceStream("autotools.xml");
+                .GetManifestResourceStream("Prebuild.data.autotools.xml");
 					
 			// Create an XML URL Resolver with default credentials
 			xr = new System.Xml.XmlUrlResolver();
