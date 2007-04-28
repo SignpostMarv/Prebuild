@@ -12,7 +12,7 @@
 			.NET Prebuild is a cross-platform XML-driven pre-build tool which
 			allows developers to easily generate project or make files for major
 			IDE's and .NET development tools including: Visual Studio .NET 2002,
-			2003, and 2005, SharpDevelop, MonoDevelop, NAnt and the GNU Autotools.
+			2003, and 2005, SharpDevelop, MonoDevelop, NAnt, Xcode and the GNU Autotools.
 
 			BSD License:
 			
