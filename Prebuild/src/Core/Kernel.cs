@@ -698,17 +698,21 @@ namespace Prebuild.Core
 			}
 			else
 			{
-                ITarget targ = (ITarget)m_Targets[target];
+				if (!m_Targets.Contains(target)) {
+					m_Log.Write(LogType.Error, "Unknown Target \"{0}\"", target);
+					return;
+				}
+				ITarget targ = (ITarget)m_Targets[target];
 
-                if(clean)
-                {
-                    targ.Clean(this);
-                }
-                else
-                {
-                    targ.Write(this);
-                }
-            }
+				if(clean)
+				{
+					targ.Clean(this);
+				}
+				else
+				{
+					targ.Write(this);
+				}
+			}
 
 			m_Log.Flush();
 		}
