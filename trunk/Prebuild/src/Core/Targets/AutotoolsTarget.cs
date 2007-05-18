@@ -1590,7 +1590,7 @@ namespace Prebuild.Core.Targets
 			if(autotoolsStream == null) 
 			{
 				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
-				autotoolsStream = assembly.GetManifestResourceStream("autotools.xml");
+                autotoolsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("autotools.xml");
 				if(autotoolsStream == null)
 				{
 					throw new System.Reflection.TargetException("Could not find the embedded autotools.xml resource file");
