@@ -168,7 +168,7 @@ fi
 AC_PREREQ(2.60)
 AC_CANONICAL_SYSTEM
 AC_CONFIG_AUX_DIR(.)
-AM_INIT_AUTOMAKE([1.9 tar-ustar])
+AM_INIT_AUTOMAKE([1.9 tar-ustar foreign])
 AM_MAINTAINER_MODE
 dnl AC_PROG_INTLTOOL([0.25])
 AC_PROG_INSTALL
@@ -662,7 +662,7 @@ fi
 <xsl:template match="/"
 >AC_INIT([<xsl:value-of select="$solutionName" />]-solution,[<xsl:value-of select="/dnpb:Prebuild/dnpb:Solution[@name=$solutionName]/@version" />])
 AC_CONFIG_AUX_DIR(.)
-AM_INIT_AUTOMAKE([1.9 tar-ustar])
+AM_INIT_AUTOMAKE([1.9 tar-ustar foreign])
 EXTRA_DIST=install-sh missing
 SOLUTION_NAME=<xsl:value-of select="$solutionName" />
 SOLUTION_VERSION=$VERSION

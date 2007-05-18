@@ -475,16 +475,6 @@ namespace Prebuild.Core.Targets
             transformToFile(Path.Combine(solutionDir, "configure.ac"), argList, "/Autotools/SolutionConfigureAc");
             transformToFile(Path.Combine(solutionDir, "Makefile.am"), argList, "/Autotools/SolutionMakefileAm");
             transformToFile(Path.Combine(solutionDir, "autogen.sh"), argList, "/Autotools/SolutionAutogenSh");
-
-            // Create stubs for files required by automake		
-            // NEWS, README, AUTHORS, ChangeLog
-            ArrayList al = new ArrayList();
-            al.Add("NEWS");
-            al.Add("README");
-            al.Add("AUTHORS");
-            al.Add("ChangeLog");
-
-            mkStubFiles(solutionDir, al);
             #endregion
 
             foreach (ProjectNode project in solution.ProjectsTableOrder)
@@ -981,30 +971,6 @@ namespace Prebuild.Core.Targets
                 transformToFile(Path.Combine(projectDir, project.Name + ".pc.in"), argList, "/Autotools/ProjectPcIn");
             if (project.Type == Core.Nodes.ProjectType.Exe || project.Type == Core.Nodes.ProjectType.WinExe)
                 transformToFile(Path.Combine(projectDir, project.Name.ToLower() + ".in"), argList, "/Autotools/ProjectWrapperScriptIn");
-
-            // Create stubs for NEWS, README, ChangeLog
-            // These are required by automake
-            ArrayList automakeFiles = new ArrayList();
-            automakeFiles.Add("NEWS");
-            automakeFiles.Add("README");
-            automakeFiles.Add("ChangeLog");
-
-            mkStubFiles(projectDir, automakeFiles);
-
-            // Populate the AUTHORS file from the list of authors
-            // This is also required by automake
-            FileStream authorsFileStream =
-                new FileStream(Path.Combine(projectDir, "AUTHORS"), FileMode.Create);
-
-            StreamWriter authorsWriter =
-                new StreamWriter(authorsFileStream);
-
-            foreach (AuthorNode author in project.Authors)
-                authorsWriter.WriteLine(author.Signature);
-
-            authorsWriter.Flush();
-            authorsFileStream.Close();
-
         }
 
         private void WriteProjectOld(SolutionNode solution, ProjectNode project)
@@ -1620,6 +1586,16 @@ namespace Prebuild.Core.Targets
             // Retrieve stream for the autotools template XML
             Stream autotoolsStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Prebuild.data.autotools.xml");
+
+			if(autotoolsStream == null) 
+			{
+				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
+				autotoolsStream = assembly.GetManifestResourceStream("autotools.xml");
+				if(autotoolsStream == null)
+				{
+					throw new System.Reflection.TargetException("Could not find the embedded autotools.xml resource file");
+				}
+			}
 
             // Create an XML URL Resolver with default credentials
             xr = new System.Xml.XmlUrlResolver();
