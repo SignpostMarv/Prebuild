@@ -49,7 +49,7 @@ namespace Prebuild.Core.Nodes
 	{
 		#region Fields
 
-		private string m_Name = "unknown";
+        private string m_Pattern = "";
 
 		#endregion
 
@@ -63,11 +63,23 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_Name;
+				return m_Pattern;
 			}
 		}
 
-		#endregion
+        /// <summary>
+        /// Gets the pattern.
+        /// </summary>
+        /// <value>The pattern.</value>
+        public string Pattern
+        {
+            get
+            {
+                return m_Pattern;
+            }
+        }
+
+        #endregion
 
 		#region Public Methods
 
@@ -77,7 +89,8 @@ namespace Prebuild.Core.Nodes
 		/// <param name="node">The node.</param>
 		public override void Parse(XmlNode node)
 		{
-			m_Name = Helper.AttributeValue(node, "name", m_Name);
+            m_Pattern = Helper.AttributeValue( node, "name", m_Pattern );
+            m_Pattern = Helper.AttributeValue(node, "pattern", m_Pattern );
 		}
 
 		#endregion

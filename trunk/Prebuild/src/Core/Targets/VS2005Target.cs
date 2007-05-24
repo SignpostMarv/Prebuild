@@ -433,7 +433,7 @@ namespace Prebuild.Core.Targets
                     ps.WriteLine("    <ConfigurationOverrideFile>");
                     ps.WriteLine("    </ConfigurationOverrideFile>");
                     ps.WriteLine("    <DefineConstants>{0}</DefineConstants>", conf.Options["CompilerDefines"]);
-                    ps.WriteLine("    <DocumentationFile>{0}</DocumentationFile>", conf.Options["XmlDocFile"]);
+                    ps.WriteLine("    <DocumentationFile>{0}</DocumentationFile>", Helper.NormalizePath(conf.Options["XmlDocFile"].ToString()));
                     ps.WriteLine("    <DebugSymbols>{0}</DebugSymbols>", conf.Options["DebugInformation"]);
                     ps.WriteLine("    <FileAlignment>{0}</FileAlignment>", conf.Options["FileAlignment"]);
                     //                    ps.WriteLine("    <IncrementalBuild = \"{0}\"", conf.Options["IncrementalBuild"]);
@@ -595,36 +595,52 @@ namespace Prebuild.Core.Targets
                     {
                         if (!list.Contains(file))
                         {
-                            ps.Write("    <{0} ", project.Files.GetBuildAction(file));
-                            ps.WriteLine("Include=\"{0}\">", Helper.NormalizePath(file));
+                        ps.Write("    <{0} ", project.Files.GetBuildAction(file));
+
+                        int startPos = 0;
+                        if ( project.Files.GetPreservePath( file ) )
+                        {
+                            while ( ( @"./\" ).IndexOf( file.Substring( startPos, 1 ) ) != -1 )
+                                startPos++;
+
+                        }
+                        else
+                        {
+                            startPos = file.LastIndexOf( Path.GetFileName( file ) );
+                        }
+                        ps.WriteLine("Include=\"{0}\">", Helper.NormalizePath(file));
 
 
-                            if (file.Contains("Designer.cs"))
-                            {
+                        if (file.Contains("Designer.cs"))
+                        {
                                 string d = ".Designer.cs";
                                 int index = file.Contains("\\") ? file.IndexOf("\\") + 1 : 0;
                                 ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(index, file.Length - index - d.Length) + ".cs");
-                            }
-
-                            if (project.Files.GetIsLink(file))
-                            {
-                                ps.WriteLine("      <Link>{0}</Link>", Path.GetFileName(file));
-                            }
-                            else if (project.Files.GetBuildAction(file) != BuildAction.None)
-                            {
-                                if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
-                                {
-                                    ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
-                                }
-                            }
-                            if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
-                            {
-                                ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
-                            }
-
-                            ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
                         }
+
+                        if (project.Files.GetIsLink(file))
+                        {
+							string alias = project.Files.GetLinkPath( file );
+							alias += file.Substring( startPos );
+							alias = Helper.NormalizePath( alias );
+                            ps.WriteLine( "      <Link>{0}</Link>", alias );
+                        }
+                        else if (project.Files.GetBuildAction(file) != BuildAction.None)
+                        {
+                            if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
+                            {
+								ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+							}
+                        }
+
+                        if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
+                        {
+                            ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(file));
+                        }
+
+                        ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
                     }
+                }
                 }
                 //                ps.WriteLine("      </Include>");
 
