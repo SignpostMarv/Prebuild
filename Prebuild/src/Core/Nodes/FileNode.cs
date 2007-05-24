@@ -118,6 +118,8 @@ namespace Prebuild.Core.Nodes
 		private SubType m_SubType = SubType.Code;
 		private CopyToOutput m_CopyToOutput = CopyToOutput.Never;
 		private bool m_Link = false;
+		private string m_LinkPath = string.Empty;
+        private bool m_PreservePath = false;
 
 
 		#endregion
@@ -173,6 +175,13 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		public string LinkPath
+		{
+			get
+			{
+				return this.m_LinkPath;
+			}
+		}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -195,6 +204,19 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public bool PreservePath
+        {
+            get
+            {
+                return m_PreservePath;
+            }
+        }
+
 		#endregion
 
 		#region Public Methods
@@ -211,7 +233,12 @@ namespace Prebuild.Core.Nodes
 				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
+			if ( this.m_Link == true )
+			{
+				this.m_LinkPath = Helper.AttributeValue( node, "linkPath", string.Empty );
+			}
 			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
+            this.m_PreservePath = bool.Parse( Helper.AttributeValue( node, "preservePath", bool.FalseString ) );
 
 			if( node == null )
 			{
