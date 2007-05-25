@@ -82,6 +82,7 @@
       <xs:attribute name="filterGroups" type="xs:string" default="" />
       <xs:attribute name="path" type="xs:string" default="" />
       <xs:attribute name="icon" type="xs:string" default="" />
+      <xs:attribute name="configFile" type="xs:string" default="" />
       <xs:attribute name="version" type="xs:string" default="1.0.0" />
       <xs:attribute name="language" default="C#">
         <xs:simpleType>
