@@ -220,7 +220,7 @@ namespace Prebuild.Core.Targets
                 ss.WriteLine("    <target name=\"{0}\">", "build");
                 ss.WriteLine("        <echo message=\"Build Directory is ${project::get-base-directory()}/${build.dir}\" />");
                 ss.WriteLine("        <mkdir dir=\"${project::get-base-directory()}/${build.dir}\" />");
-                ss.WriteLine("        <copy todir=\"${project::get-base-directory()}/${build.dir}\">");
+                ss.WriteLine("        <copy todir=\"${project::get-base-directory()}/${build.dir}\" flatten=\"true\">");
                 ss.WriteLine("            <fileset basedir=\"${project::get-base-directory()}\">");
                 foreach (ReferenceNode refr in project.References)
                 {
@@ -229,8 +229,23 @@ namespace Prebuild.Core.Targets
                         ss.WriteLine("                <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr)) + "\" />", '/'));
                     }
                 }
+                
                 ss.WriteLine("            </fileset>");
                 ss.WriteLine("        </copy>");
+                if (project.ConfigFile != null && project.ConfigFile.Length!=0)
+                {
+                    ss.Write("        <copy file=\"" + project.ConfigFile + "\" tofile=\"${project::get-base-directory()}/${build.dir}/${project::get-name()}");
+
+                    if (project.Type == ProjectType.Library)
+                    {
+                        ss.Write(".dll.config\"");
+                    }
+                    else
+                    {
+                        ss.Write(".exe.config\"");
+                    }
+                    ss.WriteLine(" />");
+                }
                 ss.Write("        <csc");
                 ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
                 ss.Write(" debug=\"{0}\"", "${build.debug}");

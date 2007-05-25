@@ -90,6 +90,7 @@ namespace Prebuild.Core.Nodes
 		private string m_FullPath = "";
 		private string m_AssemblyName;
 		private string m_AppIcon = "";
+        private string m_ConfigFile = "";
 		private string m_DesignerFolder = "";
 		private string m_Language = "C#";
 		private ProjectType m_Type = ProjectType.Exe;
@@ -208,6 +209,18 @@ namespace Prebuild.Core.Nodes
 				return m_AppIcon;
 			}
 		}
+
+        /// <summary>
+        /// Gets the app icon.
+        /// </summary>
+        /// <value>The app icon.</value>
+        public string ConfigFile
+        {
+            get
+            {
+                return m_ConfigFile;
+            }
+        }
 
 		/// <summary>
 		/// 
@@ -445,6 +458,7 @@ namespace Prebuild.Core.Nodes
 			m_FilterGroups = Helper.AttributeValue(node, "filterGroups", m_FilterGroups);
 			m_Version = Helper.AttributeValue(node, "version", m_Version);
 			m_AppIcon = Helper.AttributeValue(node, "icon", m_AppIcon);
+            m_ConfigFile = Helper.AttributeValue(node, "configFile", m_ConfigFile);
 			m_DesignerFolder = Helper.AttributeValue(node, "designerFolder", m_DesignerFolder);
 			m_AssemblyName = Helper.AttributeValue(node, "assemblyName", m_AssemblyName);
 			m_Language = Helper.AttributeValue(node, "language", m_Language);
