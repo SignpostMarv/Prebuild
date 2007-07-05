@@ -53,7 +53,7 @@ namespace Prebuild.Core.Targets
         {
             string res;
             SolutionNode solution = (SolutionNode)proj.Parent;
-            res = Path.Combine(Helper.NormalizePath(proj.FullPath), Helper.NormalizePath(path));
+            res = Path.Combine(Helper.NormalizePath(proj.FullPath, '/'), Helper.NormalizePath(path, '/'));
             res = Helper.NormalizePath(res, '/');
             res = res.Replace("/./", "/");
             while (res.IndexOf("/../") >= 0)
@@ -65,7 +65,7 @@ namespace Prebuild.Core.Targets
             res = Helper.MakePathRelativeTo(solution.FullPath, res);
             if (res.StartsWith("./"))
                 res = res.Substring(2, res.Length - 2);
-            res = Helper.NormalizePath(res);
+            res = Helper.NormalizePath(res, '/');
             return res;
         }
 
@@ -236,7 +236,7 @@ namespace Prebuild.Core.Targets
                     f.WriteLine("\tmkdir -p {0}", Path.GetDirectoryName(outpath));
                 }
                 // mcs command line.
-                f.Write("\tmcs", project.Name);
+                f.Write("\tgmcs", project.Name);
                 f.Write(" -warn:{0}", conf.Options["WarningLevel"]);
                 if ((bool)conf.Options["DebugInformation"])
                     f.Write(" -debug");
@@ -407,7 +407,7 @@ namespace Prebuild.Core.Targets
             m_Kernel.Log.Write("Creating makefile for {0}", solution.Name);
             m_Kernel.CurrentWorkingDirectory.Push();
 
-            string file = Helper.MakeFilePath(solution.FullPath, solution.Name, "make");
+            string file = "Makefile";// Helper.MakeFilePath(solution.FullPath, solution.Name, "make");
             StreamWriter f = new StreamWriter(file);
 
             Helper.SetCurrentDir(Path.GetDirectoryName(file));
