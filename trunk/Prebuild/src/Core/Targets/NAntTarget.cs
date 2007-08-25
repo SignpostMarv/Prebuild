@@ -246,6 +246,24 @@ namespace Prebuild.Core.Targets
                     }
                     ss.WriteLine(" />");
                 }
+
+                // Add the content files to just be copied
+                ss.WriteLine("        {0}", "<copy todir=\"${project::get-base-directory()}/${build.dir}/${project::get-name()}\">");
+                ss.WriteLine("            {0}", "<fileset basedir=\".\">");
+                
+                foreach (string file in project.Files)
+                {
+                    // Ignore if we aren't content
+                    if (project.Files.GetBuildAction(file) != BuildAction.Content)
+                            continue;
+
+                    // Create a include tag
+                    ss.WriteLine("                {0}", "<include name=\"" + Helper.NormalizePath(PrependPath(file), '/') + "\" />");
+                }
+
+                ss.WriteLine("            {0}", "</fileset>");
+                ss.WriteLine("        {0}", "</copy>");
+
                 ss.Write("        <csc");
                 ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
                 ss.Write(" debug=\"{0}\"", "${build.debug}");
