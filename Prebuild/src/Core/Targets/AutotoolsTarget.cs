@@ -760,7 +760,7 @@ namespace Prebuild.Core.Targets
                     string tempAssemblyFile = Path.Combine(Path.GetTempPath(), project.Name + "-temp.dll");
                     System.CodeDom.Compiler.CompilerParameters cparam =
                         new System.CodeDom.Compiler.CompilerParameters(args, tempAssemblyFile);
-
+                    
                     System.CodeDom.Compiler.CompilerResults cr =
                         cscp.CompileAssemblyFromFile(cparam, sources);
 
@@ -781,7 +781,7 @@ namespace Prebuild.Core.Targets
                     }
                     catch 
                     {
-                        Console.WriteLine("Error! '{0}'", e.ToString());
+                        //Console.WriteLine("Error! '{0}'", e.ToString());
                     }
                    
                 }
