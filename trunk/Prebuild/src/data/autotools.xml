@@ -331,7 +331,9 @@ echo "==="
 <xsl:variable name="lcType"><xsl:value-of select="translate(@type, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" /></xsl:variable>
 
 ASSEMBLY=$(ASSEMBLY_NAME).$(ASSEMBLY_EXTENSION)
-
+<!--
+  If the project is an application, create targets for the wrapper script
+  -->
 <xsl:if test="@type='Exe' or @type='WinExe'">
 <xsl:value-of select="$lcProjectName" />dir = $(prefix)/lib/<xsl:value-of select="$lcProjectName" />
 <xsl:value-of select="$lcProjectName" />_DATA = $(ASSEMBLY)<xsl:if test="$hasAssemblyConfig='true'"> $(ASSEMBLY).config</xsl:if>
@@ -385,9 +387,12 @@ CLEANFILES+=<xsl:value-of select="$outputPath"/>/$(ASSEMBLY)
 <xsl:value-of select="@name" />: <xsl:value-of select="$outputPath"/>/$(ASSEMBLY)<xsl:text disable-output-escaping="yes">
 	rm -f $(ASSEMBLY) \
 	&amp;&amp;</xsl:text> ln <xsl:value-of select="$outputPath"/>/$(ASSEMBLY) $(ASSEMBLY)
-
+<!-- If the project is a library, create library-specific targets -->
 <xsl:if test="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]/@type='Library'">
 <xsl:choose>
+<!--
+  If the project has a keyfile, make a gac install/uninstall target
+  -->
   <xsl:when test="dnpb:Options/dnpb:KeyFile/text()!=''">
 <xsl:value-of select="@name" />_install-data-local: <xsl:value-of select="$outputPath"/>/$(ASSEMBLY)
 	echo "$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS)";  \
@@ -400,6 +405,10 @@ CLEANFILES+=<xsl:value-of select="$outputPath"/>/$(ASSEMBLY)
 		$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS) || exit 1; \
 	fi
   </xsl:when>
+<!--
+   If there is no keyfile for the project, define a filesystem
+   install target
+  -->
   <xsl:otherwise>
 noinst_<xsl:value-of select="@name" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />dir = $(prefix)/lib/mono/<xsl:value-of select="$projectName" />
 noinst_<xsl:value-of select="@name" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />_DATA = <xsl:value-of select="$outputPath"/>/$(ASSEMBLY)
@@ -421,10 +430,13 @@ install-data-local: <xsl:value-of select="$defaultConfig" />_install-data-local
 
 uninstall-local: <xsl:value-of select="$defaultConfig" />_uninstall-local
   </xsl:when>
-<!-- if the default config does not have a KeyFile -->
+<!--
+  If the default config does not have a KeyFile, don't really do
+  anything
+  -->
   <xsl:otherwise>
-<xsl:value-of select="translate($lcProjectName, '.', '_')" />dir+=$(noinst_<xsl:value-of select="$defaultConfig" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />dir)
-<xsl:value-of select="translate($lcProjectName, '.', '_')" />_DATA+=$(noinst_<xsl:value-of select="$defaultConfig" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />_DATA)
+#<xsl:value-of select="translate($lcProjectName, '.', '_')" />dir+=$(noinst_<xsl:value-of select="$defaultConfig" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />dir)
+#<xsl:value-of select="translate($lcProjectName, '.', '_')" />_DATA+=$(noinst_<xsl:value-of select="$defaultConfig" />_<xsl:value-of select="translate($lcProjectName, '.', '_')" />_DATA)
   </xsl:otherwise>
 </xsl:choose>
 </xsl:if>
