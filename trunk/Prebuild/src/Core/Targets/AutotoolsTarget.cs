@@ -808,7 +808,6 @@ namespace Prebuild.Core.Targets
                         break;
                     case BuildAction.EmbeddedResource:
                         embeddedFiles.Add(filename);
-                        extraDistFiles.Add(filename);
                         break;
                 }
             }

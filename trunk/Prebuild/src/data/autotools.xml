@@ -352,10 +352,11 @@ noinst_DATA = $(ASSEMBLY)
 PACKAGES =<xsl:value-of select="$pkgLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
 SYSTEM_LIBS =<xsl:value-of select="$systemLibs" />
-RESOURCES =<xsl:value-of select="$embeddedFiles" />
+RESOURCES_SRC =<xsl:value-of select="$embeddedFiles" />
+RESOURCES = $(RESOURCES_SRC:.resx=.resource)
 SOURCES =<xsl:value-of select="$compiledFiles" />
 
-EXTRA_DIST=$(SOURCES) $(BINARY_LIBS) install-sh missing <xsl:value-of select="$extraDistFiles" />
+EXTRA_DIST=$(SOURCES) $(BINARY_LIBS) $(RESOURCES_SRC) install-sh missing <xsl:value-of select="$extraDistFiles" />
 
 CLEANFILES=$(ASSEMBLY)
 
@@ -421,6 +422,10 @@ noinst_<xsl:value-of select="@name" />_<xsl:value-of select="translate($lcProjec
 $(ASSEMBLY): <xsl:value-of select="$defaultConfig" />
 
 all: $(ASSEMBLY)
+
+# rule to compile .resx files to .resource
+%.resource: %.resx
+	resgen2 /useSourcePath /compile $(@:.resource=.resx)
 
 <xsl:if test="@type='Library'">
 <!-- if the default config has a KeyFile -->
