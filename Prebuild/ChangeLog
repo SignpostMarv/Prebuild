@@ -1,3 +1,11 @@
+2008-01-01T14:50	C.J. Adams-Collier <cjac@colliertech.org>
+	* src/data/autotools.xml
+	- fixed .resx -> .resource compilation
+	- fixed failing edge case where Project is an unsigned Library
+	- added $(RESOURCE_SRC) to list of extra dist files
+	* src/Core/Targets/AutotoolsTarget.cs
+	- removed embeddedResources from extraDistFiles list
+
 2007-04-18T07:49	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/data/prebuild-1.7.xsd
 	- removed default version from references
