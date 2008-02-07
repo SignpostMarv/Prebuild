@@ -1,0 +1,4 @@
+Gryc Ueusp <gryc.ueusp@gmail.com>
+
+  caught a problem with the NAnt target's .build output which caused
+  the Ubuntu build servers to choke on prebuild-generated packages
