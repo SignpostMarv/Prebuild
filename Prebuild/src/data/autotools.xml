@@ -220,6 +220,7 @@ PKG_CHECK_MODULES(MONO_DEPENDENCY, mono >= $MONO_REQUIRED_VERSION, has_mono=true
 if test "x$has_mono" = "xtrue"; then
   AC_PATH_PROG(RUNTIME, mono, no)
   AC_PATH_PROG(CSC, gmcs, no)
+  AC_PATH_PROG(RESGEN, resgen2, no)
   if test `uname -s` = "Darwin"; then
         LIB_PREFIX=
         LIB_SUFFIX=.dylib
@@ -253,6 +254,8 @@ AC_SUBST(LIB_PREFIX)
 AC_SUBST(LIB_SUFFIX)
 AC_SUBST(RUNTIME)
 AC_SUBST(CSC)
+AC_SUBST(RESGEN)
+AC_SUBST(GACUTIL)
 
 AC_SUBST(BASE_DEPENDENCIES_CFLAGS)
 AC_SUBST(BASE_DEPENDENCIES_LIBS)
@@ -353,7 +356,7 @@ PACKAGES =<xsl:value-of select="$pkgLibs" />
 BINARY_LIBS =<xsl:value-of select="$binaryLibs" />
 SYSTEM_LIBS =<xsl:value-of select="$systemLibs" />
 RESOURCES_SRC =<xsl:value-of select="$embeddedFiles" />
-RESOURCES = $(RESOURCES_SRC:.resx=.resource)
+RESOURCES = $(RESOURCES_SRC:.resx=.resources)
 SOURCES =<xsl:value-of select="$compiledFiles" />
 
 EXTRA_DIST=$(SOURCES) $(BINARY_LIBS) $(RESOURCES_SRC) install-sh missing <xsl:value-of select="$extraDistFiles" />
@@ -366,14 +369,14 @@ CLEANFILES=$(ASSEMBLY)
 <xsl:variable name="outputPath"><xsl:value-of select="dnpb:Options/dnpb:OutputPath/text()" /></xsl:variable>
 <xsl:variable name="keyFile"><xsl:value-of select="dnpb:Options/dnpb:KeyFile/text()" /></xsl:variable>
 <xsl:variable name="docFile"><xsl:value-of select="dnpb:Options/dnpb:XmlDocFile/text()" /></xsl:variable>
-<xsl:value-of select="$outputPath"/>/$(ASSEMBLY): $(RESOURCES) $(SOURCES) $(BINARY_LIBS) <xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template>
+<xsl:value-of select="$outputPath"/>/$(ASSEMBLY): $(srcdir)/$(ASSEMBLY).response $(RESOURCES) $(SOURCES) $(BINARY_LIBS) <xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template>
 	<xsl:if test="$docFile!=''">mkdir -p doc <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> </xsl:if>mkdir -p <xsl:value-of select="$outputPath" /> <xsl:text disable-output-escaping="yes">&amp;&amp;</xsl:text> $(CSC) /out:$@ \
 		/target:<xsl:value-of select="$lcType" /> \<xsl:if test="$embeddedFiles!=''">
 		$(addprefix /resource:$(srcdir)/, $(RESOURCES)) \</xsl:if><xsl:if test="$pkgLibs!=''">
 		$(addprefix /pkg:, $(PACKAGES)) \</xsl:if><xsl:if test="$systemLibs!=''">
 		$(addprefix /r:, $(SYSTEM_LIBS)) \</xsl:if><xsl:if test="$binaryLibs!=''">
 		$(addprefix /r:$(srcdir)/, $(BINARY_LIBS)) \</xsl:if>
-		$(addprefix $(srcdir)/, $(SOURCES)) \<xsl:if test="$docFile!=''">
+		@$(srcdir)/$(ASSEMBLY).response \<xsl:if test="$docFile!=''">
 		/doc:doc/<xsl:value-of select="$docFile" /> \</xsl:if><xsl:if test="$keyFile!=''">
 		/keyfile:$(srcdir)/<xsl:call-template name="substring-after-last-mod"><xsl:with-param name="input" select="$keyFile" /><xsl:with-param name="substr" select="'/'" /></xsl:call-template> \</xsl:if><xsl:if test="dnpb:Options/dnpb:AllowUnsafe/text()='true'">
 		/unsafe \</xsl:if><xsl:text disable-output-escaping="yes">
@@ -421,11 +424,16 @@ noinst_<xsl:value-of select="@name" />_<xsl:value-of select="translate($lcProjec
 <xsl:variable name="defaultConfig"><xsl:value-of select="//dnpb:Solution[@name=$solutionName]/dnpb:Project[@name=$projectName]/dnpb:Configuration/@name" /></xsl:variable>
 $(ASSEMBLY): <xsl:value-of select="$defaultConfig" />
 
+<xsl:text disable-output-escaping="yes">
+$(srcdir)/$(ASSEMBLY).response: $(srcdir)/Makefile
+	echo "$(addprefix $(srcdir)/, $(SOURCES))" &gt; $@
+</xsl:text>
+
 all: $(ASSEMBLY)
 
-# rule to compile .resx files to .resource
-%.resource: %.resx
-	resgen2 /useSourcePath /compile $(@:.resource=.resx)
+# rule to compile .resx files to .resources
+%.resources: %.resx
+	$(RESGEN) /useSourcePath /compile $(@:.resources=.resx)
 
 <xsl:if test="@type='Library'">
 <!-- if the default config has a KeyFile -->
