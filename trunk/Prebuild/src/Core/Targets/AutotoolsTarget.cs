@@ -82,7 +82,12 @@ namespace Prebuild.Core.Targets
         bool isInternal;
         ClrVersion targetVersion;
 
-        public void Initialize(string name, string version, string description, string[] assemblies, ClrVersion targetVersion, bool isInternal)
+        public void Initialize(string name,
+                               string version,
+                               string description,
+                               string[] assemblies,
+                               ClrVersion targetVersion,
+                               bool isInternal)
         {
             this.isInternal = isInternal;
             this.name = name;
@@ -348,10 +353,12 @@ namespace Prebuild.Core.Targets
                     }
                     else if (lowerLine.StartsWith("version:"))
                     {
+                        // "version:".Length == 8
                         version = line.Substring(8).Trim();
                     }
                     else if (lowerLine.StartsWith("description:"))
                     {
+                        // "description:".Length == 12
                         desc = line.Substring(12).Trim();
                     }
                 }
@@ -365,7 +372,12 @@ namespace Prebuild.Core.Targets
                 AddAssembly(assembly, package);
             }
 
-            package.Initialize(pname, version, desc, (string[])fullassemblies.ToArray(typeof(string)), ClrVersion.Default, false);
+            package.Initialize(pname,
+                               version,
+                               desc,
+                               (string[])fullassemblies.ToArray(typeof(string)),
+                               ClrVersion.Default,
+                               false);
             packages.Add(package);
             packagesHash[pname] = package;
         }
@@ -387,7 +399,12 @@ namespace Prebuild.Core.Targets
                 list.Add(assembly);
             }
 
-            package.Initialize("mono", version, "The Mono runtime", (string[])list.ToArray(typeof(string)), ver, false);
+            package.Initialize("mono",
+                               version,
+                               "The Mono runtime",
+                               (string[])list.ToArray(typeof(string)),
+                               ver,
+                               false);
             packages.Add(package);
         }
 
@@ -464,22 +481,29 @@ namespace Prebuild.Core.Targets
         private void WriteCombine(SolutionNode solution)
         {
             #region "Create Solution directory if it doesn't exist"
-            string solutionDir = Path.Combine(solution.FullPath, Path.Combine("autotools", solution.Name));
+            string solutionDir = Path.Combine(solution.FullPath,
+                                              Path.Combine("autotools",
+                                                           solution.Name));
             chkMkDir(solutionDir);
             #endregion
 
             #region "Write Solution-level files"
             XsltArgumentList argList = new XsltArgumentList();
             argList.AddParam("solutionName", "", solution.Name);
-            // $solutionDir is $rootDir/$solutionName
-            transformToFile(Path.Combine(solutionDir, "configure.ac"), argList, "/Autotools/SolutionConfigureAc");
-            transformToFile(Path.Combine(solutionDir, "Makefile.am"), argList, "/Autotools/SolutionMakefileAm");
-            transformToFile(Path.Combine(solutionDir, "autogen.sh"), argList, "/Autotools/SolutionAutogenSh");
+            // $solutionDir is $rootDir/$solutionName/
+            transformToFile(Path.Combine(solutionDir, "configure.ac"),
+                            argList, "/Autotools/SolutionConfigureAc");
+            transformToFile(Path.Combine(solutionDir, "Makefile.am"),
+                            argList, "/Autotools/SolutionMakefileAm");
+            transformToFile(Path.Combine(solutionDir, "autogen.sh"),
+                            argList, "/Autotools/SolutionAutogenSh");
             #endregion
 
             foreach (ProjectNode project in solution.ProjectsTableOrder)
             {
-                WriteProject(solution, project);
+              m_Kernel.Log.Write(String.Format("Writing project: {0}",
+                                               project.Name));
+              WriteProject(solution, project);
             }
         }
         private static string PrependPath(string path)
@@ -499,14 +523,20 @@ namespace Prebuild.Core.Targets
             return tmpPath;
         }
 
-        private static string BuildReference(SolutionNode solution, ReferenceNode refr)
+        private static string BuildReference(SolutionNode solution,
+                                             ReferenceNode refr)
         {
             string ret = "";
             if (solution.ProjectsTable.ContainsKey(refr.Name))
             {
-                ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
+                ProjectNode project =
+                  (ProjectNode)solution.ProjectsTable[refr.Name];
                 string fileRef = FindFileReference(refr.Name, project);
-                string finalPath = Helper.NormalizePath(Helper.MakeFilePath(project.FullPath + "/$(BUILD_DIR)/$(CONFIG)/", refr.Name, "dll"), '/');
+                string finalPath =
+                  Helper.NormalizePath(Helper.MakeFilePath(project.FullPath +
+                                                           "/$(BUILD_DIR)/$(CONFIG)/",
+                                                           refr.Name, "dll"),
+                                       '/');
                 ret += finalPath;
                 return ret;
             }
@@ -517,7 +547,12 @@ namespace Prebuild.Core.Targets
 
                 if (refr.Path != null || fileRef != null)
                 {
-                    string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
+                  string finalPath = ((refr.Path != null) ?
+                                      Helper.NormalizePath(refr.Path + "/" +
+                                                           refr.Name + ".dll",
+                                                           '/') :
+                                      fileRef
+                                      );
                     ret += Path.Combine(project.Path, finalPath);
                     return ret;
                 }
@@ -573,60 +608,68 @@ namespace Prebuild.Core.Targets
             return ret;
         }
 
-        private static string BuildReferencePath(SolutionNode solution, ReferenceNode refr)
+        private static string BuildReferencePath(SolutionNode solution,
+                                                 ReferenceNode refr)
         {
             string ret = "";
             if (solution.ProjectsTable.ContainsKey(refr.Name))
             {
-                ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-                string finalPath = Helper.NormalizePath(Helper.MakeReferencePath(project.FullPath + "/${build.dir}/"), '/');
-                ret += finalPath;
-                return ret;
+              ProjectNode project =
+                (ProjectNode)solution.ProjectsTable[refr.Name];
+              string finalPath =
+                Helper.NormalizePath(Helper.MakeReferencePath(project.FullPath +
+                                                              "/${build.dir}/"),
+                                     '/');
+              ret += finalPath;
+              return ret;
             }
             else
             {
-                ProjectNode project = (ProjectNode)refr.Parent;
-                string fileRef = FindFileReference(refr.Name, project);
+              ProjectNode project = (ProjectNode)refr.Parent;
+              string fileRef = FindFileReference(refr.Name, project);
 
-
-                if (refr.Path != null || fileRef != null)
+              if (refr.Path != null || fileRef != null)
                 {
-                    string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path, '/') : fileRef;
-                    ret += finalPath;
-                    return ret;
+                  string finalPath = ((refr.Path != null) ?
+                                      Helper.NormalizePath(refr.Path, '/') :
+                                      fileRef
+                                      );
+                  ret += finalPath;
+                  return ret;
                 }
 
-                try
+              try
                 {
-                    Assembly assem = Assembly.Load(refr.Name);
-                    if (assem != null)
+                  Assembly assem = Assembly.Load(refr.Name);
+                  if (assem != null)
                     {
-                        ret += "";
+                      ret += "";
                     }
-                    else
+                  else
                     {
-                        ret += "";
+                      ret += "";
                     }
                 }
-                catch (System.NullReferenceException e)
+              catch (System.NullReferenceException e)
                 {
-                    e.ToString();
-                    ret += "";
+                  e.ToString();
+                  ret += "";
                 }
             }
             return ret;
         }
 
-        private static string FindFileReference(string refName, ProjectNode project)
+        private static string FindFileReference(string refName,
+                                                ProjectNode project)
         {
             foreach (ReferencePathNode refPath in project.ReferencePaths)
             {
-                string fullPath = Helper.MakeFilePath(refPath.Path, refName, "dll");
+              string fullPath =
+                Helper.MakeFilePath(refPath.Path, refName, "dll");
 
-                if (File.Exists(fullPath))
-                {
-                    return fullPath;
-                }
+              if (File.Exists(fullPath)) {
+                return fullPath;
+              }
             }
 
             return null;
@@ -818,24 +861,44 @@ namespace Prebuild.Core.Targets
                 ReferenceNode refr = (ReferenceNode)project.References[refNum];
                 Assembly refAssembly = Assembly.LoadWithPartialName(refr.Name);
 
-                // Determine which pkg-config (.pc) file refers to this assembly 
-                string assemblyFullName = string.Empty;
-                if (refAssembly != null)
-                    assemblyFullName = refAssembly.FullName;
-
-                string assemblyFileName = string.Empty;
-                if (assemblyFullName != string.Empty && assemblyFullNameToPath.Contains(assemblyFileName))
-                    assemblyFileName = (string)assemblyFullNameToPath[assemblyFullName];
+                /* Determine which pkg-config (.pc) file refers to
+                   this assembly */
 
                 SystemPackage package = null;
-                if (assemblyFileName != string.Empty && assemblyPathToPackage.Contains(assemblyFileName))
+
+                if (packagesHash.Contains(refr.Name)){
+                  package = (SystemPackage)packagesHash[refr.Name];
+
+                }else{
+                  string assemblyFullName = string.Empty;
+                  if (refAssembly != null)
+                    assemblyFullName = refAssembly.FullName;
+
+                  string assemblyFileName = string.Empty;
+                  if (assemblyFullName != string.Empty &&
+                      assemblyFullNameToPath.Contains(assemblyFullName)
+                      )
+                    assemblyFileName =
+                      (string)assemblyFullNameToPath[assemblyFullName];
+
+                  if (assemblyFileName != string.Empty &&
+                      assemblyPathToPackage.Contains(assemblyFileName)
+                      )
                     package = (SystemPackage)assemblyPathToPackage[assemblyFileName];
 
-                // If we know the .pc file and it is not "mono" (already in the path), add a -pkg: argument 
-                if (package != null && package.Name != "mono" && !pkgLibs.Contains(package.Name))
+                }
+
+                /* If we know the .pc file and it is not "mono"
+                   (already in the path), add a -pkg: argument */
+
+                if (package != null &&
+                    package.Name != "mono" &&
+                    !pkgLibs.Contains(package.Name)
+                    )
                     pkgLibs.Add(package.Name);
 
-                string fileRef = FindFileReference(refr.Name, (ProjectNode)refr.Parent);
+                string fileRef =
+                  FindFileReference(refr.Name, (ProjectNode)refr.Parent);
 
                 if (refr.LocalCopy ||
                     solution.ProjectsTable.ContainsKey(refr.Name) ||
@@ -843,7 +906,10 @@ namespace Prebuild.Core.Targets
                     refr.Path != null
                     )
                 {
-                    // Attempt to copy the referenced lib to the project's directory
+
+                    /* Attempt to copy the referenced lib to the
+                       project's directory */
+
                     string filename = refr.Name + ".dll";
                     string source = filename;
                     if (refr.Path != null)
@@ -851,9 +917,10 @@ namespace Prebuild.Core.Targets
                     source = Path.Combine(project.FullPath, source);
                     string dest = Path.Combine(projectDir, filename);
 
-                    /* Since we depend on this binary dll to build, we will add a compile-
-                     * time dependency on the copied dll, and add the dll to the list of files
-                     * distributed with this package
+                    /* Since we depend on this binary dll to build, we
+                     * will add a compile- time dependency on the
+                     * copied dll, and add the dll to the list of
+                     * files distributed with this package
                      */
 
                     binaryLibs.Add(refr.Name + ".dll");
@@ -873,23 +940,32 @@ namespace Prebuild.Core.Targets
                     }
                     catch (System.IO.IOException)
                     {
-                        /* If a file is referenced and marked for local copy, but does not exist, 
-                         * let's assume it will be built some time between now and when this
-                         * project is built.
-                         * 
-                         * We put a hook into the Makefile.am to copy the dll to this project's
+                      if (solution.ProjectsTable.ContainsKey(refr.Name)){
+
+                        /* If an assembly is referenced, marked for
+                         * local copy, in the list of projects for
+                         * this solution, but does not exist, put a
+                         * target into the Makefile.am to build the
+                         * assembly and copy it to this project's
                          * directory
                          */
 
-                        ProjectNode sourcePrj = ((ProjectNode)(solution.ProjectsTable[refr.Name]));
-                        string target =
-                            filename + ":\n\tcp ../" + Path.Combine(sourcePrj.Name, filename) + " $@\n";
+                        ProjectNode sourcePrj =
+                          ((ProjectNode)(solution.ProjectsTable[refr.Name]));
 
-                        if (solution.ProjectsTable.ContainsKey(refr.Name))
-                            localCopyTargets.Add(target);
+                        string target =
+                          String.Format("{0}:\n" +
+                                        "\t$(MAKE) -C ../{1}\n" +
+                                        "\tln ../{2}/$@ $@\n",
+                                        filename,
+                                        sourcePrj.Name,
+                                        sourcePrj.Name );
+
+                        localCopyTargets.Add(target);
+                      }
                     }
                 }
-                else
+                else if( !pkgLibs.Contains(refr.Name) )
                 {
                     // Else, let's assume it's in the GAC or the lib path
                     string assemName = string.Empty;
@@ -900,6 +976,10 @@ namespace Prebuild.Core.Targets
                     else
                         assemName = refr.Name;
 
+                    m_Kernel.Log.Write(String.Format(
+                    "Warning: Couldn't find an appropriate assembly " +
+                    "for reference:\n'{0}'", refr.Name
+                                                     );
                     systemLibs.Add(assemName);
                 }
             }
@@ -1587,22 +1667,40 @@ namespace Prebuild.Core.Targets
                 throw new ArgumentNullException("kern");
             }
             m_Kernel = kern;
-
+            m_Kernel.Log.Write("Parsing system pkg-config files");
             RunInitialization();
+
+            string streamName = "autotools.xml";
+            string fqStreamName = String.Format("Prebuild.data.{0}",
+                                                streamName
+                                                );
 
             // Retrieve stream for the autotools template XML
             Stream autotoolsStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Prebuild.data.autotools.xml");
+                .GetManifestResourceStream(fqStreamName);
 
-			if(autotoolsStream == null) 
-			{
-				//try without the default namespace prepending to it in case was compiled with SharpDevelop or MonoDevelop instead of Visual Studio .NET
-                autotoolsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("autotools.xml");
-				if(autotoolsStream == null)
-				{
-					throw new System.Reflection.TargetException("Could not find the embedded autotools.xml resource file");
-				}
-			}
+            if(autotoolsStream == null) {
+
+              /* 
+               * try without the default namespace prepended, in
+               * case prebuild.exe assembly was compiled with
+               * something other than Visual Studio .NET
+               */
+
+              autotoolsStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream(streamName);
+              if(autotoolsStream == null){
+                string errStr =
+                  String.Format("Could not find embedded resource file:\n" +
+                                "'{0}' or '{1}'",
+                                streamName, fqStreamName
+                                );
+
+                m_Kernel.Log.Write(errStr);
+
+                throw new System.Reflection.TargetException(errStr);
+              }
+            }
 
             // Create an XML URL Resolver with default credentials
             xr = new System.Xml.XmlUrlResolver();
@@ -1615,8 +1713,11 @@ namespace Prebuild.Core.Targets
             autotoolsDoc = new XmlDocument();
             autotoolsDoc.Load(autotoolsStream);
 
-            // rootDir is the filesystem location where the Autotools build
-            // tree will be created - for now we'll make it $PWD/autotools
+            /* rootDir is the filesystem location where the Autotools
+             * build tree will be created - for now we'll make it
+             * $PWD/autotools
+             */
+
             string pwd = Directory.GetCurrentDirectory();
             //string pwd = System.Environment.GetEnvironmentVariable("PWD");
             string rootDir = "";
@@ -1632,7 +1733,9 @@ namespace Prebuild.Core.Targets
 
             foreach (SolutionNode solution in kern.Solutions)
             {
-                WriteCombine(solution);
+              m_Kernel.Log.Write(String.Format("Writing solution: {0}",
+                                        solution.Name));
+              WriteCombine(solution);
             }
             m_Kernel = null;
         }

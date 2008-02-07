@@ -1,3 +1,37 @@
+2008-02-07T08:27	C.J. Adams-Collier <cjac@colliertech.org>
+	* AUTHORS
+	- consolidated names and contact info found laying around the
+	  source
+	* src/Core/Kernel.cs
+	- updated copyright date
+	- re-formatted license for 80-column editor
+	- updated log banner to indicate new date, new authors
+	* src/Core/Targets/AutotoolsTarget.cs
+	- clarified reasoning behind use of constants in
+	  AutotoolsTarget.ParsePCFile
+	- reduced length of some long lines using newline/indent
+	- added log messages for parsing .pc files, emitting solutions,
+	  projects
+	- robustified the inter-package dependency resolution target
+	- log warning when we can't find assembly for <Reference />
+	- clarified code for case of inability to find embedded
+	  autotools.xml
+	* src/data/autotools.xml
+	- adding system lookup of resgen2 to configure.ac
+	- fixed .resource -> .resources typo
+	- added a rule to create <foo>.response file containing all sources
+	- using @<foo>.response on $(CSC) command line instead of listing
+	  all source files
+	* src/Properties/AssemblyInfo.cs
+	- re-formatted license for an 80-column editor
+	- added more authors to the AssemblyCopyright attribute
+	- bumped version to 2.0.3
+	* prebuild.xml
+	- bumped version to 2.0.3
+	* scripts/autotools.sh
+	- if 'mono' is in the path, run Prebuild.exe with it
+	- using dirname to capture correct path to prebuild.xml &c
+
 2008-02-06T17:18	C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/NAntTarget.cs
 	- re-formatted the license for an 80-column editor
