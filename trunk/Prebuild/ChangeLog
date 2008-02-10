@@ -1,3 +1,13 @@
+2008-02-09T20:29	C.J. Adams-Collier <cjac@colliertech.org>
+	* COPYING
+	- added MIT/X11 license due to inclusion of code from Monodevelop
+	* THANKS
+	- added Lluis Sanchez Gual and Todd Berman - I yoinked code from
+	  their pkg-config .pc file parser to build AutotoolsTarget.cs.
+	  Sorry it took me so long to remember to add mention of you guys!
+	* src/Core/Targets/AutotoolsTarget.cs
+	- added MIT/X11 license.  see above.
+
 2008-02-07T08:27	C.J. Adams-Collier <cjac@colliertech.org>
 	* AUTHORS
 	- consolidated names and contact info found laying around the
