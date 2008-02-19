@@ -1008,7 +1008,7 @@ namespace Prebuild.Core.Targets
                     m_Kernel.Log.Write(String.Format(
                     "Warning: Couldn't find an appropriate assembly " +
                     "for reference:\n'{0}'", refr.Name
-                                                     );
+                                                     ));
                     systemLibs.Add(assemName);
                 }
             }

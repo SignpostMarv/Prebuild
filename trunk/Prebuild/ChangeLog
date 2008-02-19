@@ -1,3 +1,12 @@
+2008-02-19T07:08	C.J. Adams-Collier <cjac@colliertech.org>
+	* TODO
+	- added some tasks from Sam Hocevar
+	* src/Core/Targets/AutotoolsTarget.cs
+	- added a missing end paren
+	* COPYING
+	- Removed Randy Ridge's name from the copyright.  Looks to me like
+	  his name was present only because the file was nabbed from Tao
+
 2008-02-09T20:29	C.J. Adams-Collier <cjac@colliertech.org>
 	* COPYING
 	- added MIT/X11 license due to inclusion of code from Monodevelop
