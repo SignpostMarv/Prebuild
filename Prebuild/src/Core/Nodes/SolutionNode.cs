@@ -61,6 +61,7 @@ namespace Prebuild.Core.Nodes
 		private FilesNode m_Files;
 		private Hashtable m_Configurations;
 		private Hashtable m_Projects;
+        private Hashtable m_DatabaseProjects;
 		private ArrayList m_ProjectsOrder;
 
 		#endregion
@@ -75,6 +76,7 @@ namespace Prebuild.Core.Nodes
 			m_Configurations = new Hashtable();
 			m_Projects = new Hashtable();
 			m_ProjectsOrder = new ArrayList();
+            m_DatabaseProjects = new Hashtable();
 		}
 
 		#endregion
@@ -180,7 +182,16 @@ namespace Prebuild.Core.Nodes
 				return m_Configurations;
 			}
 		}
-        
+        /// <summary>
+        /// Gets the database projects.
+        /// </summary>
+        public ICollection DatabaseProjects
+        {
+            get
+            {
+                return m_DatabaseProjects.Values;
+            }
+        }
 		/// <summary>
 		/// Gets the projects.
 		/// </summary>
