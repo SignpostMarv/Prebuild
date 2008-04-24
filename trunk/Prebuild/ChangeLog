@@ -1,3 +1,13 @@
+2008-04-24T04:33	John M. Anderson <sontek@gmail.com>	
+	* src/Core/Targets/VS2003Target.cs, src/Core/Targets/VSVersion.cs 
+	- Moved the VSVersion enum into its own file. 
+	* src/Core/Targets/VS2008Target.cs
+	- added support for VS2008 
+	* src/Core/Nodes/ProjectNode.cs
+	- Added initial support for ASP.NET projects 
+	* src/Core/Nodes/DatabaseProjectNode.cs
+	- Added support for Visual Studio database projects 
+
 2008-02-19T07:08	C.J. Adams-Collier <cjac@colliertech.org>
 	* TODO
 	- added some tasks from Sam Hocevar
