@@ -214,7 +214,8 @@ namespace Prebuild.Core.Targets
                 ps.WriteLine("    <ProductVersion>{0}</ProductVersion>", this.ProductVersion);
                 ps.WriteLine("    <SchemaVersion>{0}</SchemaVersion>", this.SchemaVersion);
                 ps.WriteLine("    <ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper());
-
+                if (project.Type == ProjectType.Web)
+                    ps.WriteLine("    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>");
                 ps.WriteLine("    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
                 ps.WriteLine("    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>");
                 ps.WriteLine("    <ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon);
