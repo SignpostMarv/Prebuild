@@ -44,28 +44,6 @@ using Prebuild.Core.Utilities;
 
 namespace Prebuild.Core.Targets
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public enum VSVersion
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		VS70,
-		/// <summary>
-		/// 
-		/// </summary>
-		VS71,
-		/// <summary>
-		/// 
-		/// </summary>
-		VS80
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
 	[Target("vs2003")]
 	public class VS2003Target : ITarget
 	{

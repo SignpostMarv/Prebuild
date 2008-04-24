@@ -59,7 +59,11 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// The project is a library
 		/// </summary>
-		Library
+		Library,
+        /// <summary>
+		/// The project is a website
+		/// </summary>
+		Web,
 	}
 
 	/// <summary>
@@ -76,7 +80,25 @@ namespace Prebuild.Core.Nodes
 		/// </summary>
 		Mono
 	}
-
+	/// <summary>
+	/// The version of the .NET framework to use (Required for VS2008)
+	/// <remarks>We don't need .NET 1.1 in here, it'll default when using vs2003.</remarks>
+	/// </summary>
+	public enum FrameworkVersion
+	{
+		/// <summary>
+		/// .NET 2.0
+		/// </summary>
+		v2_0,
+		/// <summary>
+		/// .NET 3.0
+		/// </summary>
+		v3_0,
+		/// <summary>
+		/// .NET 3.5
+		/// </summary>
+		v3_5,
+	}
 	/// <summary>
 	/// The Node object representing /Prebuild/Solution/Project elements
 	/// </summary>
@@ -95,6 +117,7 @@ namespace Prebuild.Core.Nodes
 		private string m_Language = "C#";
 		private ProjectType m_Type = ProjectType.Exe;
 		private ClrRuntime m_Runtime = ClrRuntime.Microsoft;
+        private FrameworkVersion m_Framework = FrameworkVersion.v2_0;
 		private string m_StartupObject = "";
 		private string m_RootNamespace;
 		private string m_FilterGroups = "";
@@ -134,10 +157,19 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_Name;
+			    return m_Name;
 			}
 		}
-
+		/// <summary>
+		/// The version of the .NET Framework to compile under
+		/// </summary>
+		public FrameworkVersion FrameworkVersion
+		{
+			get
+			{
+			    return this.m_Framework;
+			}
+		}
 		/// <summary>
 		/// Gets the path.
 		/// </summary>
@@ -210,17 +242,17 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-        /// <summary>
-        /// Gets the app icon.
-        /// </summary>
-        /// <value>The app icon.</value>
-        public string ConfigFile
-        {
-            get
-            {
-                return m_ConfigFile;
-            }
-        }
+		/// <summary>
+		/// Gets the app icon.
+		/// </summary>
+		/// <value>The app icon.</value>
+		public string ConfigFile
+		{
+		    get
+		    {
+		        return m_ConfigFile;
+		    }
+		}
 
 		/// <summary>
 		/// 
@@ -269,22 +301,22 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-        private bool m_GenerateAssemblyInfoFile = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool GenerateAssemblyInfoFile
-        {
-            get
-            {
-                return m_GenerateAssemblyInfoFile;
-            }
-            set
-            {
-                m_GenerateAssemblyInfoFile = value;
-            }
-        }
+		private bool m_GenerateAssemblyInfoFile = false;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool GenerateAssemblyInfoFile
+		{
+			get
+			{
+			    return m_GenerateAssemblyInfoFile;
+			}
+			set
+			{
+			    m_GenerateAssemblyInfoFile = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the startup object.
