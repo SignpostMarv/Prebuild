@@ -282,6 +282,11 @@ namespace Prebuild.Core.Nodes
 						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
 						m_ProjectsOrder.Add(dataNode);
 					}
+					else if (dataNode is DatabaseProjectNode) // needs to be added
+					{
+						m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = dataNode;
+					}
+
 				}
 			}
 			finally
