@@ -48,10 +48,13 @@ namespace Prebuild.Core.Nodes
 	/// 
 	/// </summary>
 	[DataNode("Solution")]
+    [DataNode("EmbeddedSolution")]
+    [DebuggerDisplay("{Name}")]
 	public class SolutionNode : DataNode
 	{
 		#region Fields
-        
+
+        private Guid m_Guid = Guid.NewGuid();
 		private string m_Name = "unknown";
 		private string m_Path = "";
 		private string m_FullPath = "";
@@ -63,6 +66,7 @@ namespace Prebuild.Core.Nodes
 		private Hashtable m_Projects;
         private Hashtable m_DatabaseProjects;
 		private ArrayList m_ProjectsOrder;
+        private Hashtable m_Solutions;
 
 		#endregion
 
@@ -77,12 +81,23 @@ namespace Prebuild.Core.Nodes
 			m_Projects = new Hashtable();
 			m_ProjectsOrder = new ArrayList();
             m_DatabaseProjects = new Hashtable();
+            m_Solutions = new Hashtable();
 		}
 
 		#endregion
 
 		#region Properties
-
+        public Guid Guid
+        {
+            get 
+            { 
+                return m_Guid; 
+            }
+            set
+            {
+                m_Guid = value; 
+            }
+        }
 		/// <summary>
 		/// Gets or sets the active config.
 		/// </summary>
@@ -192,6 +207,26 @@ namespace Prebuild.Core.Nodes
                 return m_DatabaseProjects.Values;
             }
         }
+        /// <summary>
+        /// Gets the nested solutions.
+        /// </summary>
+        public ICollection Solutions
+        {
+            get
+            {
+                return m_Solutions.Values;
+            }
+        }
+        /// <summary>
+        /// Gets the nested solutions hash table.
+        /// </summary>
+        public Hashtable SolutionsTable
+        {
+            get
+            {
+                return this.m_Solutions;
+            }
+        }
 		/// <summary>
 		/// Gets the projects.
 		/// </summary>
@@ -282,11 +317,19 @@ namespace Prebuild.Core.Nodes
 						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
 						m_ProjectsOrder.Add(dataNode);
 					}
-					else if (dataNode is DatabaseProjectNode) // needs to be added
-					{
-						m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = dataNode;
-					}
-
+                    else if(dataNode is SolutionNode)
+                    {
+                        m_Solutions[((SolutionNode)dataNode).Name] = dataNode;
+                    }
+                    else if (dataNode is ProcessNode)
+                    {
+                        ProcessNode p = (ProcessNode)dataNode;
+                        Kernel.Instance.ProcessFile(p, this);
+                    }
+                    else if (dataNode is DatabaseProjectNode)
+                    {
+                        m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = dataNode;
+                    }
 				}
 			}
 			finally
