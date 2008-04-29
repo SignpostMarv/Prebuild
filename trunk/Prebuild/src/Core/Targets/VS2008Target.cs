@@ -606,9 +606,9 @@ namespace Prebuild.Core.Targets
                 WriteProject(actualSolution, writer, dbProject);
             }
 
-            if (embeddedSolution.Files != null)
+            if (actualSolution.Guid == embeddedSolution.Guid)
             {
-                WriteSolutionFiles(embeddedSolution, writer);
+                WriteSolutionFiles(actualSolution, writer);
             }
         }
 
@@ -667,20 +667,12 @@ namespace Prebuild.Core.Targets
 
         private void WriteSolutionFiles(SolutionNode solution, StreamWriter ss)
         {
-            ToolInfo toolInfo = (ToolInfo)tools["Folder"];
-
-            ss.WriteLine("Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", 
-                toolInfo.Guid, solution.Guid.ToString("B").ToUpper());
-            ss.WriteLine("\tProjectSection(SolutionItems) = preProject");
-            foreach (string file in solution.Files)
-                ss.WriteLine("\t\t{0} = {0}", file);
-            ss.WriteLine("\tEndProjectSection");
-            ss.WriteLine("EndProject");
+            WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);        
         }
 
         private void WriteEmbeddedSolution(StreamWriter writer, SolutionNode embeddedSolution)
         {
-            WriteProject(writer, "Folder", embeddedSolution.Guid, embeddedSolution.Name, embeddedSolution.Name);
+            WriteProject(writer, "Folder", embeddedSolution.Guid, embeddedSolution.Name, embeddedSolution.Name, embeddedSolution.Files);
         }
 
         private void WriteProject(SolutionNode solution, StreamWriter ss, ProjectNode project)
@@ -712,6 +704,11 @@ namespace Prebuild.Core.Targets
 
         private void WriteProject(StreamWriter writer, string language, Guid projectGuid, string name, string location)
         {
+            WriteProject(writer, language, projectGuid, name, location, null);
+        }
+
+        private void WriteProject(StreamWriter writer, string language, Guid projectGuid, string name, string location, FilesNode files)
+        {
             if (!tools.ContainsKey(language))
                 throw new UnknownLanguageException("Unknown .NET language: " + language);
 
@@ -722,6 +719,17 @@ namespace Prebuild.Core.Targets
                 name, 
                 location, 
                 projectGuid.ToString("B").ToUpper());
+
+            if (files != null)
+            {
+                writer.WriteLine("\tProjectSection(SolutionItems) = preProject");
+                
+                foreach (string file in files)
+                    writer.WriteLine("\t\t{0} = {0}", file);
+
+                writer.WriteLine("\tEndProjectSection");
+            }
+
             writer.WriteLine(ProjectDeclarationEndFormat);
         }
 
