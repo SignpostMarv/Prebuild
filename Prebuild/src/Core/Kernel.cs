@@ -316,16 +316,13 @@ namespace Prebuild.Core
 		{
 			foreach(Type t in assm.GetTypes())
 			{
-				DataNodeAttribute dna = (DataNodeAttribute)Helper.CheckType(t, typeof(DataNodeAttribute), typeof(IDataNode));
-				if(dna == null)
-				{
-					continue;
-				}
-
-				NodeEntry ne = new NodeEntry();
-				ne.Type = t;
-				ne.Attribute = dna;
-				m_Nodes[dna.Name] = ne;
+                foreach (DataNodeAttribute dna in t.GetCustomAttributes(typeof(DataNodeAttribute), true))
+                {
+                    NodeEntry ne = new NodeEntry();
+                    ne.Type = t;
+                    ne.Attribute = dna;
+                    m_Nodes[dna.Name] = ne;
+                }
 			}
 		}
 
@@ -343,7 +340,31 @@ namespace Prebuild.Core
                   m_Log.Write();
 		}
 
-		private void ProcessFile(string file)
+
+
+        private void ProcessFile(string file)
+        {
+            ProcessFile(file, this.m_Solutions);
+        }
+
+        public void ProcessFile(ProcessNode node, SolutionNode parent)
+        {
+            if (node.IsValid)
+            {
+                ArrayList list = new ArrayList();
+                ProcessFile(node.Path, list);
+
+                foreach (SolutionNode solution in list)
+                    parent.SolutionsTable[solution.Name] = solution;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+		public void ProcessFile(string file, IList solutions)
 		{
 			m_CurrentWorkingDirectory.Push();
             
@@ -443,7 +464,7 @@ namespace Prebuild.Core
 					}
 					else if(dataNode is SolutionNode)
 					{
-						m_Solutions.Add(dataNode);
+						solutions.Add(dataNode);
 					}
 				}
 			}

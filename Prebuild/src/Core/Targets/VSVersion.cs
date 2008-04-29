@@ -48,7 +48,7 @@ namespace Prebuild.Core.Targets
 		/// </summary>
 		VS71,
 		/// <summary>
-		/// Visuatl Studio 2005 
+		/// Visual Studio 2005 
 		/// </summary>
 		VS80,
 		/// <summary>

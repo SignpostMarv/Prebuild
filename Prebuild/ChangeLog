@@ -1,3 +1,24 @@
+2008-04-29T04:13	Joseph Lombrozo <digitaljeebus@gmail.com>	
+	* src/Core/VSVersion.cs
+	- Fixed spelling mistake in enum comment.
+	* src/Core/Attributes/DataNodeAttribute.cs
+	- Allowed the DataNodeAttribute to be attached to a single class 
+	  more than once, allowing one class to be used to parse more than 
+	  one node at a time.
+	* src/Core/Kernel.cs
+	- Changed CacheNodeTypes() to allow for multiple DataNodeAttribute 
+	  instances in one class. Refactored ProcessFile(...) to return Solutions, 
+	  rather than adding them to the Kernel.
+	* src/Core/Nodes/SolutionNode.cs
+	- Added Guid (for embedded folders)
+	- Added DatabaseProjects, Solutions and Processes to the SolutionNode 
+	  when parsing.
+	* src/Core/Nodes/ProjectNode.cs
+	- Added FrameworkVersion property to allow for 2.0/3.0/3.5 differentiation.
+	* src/Core/Targets/VS2008Target.cs, src/data/prebuild-1.7.xsd
+	- Added ability to have embedded solutions, and externally referenced
+	  prebuild scripts.
+
 2008-04-24T04:33	John M. Anderson <sontek@gmail.com>	
 	* src/Core/Targets/VS2003Target.cs, src/Core/Targets/VSVersion.cs 
 	- Moved the VSVersion enum into its own file. 

@@ -40,7 +40,7 @@ namespace Prebuild.Core.Attributes
 	/// <summary>
 	/// 
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple=true)]
 	public sealed class DataNodeAttribute : Attribute
 	{
 		#region Fields

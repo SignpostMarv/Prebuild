@@ -53,21 +53,18 @@ namespace Prebuild.Core.Targets
     [Target("vs2008")]
     public class VS2008Target : ITarget
     {
-        #region Inner Classes
-
-        #endregion
-
         #region Fields
-
         string solutionVersion = "10.00";
         string productVersion = "9.0.21022";
         string schemaVersion = "2.0";
-        string versionName = "Visual C# 2008";
+        string versionName = "Visual Studio 2008";
         VSVersion version = VSVersion.VS90;
 
         Hashtable tools;
         Kernel kernel;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Gets or sets the solution version.
         /// </summary>
@@ -159,6 +156,7 @@ namespace Prebuild.Core.Targets
             this.tools["Database"] = new ToolInfo("Database", "{4F174C21-8C12-11D0-8340-0000F80270F8}", "dbp", "UNKNOWN");
             this.tools["Boo"] = new ToolInfo("Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets");
             this.tools["VisualBasic"] = new ToolInfo("VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets");
+            this.tools["Folder"] = new ToolInfo("Folder", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", null, null);
         }
 
         #endregion
@@ -189,6 +187,31 @@ namespace Prebuild.Core.Targets
             }
 
             return ret;
+        }
+
+        private static ProjectNode FindProjectInSolution(string name, SolutionNode solution )
+        {
+            SolutionNode node = solution;
+
+            while (node.Parent is SolutionNode)
+                node = node.Parent as SolutionNode;
+
+            return FindProjectInSolutionRecursively(name, node);
+        }
+
+        private static ProjectNode FindProjectInSolutionRecursively(string name, SolutionNode solution)
+        {
+            if (solution.ProjectsTable.ContainsKey(name))
+                return (ProjectNode)solution.ProjectsTable[name];
+
+            foreach (SolutionNode child in solution.Solutions)
+            {
+                ProjectNode node = FindProjectInSolutionRecursively(name, child);
+                if (node != null)
+                    return node;
+            }
+
+            return null;
         }
 
         private void WriteProject(SolutionNode solution, ProjectNode project)
@@ -272,49 +295,50 @@ namespace Prebuild.Core.Targets
 
                 //ps.WriteLine("      </Settings>");
 
-                // Assembly References
-                ps.WriteLine("  <ItemGroup>");
+                ArrayList projectReferences = new ArrayList(),
+                    otherReferences = new ArrayList();
+
                 foreach (ReferenceNode refr in project.References)
                 {
-                    if (!solution.ProjectsTable.ContainsKey(refr.Name))
-                    {
-                        ps.Write("    <Reference");
-                        ps.Write(" Include=\"");
-                        ps.Write(refr.Name);
-                        ps.WriteLine("\">");
-                        ps.Write("        <Name>");
-                        ps.Write(refr.Name);
-                        ps.WriteLine("</Name>");
+                    ProjectNode projectNode = FindProjectInSolution(refr.Name, solution);
+                    
+                    if (projectNode == null)
+                        otherReferences.Add(refr);
+                    else
+                        projectReferences.Add(projectNode);
+                }
+                // Assembly References
+                ps.WriteLine("  <ItemGroup>");
+                foreach (ReferenceNode refr in otherReferences)
+                {
+                    ps.Write("    <Reference");
+                    ps.Write(" Include=\"");
+                    ps.Write(refr.Name);
+                    ps.WriteLine("\">");
+                    ps.Write("        <Name>");
+                    ps.Write(refr.Name);
+                    ps.WriteLine("</Name>");
 
-                        // TODO: Allow reference to *.exe files
-                        ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
-                        ps.WriteLine("    </Reference>");
-                    }
+                    // TODO: Allow reference to *.exe files
+                    ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
+                    ps.WriteLine("    </Reference>");
                 }
                 ps.WriteLine("  </ItemGroup>");
 
                 //Project References
                 ps.WriteLine("  <ItemGroup>");
-                foreach (ReferenceNode refr in project.References)
+                foreach (ProjectNode projectReference in projectReferences)
                 {
-                    if (solution.ProjectsTable.ContainsKey(refr.Name))
-                    {
-                        ProjectNode refProject = (ProjectNode)solution.ProjectsTable[refr.Name];
-                        // TODO: Allow reference to visual basic projects
-                        ps.WriteLine("    <ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo(project.FullPath, Helper.MakeFilePath(refProject.FullPath, refProject.Name, "csproj")));
-                        //<ProjectReference Include="..\..\RealmForge\Utility\RealmForge.Utility.csproj">
-                        ps.WriteLine("      <Name>{0}</Name>", refProject.Name);
-                        //  <Name>RealmForge.Utility</Name>
-                        ps.WriteLine("      <Project>{{{0}}}</Project>", refProject.Guid.ToString().ToUpper());
-                        //  <Project>{6880D1D3-69EE-461B-B841-5319845B20D3}</Project>
-                        ps.WriteLine("      <Package>{0}</Package>", toolInfo.Guid.ToString().ToUpper());
-                        //  <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-                        ps.WriteLine("    </ProjectReference>");
-                        //</ProjectReference>
-                    }
-                    else
-                    {
-                    }
+                    ToolInfo tool = (ToolInfo)tools[projectReference.Language];
+                    if (tools == null)
+                        throw new UnknownLanguageException();
+
+                    // TODO: Allow reference to visual basic projects
+                    ps.WriteLine("    <ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo(project.FullPath, Helper.MakeFilePath(projectReference.FullPath, projectReference.Name, tool.FileExtension)));
+                    ps.WriteLine("      <Name>{0}</Name>", projectReference.Name);
+                    ps.WriteLine("      <Project>{0}</Project>", projectReference.Guid.ToString("B").ToUpper());
+                    ps.WriteLine("      <Package>{0}</Package>", tool.Guid.ToUpper());
+                    ps.WriteLine("    </ProjectReference>");
                 }
                 ps.WriteLine("  </ItemGroup>");
 
@@ -503,6 +527,12 @@ namespace Prebuild.Core.Targets
         {
             kernel.Log.Write("Creating {0} solution and project files", this.VersionName);
 
+            foreach (SolutionNode child in solution.Solutions)
+            {
+                kernel.Log.Write("...Creating folder: {0}", child.Name);
+                WriteSolution(child);
+            }
+
             foreach (ProjectNode project in solution.Projects)
             {
                 kernel.Log.Write("...Creating project: {0}", project.Name);
@@ -527,36 +557,30 @@ namespace Prebuild.Core.Targets
                 ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
                 ss.WriteLine("# Visual Studio 2008");
 
-                foreach (ProjectNode project in solution.Projects)
-                {
-                    WriteProject(solution, ss, project);
-                }
-
-                foreach (DatabaseProjectNode dbProject in solution.DatabaseProjects)
-                {
-                    WriteProject(solution, ss, dbProject);
-                }
-
-                if (solution.Files != null)
-                {
-                    WriteSolutionFolder(solution.Files, ss);
-                }
+                WriteProjectDeclarations(ss, solution, solution);
 
                 ss.WriteLine("Global");
 
-                ss.WriteLine("  GlobalSection(SolutionConfigurationPlatforms) = preSolution");
+                ss.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
                 foreach (ConfigurationNode conf in solution.Configurations)
                 {
-                    ss.WriteLine("    {0}|Any CPU = {0}|Any CPU", conf.Name);
+                    ss.WriteLine("\t\t{0}|Any CPU = {0}|Any CPU", conf.Name);
                 }
-                ss.WriteLine("  EndGlobalSection");
+                ss.WriteLine("\tEndGlobalSection");
 
-                ss.WriteLine("  GlobalSection(ProjectConfigurationPlatforms) = postSolution");
-                foreach (ProjectNode project in solution.Projects)
+                ss.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
+                WriteConfigurationLines(solution.Configurations, solution, ss);
+                ss.WriteLine("\tEndGlobalSection");
+
+                if (solution.Solutions.Count > 0)
                 {
-                    WriteConfigurationLines(solution, ss, project);
+                    ss.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
+                    foreach (SolutionNode embeddedSolution in solution.Solutions)
+                    {
+                        WriteNestedProjectMap(ss, embeddedSolution);
+                    }
+                    ss.WriteLine("\tEndGlobalSection");
                 }
-                ss.WriteLine("  EndGlobalSection");
 
                 ss.WriteLine("EndGlobal");
             }
@@ -564,28 +588,99 @@ namespace Prebuild.Core.Targets
             kernel.CurrentWorkingDirectory.Pop();
         }
 
-        private static void WriteConfigurationLines(SolutionNode solution, StreamWriter ss, ProjectNode project)
+        private void WriteProjectDeclarations(StreamWriter writer, SolutionNode actualSolution, SolutionNode embeddedSolution)
         {
-            foreach (ConfigurationNode conf in solution.Configurations)
+            foreach (SolutionNode childSolution in embeddedSolution.Solutions)
             {
-                ss.WriteLine("    {{{0}}}.{1}|Any CPU.ActiveCfg = {1}|Any CPU",
-                    project.Guid.ToString().ToUpper(),
-                    conf.Name);
+                WriteEmbeddedSolution(writer, childSolution);
+                WriteProjectDeclarations(writer, actualSolution, childSolution);
+            }
 
-                ss.WriteLine("    {{{0}}}.{1}|Any CPU.Build.0 = {1}|Any CPU",
-                    project.Guid.ToString().ToUpper(),
-                    conf.Name);
+            foreach (ProjectNode project in embeddedSolution.Projects)
+            {
+                WriteProject(actualSolution, writer, project);
+            }
+
+            foreach (DatabaseProjectNode dbProject in embeddedSolution.DatabaseProjects)
+            {
+                WriteProject(actualSolution, writer, dbProject);
+            }
+
+            if (embeddedSolution.Files != null)
+            {
+                WriteSolutionFiles(embeddedSolution, writer);
             }
         }
 
-        private static void WriteSolutionFolder(FilesNode files, StreamWriter ss)
+        private static void WriteNestedProjectMap(StreamWriter writer, SolutionNode embeddedSolution)
         {
-            ss.WriteLine("Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", Guid.NewGuid());
+            foreach (ProjectNode project in embeddedSolution.Projects)
+            {
+                WriteNestedProject(writer, embeddedSolution, project.Guid);
+            }
+
+            foreach (DatabaseProjectNode dbProject in embeddedSolution.DatabaseProjects)
+            {
+                WriteNestedProject(writer, embeddedSolution, dbProject.Guid);
+            }
+
+            foreach (SolutionNode child in embeddedSolution.Solutions)
+            {
+                WriteNestedProject(writer, embeddedSolution, child.Guid);
+                WriteNestedProjectMap(writer, child);
+            }
+        }
+
+        private static void WriteNestedProject(StreamWriter writer, SolutionNode solution, Guid projectGuid)
+        {
+            WriteNestedFolder(writer, solution.Guid, projectGuid);
+        }
+
+        private static void WriteNestedFolder(StreamWriter writer, Guid parentGuid, Guid childGuid)
+        {
+            writer.WriteLine("\t\t{0} = {1}",
+                childGuid.ToString("B").ToUpper(),
+                parentGuid.ToString("B").ToUpper());
+        }
+
+        private static void WriteConfigurationLines(ICollection configurations, SolutionNode solution, StreamWriter ss)
+        {
+            foreach (ProjectNode project in solution.Projects)
+            {
+                foreach (ConfigurationNode conf in configurations)
+                {
+                    ss.WriteLine("\t\t{0}.{1}|Any CPU.ActiveCfg = {1}|Any CPU",
+                        project.Guid.ToString("B").ToUpper(),
+                        conf.Name);
+
+                    ss.WriteLine("\t\t{0}.{1}|Any CPU.Build.0 = {1}|Any CPU",
+                        project.Guid.ToString("B").ToUpper(),
+                        conf.Name);
+                }
+            }
+
+            foreach (SolutionNode child in solution.Solutions)
+            {
+                WriteConfigurationLines(configurations, child, ss);
+            }
+        }
+
+        private void WriteSolutionFiles(SolutionNode solution, StreamWriter ss)
+        {
+            ToolInfo toolInfo = (ToolInfo)tools["Folder"];
+
+            ss.WriteLine("Project(\"{0}\") = \"Solution Items\", \"Solution Items\", \"{1}\"", 
+                toolInfo.Guid, solution.Guid.ToString("B").ToUpper());
             ss.WriteLine("\tProjectSection(SolutionItems) = preProject");
-            foreach (string file in files)
+            foreach (string file in solution.Files)
                 ss.WriteLine("\t\t{0} = {0}", file);
             ss.WriteLine("\tEndProjectSection");
             ss.WriteLine("EndProject");
+        }
+
+        private void WriteEmbeddedSolution(StreamWriter writer, SolutionNode embeddedSolution)
+        {
+            WriteProject(writer, "Folder", embeddedSolution.Guid, embeddedSolution.Name, embeddedSolution.Name);
         }
 
         private void WriteProject(SolutionNode solution, StreamWriter ss, ProjectNode project)
@@ -595,10 +690,11 @@ namespace Prebuild.Core.Targets
 
         private void WriteProject(SolutionNode solution, StreamWriter ss, DatabaseProjectNode dbProject)
         {
-            WriteProject(ss, solution, "Database", Guid.NewGuid(), dbProject.Name, dbProject.FullPath);
+            WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
         }
 
-        const string ProjectDeclarationFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{{{3}}}\"\nEndProject";
+        const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
+        const string ProjectDeclarationEndFormat = "EndProject";
 
         private void WriteProject(StreamWriter ss, SolutionNode solution, string language, Guid guid, string name, string projectFullPath)
         {
@@ -608,11 +704,25 @@ namespace Prebuild.Core.Targets
             ToolInfo toolInfo = (ToolInfo)tools[language];
 
             string path = Helper.MakePathRelativeTo(solution.FullPath, projectFullPath);
-            ss.WriteLine(ProjectDeclarationFormat,
+
+            path = Helper.MakeFilePath(path, name, toolInfo.FileExtension);
+
+            WriteProject(ss, language, guid, name, path);
+        }
+
+        private void WriteProject(StreamWriter writer, string language, Guid projectGuid, string name, string location)
+        {
+            if (!tools.ContainsKey(language))
+                throw new UnknownLanguageException("Unknown .NET language: " + language);
+
+            ToolInfo toolInfo = (ToolInfo)tools[language];
+
+            writer.WriteLine(ProjectDeclarationBeginFormat,
                 toolInfo.Guid, 
                 name, 
-                Helper.MakeFilePath(path, name, toolInfo.FileExtension), 
-                guid.ToString().ToUpper());
+                location, 
+                projectGuid.ToString("B").ToUpper());
+            writer.WriteLine(ProjectDeclarationEndFormat);
         }
 
         private void WriteDatabaseProject(SolutionNode solution, DatabaseProjectNode project)
