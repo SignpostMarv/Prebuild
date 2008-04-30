@@ -1,3 +1,11 @@
+2008-04-29T06:35	Joseph Lombrozo <digitaljeebus@gmail.com>
+	* src/Core/Targets/VS2008Target.cs,
+	  src/Core/Nodes/DatabaseProjectNode.cs,
+	  src/Core/Nodes/DatabaseReferenceNode.cs,
+	  src/data/prebuild-1.7.xsd
+	- Added database references to database projects.
+	- Prevented nested solutions from being written to disk.
+
 2008-04-29T05:43	Joseph Lombrozo <digitaljeebus@gmail.com>
 	* src/Core/Targets/VS2008Target.cs
 	- Enabled embedded solutions to contain Files.

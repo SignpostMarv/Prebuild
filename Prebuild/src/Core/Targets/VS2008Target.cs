@@ -523,14 +523,14 @@ namespace Prebuild.Core.Targets
             kernel.CurrentWorkingDirectory.Pop();
         }
 
-        private void WriteSolution(SolutionNode solution)
+        private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
         {
             kernel.Log.Write("Creating {0} solution and project files", this.VersionName);
 
             foreach (SolutionNode child in solution.Solutions)
             {
                 kernel.Log.Write("...Creating folder: {0}", child.Name);
-                WriteSolution(child);
+                WriteSolution(child, false);
             }
 
             foreach (ProjectNode project in solution.Projects)
@@ -545,47 +545,50 @@ namespace Prebuild.Core.Targets
                 WriteDatabaseProject(solution, project);
             }
 
-            kernel.Log.Write("");
-            string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
-            StreamWriter ss = new StreamWriter(solutionFile);
-
-            kernel.CurrentWorkingDirectory.Push();
-            Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
-
-            using (ss)
+            if (writeSolutionToDisk) // only write main solution
             {
-                ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
-                ss.WriteLine("# Visual Studio 2008");
+                kernel.Log.Write("");
+                string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
+                StreamWriter ss = new StreamWriter(solutionFile);
 
-                WriteProjectDeclarations(ss, solution, solution);
+                kernel.CurrentWorkingDirectory.Push();
+                Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
 
-                ss.WriteLine("Global");
-
-                ss.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
-                foreach (ConfigurationNode conf in solution.Configurations)
+                using (ss)
                 {
-                    ss.WriteLine("\t\t{0}|Any CPU = {0}|Any CPU", conf.Name);
-                }
-                ss.WriteLine("\tEndGlobalSection");
+                    ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
+                    ss.WriteLine("# Visual Studio 2008");
 
-                ss.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
-                WriteConfigurationLines(solution.Configurations, solution, ss);
-                ss.WriteLine("\tEndGlobalSection");
+                    WriteProjectDeclarations(ss, solution, solution);
 
-                if (solution.Solutions.Count > 0)
-                {
-                    ss.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
-                    foreach (SolutionNode embeddedSolution in solution.Solutions)
+                    ss.WriteLine("Global");
+
+                    ss.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
+                    foreach (ConfigurationNode conf in solution.Configurations)
                     {
-                        WriteNestedProjectMap(ss, embeddedSolution);
+                        ss.WriteLine("\t\t{0}|Any CPU = {0}|Any CPU", conf.Name);
                     }
                     ss.WriteLine("\tEndGlobalSection");
+
+                    ss.WriteLine("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
+                    WriteConfigurationLines(solution.Configurations, solution, ss);
+                    ss.WriteLine("\tEndGlobalSection");
+
+                    if (solution.Solutions.Count > 0)
+                    {
+                        ss.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
+                        foreach (SolutionNode embeddedSolution in solution.Solutions)
+                        {
+                            WriteNestedProjectMap(ss, embeddedSolution);
+                        }
+                        ss.WriteLine("\tEndGlobalSection");
+                    }
+
+                    ss.WriteLine("EndGlobal");
                 }
 
-                ss.WriteLine("EndGlobal");
+                kernel.CurrentWorkingDirectory.Pop();
             }
-
-            kernel.CurrentWorkingDirectory.Pop();
         }
 
         private void WriteProjectDeclarations(StreamWriter writer, SolutionNode actualSolution, SolutionNode embeddedSolution)
@@ -746,12 +749,27 @@ namespace Prebuild.Core.Targets
             {
                 ps.WriteLine("# Microsoft Developer Studio Project File - Database Project");
                 ps.WriteLine("Begin DataProject = \"{0}\"", project.Name);
-                    ps.Indent++;
+                ps.Indent++;
                     ps.WriteLine("MSDTVersion = \"80\"");
                     // TODO: Use the project.Files property
                     if (ContainsSqlFiles(Path.GetDirectoryName(projectFile)))
                         WriteDatabaseFoldersAndFiles(ps, Path.GetDirectoryName(projectFile));
+
+                    ps.WriteLine("Begin DBRefFolder = \"Database References\"");
+                    ps.Indent++;
+                        foreach (DatabaseReferenceNode reference in project.References)
+                        {
+                            ps.WriteLine("Begin DBRefNode = \"{0}\"", reference.Name);
+                            ps.Indent++;
+                                ps.WriteLine("ConnectStr = \"{0}\"", reference.ConnectionString);
+                                ps.WriteLine("Provider = \"{0}\"", reference.ProviderId.ToString("B").ToUpper());
+                                //ps.WriteLine("Colorizer = 5");
+                            ps.Indent--;
+                            ps.WriteLine("End");
+                        }
                     ps.Indent--;
+                    ps.WriteLine("End");
+                ps.Indent--;
                 ps.WriteLine("End");
 
                 ps.Flush();
@@ -842,7 +860,7 @@ namespace Prebuild.Core.Targets
             kernel = kern;
             foreach (SolutionNode sol in kernel.Solutions)
             {
-                WriteSolution(sol);
+                WriteSolution(sol, true);
             }
             kernel = null;
         }
