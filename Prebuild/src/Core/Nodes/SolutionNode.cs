@@ -87,6 +87,27 @@ namespace Prebuild.Core.Nodes
 		#endregion
 
 		#region Properties
+        public override IDataNode Parent
+        {
+            get
+            {
+                return base.Parent;
+            }
+            set
+            {
+                if (value is SolutionNode)
+                {
+                    SolutionNode solution = (SolutionNode)value;
+                    foreach (ConfigurationNode conf in solution.Configurations)
+                    {
+                        m_Configurations[conf.Name] = conf.Clone();
+                    }
+                }
+
+                base.Parent = value;
+            }
+        }
+
         public Guid Guid
         {
             get 

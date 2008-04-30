@@ -1,3 +1,7 @@
+2008-04-30T17:29	Joseph Lombrozo <digitaljeebus@gmail.com>
+	* src/Core/Nodes/SolutionNode.cs
+	- Had solutions inherit Configurations in the same way that Projects do.
+
 2008-04-29T06:35	Joseph Lombrozo <digitaljeebus@gmail.com>
 	* src/Core/Targets/VS2008Target.cs,
 	  src/Core/Nodes/DatabaseProjectNode.cs,
