@@ -87,9 +87,19 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Author" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="DatabaseReference" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="required" />
       <xs:attribute name="path" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DatabaseReference">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="providerId" type="xs:string" />
+      <xs:attribute name="providerName" type="xs:string" />
+      <xs:attribute name="connectionString" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   

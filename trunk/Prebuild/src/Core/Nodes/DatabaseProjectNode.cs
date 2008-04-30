@@ -16,8 +16,8 @@ namespace Prebuild.Core.Nodes
         string path;
         string fullpath;
         Guid guid = Guid.NewGuid();
-        FilesNode filesNode;
         ArrayList authors = new ArrayList();
+        ArrayList references = new ArrayList();
 
         public Guid Guid
         {
@@ -39,9 +39,9 @@ namespace Prebuild.Core.Nodes
             get { return this.fullpath; }
         }
 
-        public FilesNode Files
+        public IEnumerable References
         {
-            get { return this.filesNode; }
+            get { return this.references; }
         }
 
         public override void Parse(System.Xml.XmlNode node)
@@ -72,14 +72,14 @@ namespace Prebuild.Core.Nodes
                 foreach (XmlNode child in node.ChildNodes)
                 {
                     IDataNode dataNode = Kernel.Instance.ParseNode(child, this);
+
+                    if (dataNode == null)
+                        continue;
+
                     if (dataNode is AuthorNode)
-                    {
                         this.authors.Add(dataNode);
-                    }
-                    else if (dataNode is FilesNode)
-                    {
-                        this.filesNode = (FilesNode)dataNode;
-                    }
+                    else if (dataNode is DatabaseReferenceNode)
+                        this.references.Add(dataNode);
                 }
             }
             finally
