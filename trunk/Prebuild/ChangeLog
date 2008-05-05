@@ -1,3 +1,14 @@
+2008-04-30T17:29	John Anderson <sontek@gmail.com>
+	* src/Core/Nodes/DatabaseReferenceNode.cs,
+	  src/Core/Nodes/Datanode.cs,
+	  src/Core/Nodes/FileNode.cs,
+	  src/Core/Nodes/FileNodes.cs,
+	  src/Core/Nodes/MatchNode.cs,
+	  src/Core/Targets/VS2008Target.cs,
+	  src/data/prebuild-1.7.xsd
+	- Refactored the project generation code to handle web projects and more
+	  logically handle embedded resources and designer files.
+
 2008-04-30T17:29	Joseph Lombrozo <digitaljeebus@gmail.com>
 	* src/Core/Nodes/SolutionNode.cs
 	- Had solutions inherit Configurations in the same way that Projects do.

@@ -249,6 +249,7 @@
             <xs:simpleType>
               <xs:restriction base="xs:string">
                 <xs:enumeration value="Code" />
+                <xs:enumeration value="CodeBehind" />
                 <xs:enumeration value="Component" />
                 <xs:enumeration value="Form" />
                 <xs:enumeration value="Settings" />
@@ -296,6 +297,7 @@
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="Code" />
+            <xs:enumeration value="CodeBehind" />
             <xs:enumeration value="Component" />
             <xs:enumeration value="Designer" />
             <xs:enumeration value="Form" />
