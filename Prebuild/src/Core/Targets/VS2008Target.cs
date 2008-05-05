@@ -355,7 +355,9 @@ namespace Prebuild.Core.Targets
                     //						Console.WriteLine(project.Files.GetSubType(file).ToString());
                     //					}
 
-                    if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings && project.Files.GetSubType(file) != SubType.Designer)
+					SubType subType = project.Files.GetSubType(file);
+                    if (subType != SubType.Code && subType != SubType.Settings && subType != SubType.Designer
+						&& subType != SubType.CodeBehind)
                     {
                         ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
 
@@ -373,10 +375,10 @@ namespace Prebuild.Core.Targets
                         //
                     }
 
-                    if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) == SubType.Designer)
+                    if (subType != SubType.Code && subType == SubType.Designer)
                     {
                         ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
-                        ps.WriteLine("      <SubType>" + project.Files.GetSubType(file) + "</SubType>");
+                        ps.WriteLine("      <SubType>" + subType + "</SubType>");
                         ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
                         ps.WriteLine("      <LastGenOutput>Resources.Designer.cs</LastGenOutput>");
                         ps.WriteLine("    </EmbeddedResource>");
@@ -387,7 +389,7 @@ namespace Prebuild.Core.Targets
                         ps.WriteLine("    </Compile>");
                         list.Add(file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs");
                     }
-                    if (project.Files.GetSubType(file).ToString() == "Settings")
+                    if (subType == SubType.Settings)
                     {
                         //Console.WriteLine("File: " + file);
                         //Console.WriteLine("Last index: " + file.LastIndexOf('.'));
@@ -423,7 +425,7 @@ namespace Prebuild.Core.Targets
                         }
                         ps.WriteLine("    </{0}>", project.Files.GetBuildAction(file));
                     }
-                    else if (project.Files.GetSubType(file) != SubType.Designer)
+                    else if (subType != SubType.Designer)
                     {
                         if (!list.Contains(file))
                         {
@@ -442,14 +444,25 @@ namespace Prebuild.Core.Targets
                             }
                             ps.WriteLine("Include=\"{0}\">", Helper.NormalizePath(file));
 
-
-                            if (file.Contains("Designer.cs"))
+							int last_period_index = file.LastIndexOf('.');
+							string short_file_name = file.Substring(0, last_period_index);
+							string extension = Path.GetExtension(file);
+							string designer_format = string.Format(".designer{0}", extension);
+							
+							if (file.ToLower().EndsWith(designer_format)) 
                             {
-                                string d = ".Designer.cs";
-                                int index = file.Contains("\\") ? file.IndexOf("\\") + 1 : 0;
-                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file.Substring(index, file.Length - index - d.Length) + ".cs");
-                            }
+								string file_name = file.ToLower();
+								int designer_index = file_name.IndexOf(designer_format);
+								file_name = file.Substring(0, designer_index);
+								if (File.Exists(file_name))
+									ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file_name);
+								else
+									ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file_name + ".resx");
 
+                            } else if (subType == SubType.CodeBehind)
+							{
+								ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", short_file_name);
+							}
                             if (project.Files.GetIsLink(file))
                             {
                                 string alias = project.Files.GetLinkPath(file);
@@ -461,7 +474,7 @@ namespace Prebuild.Core.Targets
                             {
                                 if (project.Files.GetBuildAction(file) != BuildAction.EmbeddedResource)
                                 {
-                                    ps.WriteLine("      <SubType>{0}</SubType>", project.Files.GetSubType(file));
+                                    ps.WriteLine("      <SubType>{0}</SubType>", subType);
                                 }
                             }
 

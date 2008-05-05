@@ -55,8 +55,8 @@ namespace Prebuild.Core.Nodes
 
 		private StringCollection m_Files;
 		private Regex m_Regex;
-		private BuildAction m_BuildAction = BuildAction.Compile;
-		private SubType m_SubType = SubType.Code;
+		private BuildAction? m_BuildAction;
+		private SubType? m_SubType;
 		string m_ResourceName = "";
 		private CopyToOutput m_CopyToOutput;
 		private bool m_Link;
@@ -95,7 +95,7 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
-		public BuildAction BuildAction
+		public BuildAction? BuildAction
 		{
 			get
 			{
@@ -106,7 +106,7 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
-		public SubType SubType
+		public SubType? SubType
 		{
 			get
 			{
@@ -279,10 +279,10 @@ namespace Prebuild.Core.Nodes
 			string pattern = Helper.AttributeValue(node, "pattern", "*");
 			bool recurse = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "recurse", "false"));
 			bool useRegex = (bool)Helper.TranslateValue(typeof(bool), Helper.AttributeValue(node, "useRegex", "false"));
-			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
-				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
-			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
-				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
+			//m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
+			//    Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+			//m_SubType = (SubType)Enum.Parse(typeof(SubType), 
+			//    Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
 			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));

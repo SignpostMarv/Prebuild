@@ -39,6 +39,7 @@ using System.Xml;
 
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
+using System.IO;
 
 namespace Prebuild.Core.Nodes
 {
@@ -224,8 +225,8 @@ namespace Prebuild.Core.Nodes
 						if (!m_Files.Contains(file))
 						{
 							m_Files.Add(file);
-                            m_BuildActions[ file ] = matchNode.BuildAction;
-                            m_SubTypes[ file ] = matchNode.SubType;
+                            m_BuildActions[ file ] = matchNode.BuildAction == null ? GetBuildActionByFileName(file) : matchNode.BuildAction;
+                            m_SubTypes[ file ] = matchNode.SubType == null ? GetSubTypeByFileName(file) : matchNode.SubType;
                             m_ResourceNames[ file ] = matchNode.ResourceName;
                             this.m_PreservePaths[ file ] = matchNode.PreservePath;
                             this.m_Links[ file ] = matchNode.IsLink;

@@ -39,6 +39,7 @@ using System.Xml;
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
 using Prebuild.Core.Utilities;
+using Prebuild.Core.Targets;
 
 namespace Prebuild.Core.Nodes
 {
@@ -93,7 +94,11 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
-		UserControl
+		UserControl,
+		/// <summary>
+		/// 
+		/// </summary>
+		CodeBehind,
 	}
 
 	public enum CopyToOutput
@@ -113,9 +118,9 @@ namespace Prebuild.Core.Nodes
 
 		private string m_Path;
 		private string m_ResourceName = "";
-		private BuildAction m_BuildAction = BuildAction.Compile;
+		private BuildAction? m_BuildAction;
 		private bool m_Valid;
-		private SubType m_SubType = SubType.Code;
+		private SubType? m_SubType;
 		private CopyToOutput m_CopyToOutput = CopyToOutput.Never;
 		private bool m_Link = false;
 		private string m_LinkPath = string.Empty;
@@ -155,7 +160,11 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_BuildAction;
+				if (m_BuildAction != null)
+					return m_BuildAction.Value;
+				else
+					return GetBuildActionByFileName(this.Path);
+
 			}
 		}
 
@@ -189,7 +198,10 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_SubType;
+				if (m_SubType != null)
+					return m_SubType.Value;
+				else
+					return GetSubTypeByFileName(this.Path);
 			}
 		}
 
@@ -227,10 +239,10 @@ namespace Prebuild.Core.Nodes
 		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
-			m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
-				Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
-			m_SubType = (SubType)Enum.Parse(typeof(SubType), 
-				Helper.AttributeValue(node, "subType", m_SubType.ToString()));
+			//m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
+			//    Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
+			//m_SubType = (SubType)Enum.Parse(typeof(SubType), 
+			//    Helper.AttributeValue(node, "subType", m_SubType.ToString()));
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
 			if ( this.m_Link == true )
