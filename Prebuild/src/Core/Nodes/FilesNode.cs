@@ -226,7 +226,7 @@ namespace Prebuild.Core.Nodes
 						{
 							m_Files.Add(file);
                             m_BuildActions[ file ] = matchNode.BuildAction == null ? GetBuildActionByFileName(file) : matchNode.BuildAction;
-                            m_SubTypes[ file ] = matchNode.SubType == null ? GetSubTypeByFileName(file) : matchNode.SubType;
+							m_SubTypes[file] = matchNode.SubType == null ? GetSubTypeByFileName(file) : matchNode.SubType.Value;
                             m_ResourceNames[ file ] = matchNode.ResourceName;
                             this.m_PreservePaths[ file ] = matchNode.PreservePath;
                             this.m_Links[ file ] = matchNode.IsLink;

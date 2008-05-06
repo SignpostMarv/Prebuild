@@ -239,10 +239,13 @@ namespace Prebuild.Core.Nodes
 		/// <param name="node"></param>
 		public override void Parse(XmlNode node)
 		{
-			//m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), 
-			//    Helper.AttributeValue(node, "buildAction", m_BuildAction.ToString()));
-			//m_SubType = (SubType)Enum.Parse(typeof(SubType), 
-			//    Helper.AttributeValue(node, "subType", m_SubType.ToString()));
+			string buildAction = Helper.AttributeValue(node, "buildAction", String.Empty);
+			if (buildAction != string.Empty)
+				m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), buildAction);
+			string subType = Helper.AttributeValue(node, "subType", string.Empty);
+			if (subType != String.Empty)
+				m_SubType = (SubType)Enum.Parse(typeof(SubType), subType);
+
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
 			if ( this.m_Link == true )
