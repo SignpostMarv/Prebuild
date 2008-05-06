@@ -347,6 +347,19 @@ namespace Prebuild.Core.Targets
 
                 //                ps.WriteLine("      <Include>");
                 ArrayList list = new ArrayList();
+				ArrayList filesToRemove = new ArrayList();
+
+				//foreach (string path in project.Files)
+				//{
+				//    string lower = path.ToLower();
+				//    if (lower.EndsWith(".resx"))
+				//    {
+				//        string codebehind = String.Format("{0}.Designer{1}", path.Substring(0, path.LastIndexOf('.')), toolInfo.LanguageExtension);
+				//        if(!list.Contains(codebehind))
+				//            list.Add(codebehind);
+				//    }
+				//}
+
                 foreach (string file in project.Files)
                 {
                     //					if (file == "Properties\\Bind.Designer.cs")
@@ -356,6 +369,7 @@ namespace Prebuild.Core.Targets
                     //					}
 
 					SubType subType = project.Files.GetSubType(file);
+	
                     if (subType != SubType.Code && subType != SubType.Settings && subType != SubType.Designer
 						&& subType != SubType.CodeBehind)
                     {
@@ -375,9 +389,9 @@ namespace Prebuild.Core.Targets
                         //
                     }
 
-                    if (subType != SubType.Code && subType == SubType.Designer)
+                    if (subType == SubType.Designer)
                     {
-                        ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
+                        ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file);
                         ps.WriteLine("      <SubType>" + subType + "</SubType>");
                         ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
                         ps.WriteLine("      <LastGenOutput>Resources.Designer.cs</LastGenOutput>");
@@ -385,9 +399,8 @@ namespace Prebuild.Core.Targets
                         ps.WriteLine("    <Compile Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs");
                         ps.WriteLine("      <AutoGen>True</AutoGen>");
                         ps.WriteLine("      <DesignTime>True</DesignTime>");
-                        ps.WriteLine("      <DependentUpon>Resources.resx</DependentUpon>");
+                        ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file);
                         ps.WriteLine("    </Compile>");
-                        list.Add(file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs");
                     }
                     if (subType == SubType.Settings)
                     {
@@ -459,7 +472,8 @@ namespace Prebuild.Core.Targets
 								else
 									ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", file_name + ".resx");
 
-                            } else if (subType == SubType.CodeBehind)
+                            } 
+							else if (subType == SubType.CodeBehind)
 							{
 								ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", short_file_name);
 							}

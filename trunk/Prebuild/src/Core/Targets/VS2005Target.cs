@@ -103,6 +103,21 @@ namespace Prebuild.Core.Targets
                 fileExtension = value;
             }
         }
+		public string LanguageExtension
+		{
+			get
+			{
+				switch (this.Name)
+				{
+					case "C#":
+						return ".cs";
+					case "Visual Basic":
+						return ".vb";
+					default:
+						return ".cs";
+				}
+			}
+		}
         /// <summary>
         /// Gets or sets the XML tag.
         /// </summary>
@@ -517,12 +532,6 @@ namespace Prebuild.Core.Targets
                 ArrayList list = new ArrayList();
                 foreach (string file in project.Files)
                 {
-                    //					if (file == "Properties\\Bind.Designer.cs")
-                    //					{
-                    //						Console.WriteLine("Wait a minute!");
-                    //						Console.WriteLine(project.Files.GetSubType(file).ToString());
-                    //					}
-
                     if (project.Files.GetSubType(file) != SubType.Code && project.Files.GetSubType(file) != SubType.Settings && project.Files.GetSubType(file) != SubType.Designer)
                     {
                         ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
