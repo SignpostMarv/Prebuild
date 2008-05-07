@@ -43,13 +43,16 @@ namespace Prebuild.Core.Targets
 	/// </summary>
 	[Target("sharpdev2")]
 	public class SharpDevelop2Target : VS2005Target
-	{
-		#region Private Methods
-		private void SetSharpDevelop2()
-		{
-			this.VersionName = "SharpDevelop2";
-		}
-		#endregion
+    {
+        #region Properties
+        public override string VersionName
+        {
+            get
+            {
+                return "SharpDevelop2";
+            }
+        }
+        #endregion
 
 		#region Public Methods
 
@@ -59,7 +62,6 @@ namespace Prebuild.Core.Targets
 		/// <param name="kern">The kern.</param>
 		public override void Write(Kernel kern)
 		{
-			SetSharpDevelop2();
 			base.Write(kern);
 		}
 
@@ -69,7 +71,6 @@ namespace Prebuild.Core.Targets
 		/// <param name="kern">The kern.</param>
 		public override void Clean(Kernel kern)
 		{
-			SetSharpDevelop2();
 			base.Clean(kern);
 		}
 
