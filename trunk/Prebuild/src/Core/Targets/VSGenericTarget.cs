@@ -367,9 +367,9 @@ namespace Prebuild.Core.Targets
 						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file);
 						ps.WriteLine("      <SubType>" + subType + "</SubType>");
 						ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
-						ps.WriteLine("      <LastGenOutput>Resources.Designer.cs</LastGenOutput>");
-						ps.WriteLine("    </EmbeddedResource>");
 						string autogen_name = file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs";
+						ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", autogen_name);
+						ps.WriteLine("    </EmbeddedResource>");
 						ps.WriteLine("    <Compile Include=\"{0}\">", autogen_name);
 						ps.WriteLine("      <AutoGen>True</AutoGen>");
 						ps.WriteLine("      <DesignTime>True</DesignTime>");
