@@ -260,8 +260,13 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("    <DebugSymbols>{0}</DebugSymbols>", conf.Options["DebugInformation"]);
 					ps.WriteLine("    <FileAlignment>{0}</FileAlignment>", conf.Options["FileAlignment"]);
 					ps.WriteLine("    <Optimize>{0}</Optimize>", conf.Options["OptimizeCode"]);
-					ps.WriteLine("    <OutputPath>{0}</OutputPath>",
-						Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
+					if (project.Type != ProjectType.Web)
+						ps.WriteLine("    <OutputPath>{0}</OutputPath>",
+							Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
+					else
+						ps.WriteLine("    <OutputPath>{0}</OutputPath>",
+							Helper.EndPath(Helper.NormalizePath("bin\\")));
+
 					ps.WriteLine("    <RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options["RegisterComInterop"]);
 					ps.WriteLine("    <RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options["RemoveIntegerChecks"]);
 					ps.WriteLine("    <TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options["WarningsAsErrors"]);
