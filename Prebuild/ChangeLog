@@ -1,3 +1,7 @@
+2008-05-07T17:29	John Anderson <sontek@gmail.com>
+	* src/Core/Targets/VSGenericTarget.cs
+	  - Generate asp.net output in bin\ folder (asp.net requires it there)
+
 2008-04-30T17:29	John Anderson <sontek@gmail.com>
 	* src/Core/Nodes/DatabaseReferenceNode.cs,
 	  src/Core/Nodes/Datanode.cs,
