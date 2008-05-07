@@ -367,40 +367,30 @@ namespace Prebuild.Core.Targets
 						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file);
 						ps.WriteLine("      <SubType>" + subType + "</SubType>");
 						ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
+						
 						string autogen_name = file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs";
+						
 						ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", autogen_name);
 						ps.WriteLine("    </EmbeddedResource>");
-						ps.WriteLine("    <Compile Include=\"{0}\">", autogen_name);
-						ps.WriteLine("      <AutoGen>True</AutoGen>");
-						ps.WriteLine("      <DesignTime>True</DesignTime>");
-						ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
-						ps.WriteLine("    </Compile>");
+						if (File.Exists(autogen_name))
+						{
+							ps.WriteLine("    <Compile Include=\"{0}\">", autogen_name);
+							ps.WriteLine("      <AutoGen>True</AutoGen>");
+							ps.WriteLine("      <DesignTime>True</DesignTime>");
+							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
+							ps.WriteLine("    </Compile>");
+						}
 						list.Add(autogen_name);
 					}
 					if (subType == SubType.Settings)
 					{
-						//Console.WriteLine("File: " + file);
-						//Console.WriteLine("Last index: " + file.LastIndexOf('.'));
-						//Console.WriteLine("Length: " + file.Length);
 						ps.Write("    <{0} ", project.Files.GetBuildAction(file));
 						ps.WriteLine("Include=\"{0}\">", file);
-						int slash = file.LastIndexOf('\\');
-						string fileName = file.Substring(slash + 1, file.Length - slash - 1);
+						string fileName = Path.GetFileName(file);
 						if (project.Files.GetBuildAction(file) == BuildAction.None)
 						{
 							ps.WriteLine("      <Generator>SettingsSingleFileGenerator</Generator>");
-
-							//Console.WriteLine("FileName: " + fileName);
-							//Console.WriteLine("FileNameMain: " + fileName.Substring(0, fileName.LastIndexOf('.')));
-							//Console.WriteLine("FileNameExt: " + fileName.Substring(fileName.LastIndexOf('.'), fileName.Length - fileName.LastIndexOf('.')));
-							if (slash == -1)
-							{
-								ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
-							}
-							else
-							{
-								ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
-							}
+							ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
 						}
 						else
 						{
