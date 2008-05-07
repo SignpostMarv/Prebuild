@@ -49,7 +49,7 @@ namespace Prebuild.Core.Nodes
 		#region Fields
 
 		private IDataNode parent;
-		string[] m_WebTypes = new string[] { "aspx", "ascx", "master", "ashx" };
+		string[] m_WebTypes = new string[] { "aspx", "ascx", "master", "ashx", "asmx" };
 
 		#endregion
 

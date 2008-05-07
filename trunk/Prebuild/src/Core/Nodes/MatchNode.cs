@@ -282,9 +282,11 @@ namespace Prebuild.Core.Nodes
 			string buildAction = Helper.AttributeValue(node, "buildAction", String.Empty);
 			if (buildAction != string.Empty)
 				m_BuildAction = (BuildAction)Enum.Parse(typeof(BuildAction), buildAction);
-			string subType = Helper.AttributeValue(node, "subType", string.Empty);
-			if (subType != String.Empty)
-				m_SubType = (SubType)Enum.Parse(typeof(SubType), subType);
+			
+			//TODO: Figure out where the subtype node is being assigned
+			//string subType = Helper.AttributeValue(node, "subType", string.Empty);
+			//if (subType != String.Empty)
+			//    m_SubType = (SubType)Enum.Parse(typeof(SubType), subType);
 			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
 			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
 			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
