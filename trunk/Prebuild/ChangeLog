@@ -1,3 +1,7 @@
+2008-05-21T0737		C.J. Adams-Collier <cjac@colliertech.org>
+	* src/Core/Targets/AutotoolsTarget.cs
+	- catch exception when unable to compile AssemblyInfo.cs
+
 2008-05-07T17:29	John Anderson <sontek@gmail.com>
 	* src/Core/Targets/VSGenericTarget.cs
 	  - Generate asp.net output in bin\ folder (asp.net requires it there)
