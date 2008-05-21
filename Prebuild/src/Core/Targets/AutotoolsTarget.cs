@@ -776,7 +776,9 @@ namespace Prebuild.Core.Targets
                 extraDistFiles = new ArrayList(),
                 localCopyTargets = new ArrayList();
 
-            // If there exists a .config file for this assembly, copy it to the project folder 
+            // If there exists a .config file for this assembly, copy
+            // it to the project folder
+
             // TODO: Support copying .config.osx files
             // TODO: support processing the .config file for native library deps
             string projectAssemblyName = project.Name;
@@ -839,11 +841,15 @@ namespace Prebuild.Core.Targets
                     foreach (System.CodeDom.Compiler.CompilerError error in cr.Errors)
                         Console.WriteLine("Error! '{0}'", error.ErrorText);
 
-                    string projectFullName = cr.CompiledAssembly.FullName;
-                    Regex verRegex = new Regex("Version=([\\d\\.]+)");
-                    Match verMatch = verRegex.Match(projectFullName);
-                    if (verMatch.Success)
+                    try {
+                      string projectFullName = cr.CompiledAssembly.FullName;
+                      Regex verRegex = new Regex("Version=([\\d\\.]+)");
+                      Match verMatch = verRegex.Match(projectFullName);
+                      if (verMatch.Success)
                         projectVersion = verMatch.Groups[1].Value;
+                    }catch{
+                      Console.WriteLine("Couldn't compile AssemblyInfo.cs");
+                    }
 
                     // Clean up the temp file
                     try
@@ -853,7 +859,7 @@ namespace Prebuild.Core.Targets
                     }
                     catch 
                     {
-                        //Console.WriteLine("Error! '{0}'", e.ToString());
+                        Console.WriteLine("Error! '{0}'", e.ToString());
                     }
                    
                 }
