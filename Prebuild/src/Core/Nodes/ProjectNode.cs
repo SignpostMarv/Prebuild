@@ -499,7 +499,10 @@ namespace Prebuild.Core.Nodes
             m_Framework = (FrameworkVersion)Helper.EnumAttributeValue(node, "frameworkVersion", typeof(FrameworkVersion), m_Framework);
 			m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 			m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
-			m_Guid = Guid.NewGuid();
+			
+			string guid = Helper.AttributeValue(node, "guid", Guid.NewGuid().ToString());
+			m_Guid = new Guid(guid);
+
             m_GenerateAssemblyInfoFile = Helper.ParseBoolean(node, "generateAssemblyInfoFile", false);
             
 			if(m_AssemblyName == null || m_AssemblyName.Length < 1)

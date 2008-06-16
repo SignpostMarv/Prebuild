@@ -1,3 +1,7 @@
+2008-06-16T17:37	John Anderson <sontek@gmail.com>
+	* src/Core/Nodes/ProjectNode.cs,data/prebuild-1.7.xsd
+	- Added the ability to hardcode guid's in the projects 
+
 2008-05-21T0737		C.J. Adams-Collier <cjac@colliertech.org>
 	* src/Core/Targets/AutotoolsTarget.cs
 	- catch exception when unable to compile AssemblyInfo.cs
