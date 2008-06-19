@@ -41,8 +41,7 @@ namespace Prebuild.Core.Targets
 	/// <summary>
 	/// 
 	/// </summary>
-	[Target("vsGeneric")]
-	public class VSGenericTarget : ITarget
+	public abstract class VSGenericTarget : ITarget
 	{
 		#region Fields
 		Hashtable tools;

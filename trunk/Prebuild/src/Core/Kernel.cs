@@ -297,13 +297,15 @@ namespace Prebuild.Core
 			foreach(Type t in assm.GetTypes())
 			{
 				TargetAttribute ta = (TargetAttribute)Helper.CheckType(t, typeof(TargetAttribute), typeof(ITarget));
-				if(ta == null)
-				{
-					continue;
-				}
 
+				if(ta == null)
+					continue;
+				
+				if (t.IsAbstract)
+					continue;
+				
 				ITarget target = (ITarget)assm.CreateInstance(t.FullName);
-				if(target == null)
+				if (target == null)
 				{
 					throw new MissingMethodException("Could not create ITarget instance");
 				}
