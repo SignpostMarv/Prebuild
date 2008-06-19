@@ -1,3 +1,9 @@
+2008-06-19T09:37	John Anderson <sontek@gmail.com>
+	* src/Core/Kernel.cs
+	- Only Loop through targets that are not abstract.
+	* src/Core/Targets/VSGenericTarget.cs
+	- Marked abstract and removed the Target attribute.
+
 2008-06-16T17:37	John Anderson <sontek@gmail.com>
 	* src/Core/Nodes/ProjectNode.cs,data/prebuild-1.7.xsd
 	- Added the ability to hardcode guid's in the projects 
