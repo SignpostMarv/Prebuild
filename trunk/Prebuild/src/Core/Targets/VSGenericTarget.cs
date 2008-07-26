@@ -1,4 +1,4 @@
-﻿#region BSD License
+#region BSD License
 /*
 Copyright (c) 2008 Matthew Holmes (matthew@wildfiregames.com), John Anderson (sontek@gmail.com)
 
@@ -301,7 +301,8 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("</Name>");
 
 					// TODO: Allow reference to *.exe files
-					ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
+					if (!String.IsNullOrEmpty(refr.Path))
+						ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
 					ps.WriteLine("    </Reference>");
 				}
 				ps.WriteLine("  </ItemGroup>");
