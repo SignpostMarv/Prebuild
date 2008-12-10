@@ -469,7 +469,7 @@ namespace Prebuild.Core.Parse
 
 								// Create a new reader object for this file. Then put the old reader back on the stack and start
 								// processing using this new XML reader.
-								XmlReader newReader = new XmlTextReader(includeFile.Open(FileMode.Open));
+								XmlReader newReader = new XmlTextReader(includeFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read));
 
 								readerStack.Push(reader);
 								reader = newReader;
