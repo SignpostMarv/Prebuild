@@ -402,6 +402,33 @@ namespace Prebuild.Core
 
 				string xml = pre.Process(reader);//remove script and evaulate pre-proccessing to get schema-conforming XML
 
+				// See if the user put into a pseudo target of "prebuild:preprocessed-input" to indicate they want to see the
+				// output before the system processes it.
+				if (m_CommandLine.WasPassed("ppi"))
+				{
+					// Get the filename if there is one, otherwise use a default.
+					string ppiFile = m_CommandLine["ppi"];
+					if (ppiFile == null || ppiFile.Trim().Length == 0)
+					{
+						ppiFile = "preprocessed-input.xml";
+					}
+
+					// Write out the string to the given stream.
+					try
+					{
+						using (StreamWriter ppiWriter = new StreamWriter(ppiFile))
+						{
+							ppiWriter.WriteLine(xml);
+						}
+					}
+					catch(IOException ex)
+					{
+						Console.WriteLine("Could not write PPI file '{0}': {1}", ppiFile, ex.Message);
+					}
+
+					// Finish processing this special tag.
+					return;
+				}
 				
 				m_CurrentDoc = new XmlDocument();
 				try
