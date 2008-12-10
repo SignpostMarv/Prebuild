@@ -138,10 +138,10 @@ namespace Prebuild.Core.Parse
 				return "Win32";
 			}
 
-            if (File.Exists("/System/Library/Frameworks/Cocoa.framework/Cocoa"))
-            {
-                return "MACOSX";
-            }
+			if (File.Exists("/System/Library/Frameworks/Cocoa.framework/Cocoa"))
+			{
+				return "MACOSX";
+			}
 
 			/*
 			 * .NET 1.x, under Mono, the UNIX code is 128. Under
@@ -236,7 +236,7 @@ namespace Prebuild.Core.Parse
 			OperatorSymbol oper = OperatorSymbol.None;
 			bool inStr = false;
 			char c;
-            
+			
 			for(int i = 0; i < exp.Length; i++)
 			{
 				c = exp[i];
@@ -283,7 +283,7 @@ namespace Prebuild.Core.Parse
 								{
 									oper = OperatorSymbol.NotEqual;
 								}
-                                
+								
 								break;
 
 							case '<':
@@ -295,7 +295,7 @@ namespace Prebuild.Core.Parse
 								{
 									oper = OperatorSymbol.LessThan;
 								}
-                                
+								
 								break;
 
 							case '>':
@@ -314,7 +314,7 @@ namespace Prebuild.Core.Parse
 				}
 			}
 
-            
+			
 			if(inStr)
 			{
 				throw new WarningException("Expected end of string in expression");
@@ -491,7 +491,7 @@ namespace Prebuild.Core.Parse
 						{
 							writer.WriteEndElement();
 						}
-                        
+						
 						break;
 
 					case XmlNodeType.EndElement:
@@ -515,7 +515,7 @@ namespace Prebuild.Core.Parse
 			{
 				throw new WarningException("Mismatched 'if', 'endif' pair");
 			}
-            
+			
 			return xmlText.ToString();
 		}
 
