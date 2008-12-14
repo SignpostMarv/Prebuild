@@ -680,7 +680,8 @@ namespace Prebuild.Core.Targets
 
 		private void WriteProject(SolutionNode solution, StreamWriter ss, DatabaseProjectNode dbProject)
 		{
-			WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
+			if (solution.Files != null && solution.Files.Count > 0)
+				WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
 		}
 
 		const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
