@@ -96,7 +96,7 @@ namespace Prebuild.Core.Targets
 			{
 				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
 				string fileRef = FindFileReference(refr.Name, project);
-				string finalPath = Helper.NormalizePath(Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, "dll"), '/');
+				string finalPath = Helper.NormalizePath(Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, GetProjectExtension(project)), '/');
 				ret += finalPath;
 				return ret;
 			}
@@ -104,10 +104,12 @@ namespace Prebuild.Core.Targets
 			{
 				ProjectNode project = (ProjectNode)refr.Parent;
 				string fileRef = FindFileReference(refr.Name, project);
+                string ext = GetProjectExtension(project);
 
 				if (refr.Path != null || fileRef != null)
 				{
-					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path + "/" + refr.Name + ".dll", '/') : fileRef;
+					string finalPath = (refr.Path != null) ? Helper.NormalizePath(Helper.MakeFilePath(refr.Path, refr.Name, ext), '/') : fileRef;
+
 					ret += finalPath;
 					return ret;
 				}
@@ -121,17 +123,30 @@ namespace Prebuild.Core.Targets
 					//}
 					//else
 					//{
-					ret += (refr.Name + ".dll");
+					ret += (refr.Name + "." + ext);
 					//}
 				}
 				catch (System.NullReferenceException e)
 				{
 					e.ToString();
-					ret += refr.Name + ".dll";
+					ret += refr.Name + "." + ext;
 				}
 			}
 			return ret;
 		}
+
+        private static string GetProjectExtension(ProjectNode project)
+        {
+            switch (project.Type)
+            {
+                case ProjectType.Exe:
+                case ProjectType.WinExe:
+                    return "exe";
+                case ProjectType.Library:
+                default:
+                    return "dll";
+            }
+        }
 
 		private static string BuildReferencePath(SolutionNode solution, ReferenceNode refr)
 		{
