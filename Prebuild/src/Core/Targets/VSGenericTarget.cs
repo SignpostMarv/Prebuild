@@ -1,4 +1,4 @@
-#region BSD License
+﻿#region BSD License
 /*
 Copyright (c) 2008 Matthew Holmes (matthew@wildfiregames.com), John Anderson (sontek@gmail.com)
 
@@ -370,16 +370,29 @@ namespace Prebuild.Core.Targets
 						ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
 						
 						string autogen_name = file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs";
-						
+                        string dependent_name = file.Substring(0, file.LastIndexOf('.')) + ".cs";
+
 						ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", autogen_name);
-						ps.WriteLine("    </EmbeddedResource>");
+
+                        // Check for a parent .cs file with the same name as this designer file
+                        if (File.Exists(dependent_name))
+                            ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
+						
+                        ps.WriteLine("    </EmbeddedResource>");
 						if (File.Exists(autogen_name))
 						{
 							ps.WriteLine("    <Compile Include=\"{0}\">", autogen_name);
 							ps.WriteLine("      <AutoGen>True</AutoGen>");
 							ps.WriteLine("      <DesignTime>True</DesignTime>");
-							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
-							ps.WriteLine("    </Compile>");
+
+                            // If a parent .cs file exists, link this autogen file to it. Otherwise link
+                            // to the designer file
+                            if (File.Exists(dependent_name))
+                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
+                            else
+                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
+	
+                            ps.WriteLine("    </Compile>");
 						}
 						list.Add(autogen_name);
 					}
@@ -407,6 +420,7 @@ namespace Prebuild.Core.Targets
 					else if (subType != SubType.Designer)
 					{
 						string path = Helper.NormalizePath(file);
+                        string path_lower = path.ToLower();
 
 						if (!list.Contains(file))
 						{
@@ -431,16 +445,15 @@ namespace Prebuild.Core.Targets
 							string extension = Path.GetExtension(path);
 							string designer_format = string.Format(".designer{0}", extension);
 
-							if (path.EndsWith(designer_format))
+                            if (path_lower.EndsWith(designer_format))
 							{
-								int designer_index = path.IndexOf(designer_format);
+								int designer_index = path_lower.IndexOf(designer_format);
 								string file_name = path.Substring(0, designer_index);
 
 								if (File.Exists(file_name))
 									ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name));
 								else if (File.Exists(file_name + ".resx"))
 									ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + ".resx"));
-
 							}
 							else if (subType == SubType.CodeBehind)
 							{
@@ -553,7 +566,20 @@ namespace Prebuild.Core.Targets
 				using (ss)
 				{
 					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
-					ss.WriteLine("# Visual Studio 2008");
+
+                    switch (this.Version)
+                    {
+                        case VSVersion.VS70:
+                        case VSVersion.VS71:
+                            ss.WriteLine("# Visual Studio 2003");
+                            break;
+                        case VSVersion.VS80:
+                            ss.WriteLine("# Visual Studio 2005");
+                            break;
+                        case VSVersion.VS90:
+                            ss.WriteLine("# Visual Studio 2008");
+                            break;
+                    }
 
 					WriteProjectDeclarations(ss, solution, solution);
 
