@@ -317,13 +317,20 @@ namespace Prebuild.Core.Targets
 
                     string hintPath;
 
-                    if (refr.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                    if (String.IsNullOrEmpty(refr.Path))
                     {
-                        hintPath = Helper.NormalizePath(Path.Combine(refPath, refr.Name), '\\');
+                        if (ExtensionSpecified(refr.Name))
+                        {
+                            hintPath = Helper.NormalizePath(Path.Combine(refPath, refr.Name), '\\');
+                        }
+                        else
+                        {
+                            hintPath = refr.Name + ".dll";
+                        }
                     }
                     else
                     {
-                        hintPath = refr.Name + ".dll";
+                        hintPath = refr.Path;
                     }
 
 					// TODO: Allow reference to *.exe files
@@ -582,13 +589,12 @@ namespace Prebuild.Core.Targets
 			{
 				kernel.Log.Write("");
 				string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
-				StreamWriter ss = new StreamWriter(solutionFile);
+				
+                using (StreamWriter ss = new StreamWriter(solutionFile))
+                {
+                    kernel.CurrentWorkingDirectory.Push();
+                    Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
 
-				kernel.CurrentWorkingDirectory.Push();
-				Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
-
-				using (ss)
-				{
 					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
                     ss.WriteLine(SolutionTag);
 
@@ -721,6 +727,21 @@ namespace Prebuild.Core.Targets
 			if (solution.Files != null && solution.Files.Count > 0)
 				WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
 		}
+
+        private static bool ExtensionSpecified(string refName)
+        {
+            return refName.EndsWith(".dll") || refName.EndsWith(".exe");
+        }
+
+        private static string GetProjectExtension(ProjectNode project)
+        {
+            string extension = ".dll";
+            if (project.Type == ProjectType.Exe)
+            {
+                extension = ".exe";
+            }
+            return extension;
+        }
 
 		const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
 		const string ProjectDeclarationEndFormat = "EndProject";
