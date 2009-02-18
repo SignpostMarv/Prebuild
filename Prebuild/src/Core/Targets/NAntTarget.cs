@@ -89,96 +89,79 @@ namespace Prebuild.Core.Targets
 			return tmpPath;
 		}
 
-		private static string BuildReference(SolutionNode solution, ProjectNode currentProject, ReferenceNode refr)
-		{
-			string ret = "";
-			if (solution.ProjectsTable.ContainsKey(refr.Name))
-			{
-				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-                string finalPath = Helper.NormalizePath(((ReferencePathNode)currentProject.ReferencePaths[0]).Path + refr.Name + GetProjectExtension(project), '/');
-                return finalPath;
-			}
-			else
-			{
-				ProjectNode project = (ProjectNode)refr.Parent;
-				string fileRef = FindFileReference(refr.Name, project);
-                string ext = GetProjectExtension(project);
-
-				if (refr.Path != null || fileRef != null)
-				{
-					string finalPath = (refr.Path != null) ? Helper.NormalizePath(Helper.MakeFilePath(refr.Path, refr.Name, ext), '/') : fileRef;
-
-					ret += finalPath;
-					return ret;
-				}
-
-				try
-				{
-					ret += (refr.Name + "." + ext);
-				}
-				catch (System.NullReferenceException e)
-				{
-					e.ToString();
-					ret += refr.Name + "." + ext;
-				}
-			}
-			return ret;
-		}
-
-        private static string GetProjectExtension(ProjectNode project)
+        private static string BuildReference(SolutionNode solution, ProjectNode currentProject, ReferenceNode refr)
         {
-            switch (project.Type)
+            string ret = "";
+            string referencePath = ((ReferencePathNode)currentProject.ReferencePaths[0]).Path;
+
+            if (String.IsNullOrEmpty(refr.Path))
             {
-                case ProjectType.Exe:
-                case ProjectType.WinExe:
-                    return "exe";
-                case ProjectType.Library:
-                default:
-                    return "dll";
+                if (solution.ProjectsTable.ContainsKey(refr.Name))
+                {
+                    ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
+                    string finalPath =
+                        Helper.NormalizePath(referencePath + refr.Name + GetProjectExtension(project), '/');
+                    return finalPath;
+                }
+                else
+                {
+                    ProjectNode project = (ProjectNode)refr.Parent;
+
+                    // Do we have an explicit file reference?
+                    string fileRef = FindFileReference(refr.Name, project);
+                    if (fileRef != null)
+                    {
+                        return fileRef;
+                    }
+
+                    // Is there an explicit path in the project ref?
+                    if (refr.Path != null)
+                    {
+                        return Helper.NormalizePath(refr.Path + "/" + refr.Name + GetProjectExtension(project), '/');
+                    }
+
+                    // Is it a specified extension (dll or exe?)
+                    if (ExtensionSpecified(refr.Name))
+                    {
+                        return Helper.NormalizePath(referencePath + GetRefFileName(refr.Name), '/');
+                    }
+
+                    // No, it's an extensionless GAC ref, but nant needs the .dll extension anyway
+                    return refr.Name + ".dll";
+                }
+            }
+            else
+            {
+                return refr.Path;
             }
         }
 
-		private static string BuildReferencePath(SolutionNode solution, ReferenceNode refr)
-		{
-			string ret = "";
-			if (solution.ProjectsTable.ContainsKey(refr.Name))
-			{
-				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-                string finalPath = Helper.NormalizePath(((ReferencePathNode)project.ReferencePaths[0]).Path, '/');
-                return finalPath;
-			}
-			else
-			{
-				ProjectNode project = (ProjectNode)refr.Parent;
-				string fileRef = FindFileReference(refr.Name, project);
+        public static string GetRefFileName(string refName)
+        {
+            if (ExtensionSpecified(refName))
+            {
+                return refName;
+            }
+            else
+            {
+                return refName + ".dll";
+            }
+        }
 
-				if (refr.Path != null || fileRef != null)
-				{
-					string finalPath = (refr.Path != null) ? Helper.NormalizePath(refr.Path, '/') : fileRef;
-					ret += finalPath;
-					return ret;
-				}
+        private static bool ExtensionSpecified(string refName)
+        {
+            return refName.EndsWith(".dll") || refName.EndsWith(".exe");
+        }
 
-				try
-				{
-					Assembly assem = Assembly.Load(refr.Name);
-					if (assem != null)
-					{
-						ret += "";
-					}
-					else
-					{
-						ret += "";
-					}
-				}
-				catch (System.NullReferenceException e)
-				{
-					e.ToString();
-					ret += "";
-				}
-			}
-			return ret;
-		}
+        private static string GetProjectExtension(ProjectNode project)
+        {
+            string extension = ".dll";
+            if (project.Type == ProjectType.Exe)
+            {
+                extension = ".exe";
+            }
+            return extension;
+        }
 
 		private static string FindFileReference(string refName, ProjectNode project)
 		{
@@ -190,6 +173,13 @@ namespace Prebuild.Core.Targets
 				{
 					return fullPath;
 				}
+
+                fullPath = Helper.MakeFilePath(refPath.Path, refName, "exe");
+
+                if (File.Exists(fullPath))
+                {
+                    return fullPath;
+                }
 			}
 
 			return null;
@@ -398,6 +388,7 @@ namespace Prebuild.Core.Targets
                         ss.WriteLine("            <fileset basedir=\"${project::get-base-directory()}/${build.dir}/\" >");
                         ss.WriteLine("                <include name=\"*.dll\"/>");
                         ss.WriteLine("                <include name=\"*.exe\"/>");
+                        ss.WriteLine("                <include name=\"*.mdb\" if='${build.debug}'/>");
                         ss.WriteLine("            </fileset>");
                         ss.WriteLine("        </copy>");
                         break;
