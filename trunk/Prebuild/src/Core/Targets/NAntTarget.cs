@@ -89,16 +89,14 @@ namespace Prebuild.Core.Targets
 			return tmpPath;
 		}
 
-		private static string BuildReference(SolutionNode solution, ReferenceNode refr)
+		private static string BuildReference(SolutionNode solution, ProjectNode currentProject, ReferenceNode refr)
 		{
 			string ret = "";
 			if (solution.ProjectsTable.ContainsKey(refr.Name))
 			{
 				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-				string fileRef = FindFileReference(refr.Name, project);
-				string finalPath = Helper.NormalizePath(Helper.MakeFilePath(project.FullPath + "/${build.dir}/", refr.Name, GetProjectExtension(project)), '/');
-				ret += finalPath;
-				return ret;
+                string finalPath = Helper.NormalizePath(((ReferencePathNode)currentProject.ReferencePaths[0]).Path + refr.Name + GetProjectExtension(project), '/');
+                return finalPath;
 			}
 			else
 			{
@@ -116,15 +114,7 @@ namespace Prebuild.Core.Targets
 
 				try
 				{
-					//Assembly assem = Assembly.Load(refr.Name);
-					//if (assem != null)
-					//{
-					//ret += (refr.Name + ".dll");
-					//}
-					//else
-					//{
 					ret += (refr.Name + "." + ext);
-					//}
 				}
 				catch (System.NullReferenceException e)
 				{
@@ -154,10 +144,8 @@ namespace Prebuild.Core.Targets
 			if (solution.ProjectsTable.ContainsKey(refr.Name))
 			{
 				ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-				string fileRef = FindFileReference(refr.Name, project);
-				string finalPath = Helper.NormalizePath(Helper.MakeReferencePath(project.FullPath + "/${build.dir}/"), '/');
-				ret += finalPath;
-				return ret;
+                string finalPath = Helper.NormalizePath(((ReferencePathNode)project.ReferencePaths[0]).Path, '/');
+                return finalPath;
 			}
 			else
 			{
@@ -233,7 +221,7 @@ namespace Prebuild.Core.Targets
 
 		private void WriteProject(SolutionNode solution, ProjectNode project)
 		{
-			string projFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
+            string projFile = Helper.MakeFilePath(project.FullPath, project.Name + GetProjectExtension(project), "build");
 			StreamWriter ss = new StreamWriter(projFile);
 
 			m_Kernel.CurrentWorkingDirectory.Push();
@@ -253,7 +241,7 @@ namespace Prebuild.Core.Targets
 				{
 					if (refr.LocalCopy)
 					{
-						ss.WriteLine("				  <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr)) + "\" />", '/'));
+						ss.WriteLine("				  <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, project, refr)) + "\" />", '/'));
 					}
 				}
 				
@@ -389,11 +377,33 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("				  </lib>");
 				foreach (ReferenceNode refr in project.References)
 				{
-					ss.WriteLine("				  <include name=\"{0}", Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, refr)) + "\" />", '/'));
+					string path = Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, project, refr)), '/');
+                    ss.WriteLine("                <include name=\"" + path + "\" />");
 				}
 				ss.WriteLine("			  </references>");
 
 				ss.WriteLine("		  </csc>");
+
+				foreach (ConfigurationNode conf in project.Configurations)
+                {
+                    if (!String.IsNullOrEmpty(conf.Options.OutputPath))
+                    {
+                        string targetDir = Helper.NormalizePath(conf.Options.OutputPath, '/');
+
+                        ss.WriteLine("        <echo message=\"Copying from [${project::get-base-directory()}/${build.dir}/] to [${project::get-base-directory()}/" + targetDir + "\" />");
+
+                        ss.WriteLine("        <mkdir dir=\"${project::get-base-directory()}/" + targetDir + "\"/>");
+
+                        ss.WriteLine("        <copy todir=\"${project::get-base-directory()}/" + targetDir + "\">");
+                        ss.WriteLine("            <fileset basedir=\"${project::get-base-directory()}/${build.dir}/\" >");
+                        ss.WriteLine("                <include name=\"*.dll\"/>");
+                        ss.WriteLine("                <include name=\"*.exe\"/>");
+                        ss.WriteLine("            </fileset>");
+                        ss.WriteLine("        </copy>");
+                        break;
+                    }
+                }
+
 				ss.WriteLine("	  </target>");
 
 				ss.WriteLine("	  <target name=\"clean\">");
@@ -499,13 +509,11 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("	  <property name=\"doc.dir\" value=\"doc\" />");
 				ss.WriteLine("	  <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
+                // actually use active config out of prebuild.xml
+                ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", solution.ActiveConfig);
+
 				foreach (ConfigurationNode conf in solution.Configurations)
 				{
-					// Set the project.config to a non-debug configuration
-					if (conf.Options["DebugInformation"].ToString().ToLower() != "true")
-					{
-						ss.WriteLine("	  <property name=\"project.config\" value=\"{0}\" />", conf.Name);
-					}
 					ss.WriteLine();
 					ss.WriteLine("	  <target name=\"{0}\" description=\"\">", conf.Name);
 					ss.WriteLine("		  <property name=\"project.config\" value=\"{0}\" />", conf.Name);
@@ -554,16 +562,80 @@ namespace Prebuild.Core.Targets
                 ss.WriteLine("    </target>");
                 ss.WriteLine();
 
+
+                // sdague - ok, this is an ugly hack, but what it lets
+                // us do is native include of files into the nant
+                // created files from all .nant/*include files.  This
+                // lets us keep using prebuild, but allows for
+                // extended nant targets to do build and the like.
+
+                try
+                {
+                    Regex re = new Regex(".include$");
+                    DirectoryInfo nantdir = new DirectoryInfo(".nant");
+                    foreach (FileSystemInfo item in nantdir.GetFileSystemInfos())
+                    {
+                        if (item is DirectoryInfo) { }
+                        else if (item is FileInfo)
+                        {
+                            if (re.Match(((FileInfo)item).FullName) !=
+                                System.Text.RegularExpressions.Match.Empty)
+                            {
+                                Console.WriteLine("Including file: " + ((FileInfo)item).FullName);
+
+                                using (FileStream fs = new FileStream(((FileInfo)item).FullName,
+                                                                      FileMode.Open,
+                                                                      FileAccess.Read,
+                                                                      FileShare.None))
+                                {
+                                    using (StreamReader sr = new StreamReader(fs))
+                                    {
+                                        ss.WriteLine("<!-- included from {0} -->", ((FileInfo)item).FullName);
+                                        while (sr.Peek() != -1)
+                                        {
+                                            ss.WriteLine(sr.ReadLine());
+                                        }
+                                        ss.WriteLine();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+                // ss.WriteLine("   <include buildfile=\".nant/local.include\" />");
+                //                 ss.WriteLine("    <target name=\"zip\" description=\"\">");
+                //                 ss.WriteLine("       <zip zipfile=\"{0}-{1}.zip\">", solution.Name, solution.Version);
+                //                 ss.WriteLine("       <fileset basedir=\"${project::get-base-directory()}\">");
+
+                //                 ss.WriteLine("       <include name=\"${project::get-base-directory()}/**/*.cs\" />");
+                //                 // ss.WriteLine("       <include name=\"${project.main.dir}/**/*\" />");
+                //                 ss.WriteLine("       </fileset>");
+                //                 ss.WriteLine("       </zip>");
+                //                 ss.WriteLine("        <echo message=\"Building zip target\" />");
+                //                 ss.WriteLine("    </target>");
+                ss.WriteLine();
+
+
                 ss.WriteLine("    <target name=\"clean\" description=\"\">");
                 ss.WriteLine("        <echo message=\"Deleting all builds from all configurations\" />");
                 //ss.WriteLine("        <delete dir=\"${dist.dir}\" failonerror=\"false\" />");
-                ss.WriteLine("        <delete dir=\"${bin.dir}\" failonerror=\"false\" />");
+                ss.WriteLine("        <delete failonerror=\"false\">");
+                ss.WriteLine("        <fileset basedir=\"${bin.dir}\">");
+                ss.WriteLine("            <include name=\"OpenSim*.dll\"/>");
+                ss.WriteLine("            <include name=\"OpenSim*.exe\"/>");
+                ss.WriteLine("            <include name=\"ScriptEngines/*\"/>");
+                ss.WriteLine("            <include name=\"Physics/*\"/>");
+                ss.WriteLine("            <exclude name=\"OpenSim.32BitLaunch.exe\"/>");
+                ss.WriteLine("            <exclude name=\"ScriptEngines/Default.lsl\"/>");
+                ss.WriteLine("        </fileset>");
+                ss.WriteLine("        </delete>");
                 ss.WriteLine("        <delete dir=\"${obj.dir}\" failonerror=\"false\" />");
                 foreach (ProjectNode project in solution.Projects)
                 {
                     string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
                     ss.Write("        <nant buildfile=\"{0}\"",
-                        Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"), '/'));
+                             Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + GetProjectExtension(project), "build"), '/'));
                     ss.WriteLine(" target=\"clean\" />");
                 }
                 ss.WriteLine("    </target>");
@@ -575,7 +647,7 @@ namespace Prebuild.Core.Targets
                 {
                     string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
                     ss.Write("        <nant buildfile=\"{0}\"",
-                        Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"), '/'));
+                             Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + GetProjectExtension(project), "build"), '/'));
                     ss.WriteLine(" target=\"build\" />");
                 }
                 ss.WriteLine("    </target>");
@@ -595,7 +667,7 @@ namespace Prebuild.Core.Targets
                 {
                     string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
                     ss.Write("        <nant buildfile=\"{0}\"",
-                        Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build"), '/'));
+                             Helper.NormalizePath(Helper.MakeFilePath(path, project.Name + GetProjectExtension(project), "build"), '/'));
                     ss.WriteLine(" target=\"doc\" />");
                 }
                 ss.WriteLine("    </target>");
@@ -609,7 +681,7 @@ namespace Prebuild.Core.Targets
         private void CleanProject(ProjectNode project)
         {
             m_Kernel.Log.Write("...Cleaning project: {0}", project.Name);
-            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + (project.Type == ProjectType.Library ? ".dll" : ".exe"), "build");
+            string projectFile = Helper.MakeFilePath(project.FullPath, project.Name + GetProjectExtension(project), "build");
             Helper.DeleteIfExists(projectFile);
         }
 

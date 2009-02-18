@@ -59,6 +59,7 @@ namespace Prebuild.Core.Nodes
 		private string m_Path = "";
 		private string m_FullPath = "";
 		private string m_ActiveConfig = "Debug";
+        private string m_Version = "1.0.0";
         
 		private OptionsNode m_Options;
 		private FilesNode m_Files;
@@ -172,6 +173,18 @@ namespace Prebuild.Core.Nodes
 		}
 
 		/// <summary>
+		/// Gets the version.
+		/// </summary>
+		/// <value>The version.</value>
+		public string Version 
+		{
+			get 
+			{
+				return m_Version;
+			}
+		}
+
+		/// <summary>
 		/// Gets the options.
 		/// </summary>
 		/// <value>The options.</value>
@@ -203,7 +216,9 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_Configurations.Values;
+                ArrayList tmp = new ArrayList(ConfigurationsTable.Values);
+                tmp.Sort();
+                return tmp;
 			}
 		}
 
@@ -256,7 +271,9 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_Projects.Values;
+                ArrayList tmp = new ArrayList(m_Projects.Values);
+                tmp.Sort();
+                return tmp;
 			}
 		}
 
@@ -297,6 +314,7 @@ namespace Prebuild.Core.Nodes
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
 			m_ActiveConfig = Helper.AttributeValue(node, "activeConfig", m_ActiveConfig);
 			m_Path = Helper.AttributeValue(node, "path", m_Path);
+			m_Version = Helper.AttributeValue(node, "version", m_Version);
 
 			m_FullPath = m_Path;
 			try

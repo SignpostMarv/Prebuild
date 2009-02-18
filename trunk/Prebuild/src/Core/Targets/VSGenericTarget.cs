@@ -115,6 +115,10 @@ namespace Prebuild.Core.Targets
 				throw new NotImplementedException("You need to override the Name property");
 			}
 		}
+
+        protected abstract string GetToolsVersionXml(FrameworkVersion version);
+        public abstract string SolutionTag { get; }
+
 		#endregion
 
 		#region Constructors
@@ -205,7 +209,7 @@ namespace Prebuild.Core.Targets
 			#region Project File
 			using (ps)
 			{
-				ps.WriteLine("<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" ToolsVersion=\"3.5\">");
+				ps.WriteLine("<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" {0}>", GetToolsVersionXml(project.FrameworkVersion));
 				ps.WriteLine("  <PropertyGroup>");
 				ps.WriteLine("    <ProjectType>Local</ProjectType>");
 				ps.WriteLine("    <ProductVersion>{0}</ProductVersion>", this.ProductVersion);
@@ -240,6 +244,10 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("    <AppDesignerFolder>{0}</AppDesignerFolder>", project.DesignerFolder);
 				ps.WriteLine("    <RootNamespace>{0}</RootNamespace>", project.RootNamespace);
 				ps.WriteLine("    <StartupObject>{0}</StartupObject>", project.StartupObject);
+                if (string.IsNullOrEmpty(project.DebugStartParameters))
+                {
+                    ps.WriteLine("    <StartArguments>{0}</StartArguments>", project.DebugStartParameters);
+                }
 				ps.WriteLine("    <FileUpgradeFlags>");
 				ps.WriteLine("    </FileUpgradeFlags>");
 
@@ -291,19 +299,36 @@ namespace Prebuild.Core.Targets
 				}
 				// Assembly References
 				ps.WriteLine("  <ItemGroup>");
+			    string refPath;
+                if (project.ReferencePaths.Count > 0)
+                    refPath = ((ReferencePathNode)project.ReferencePaths[0]).Path;
+                else
+                    refPath = string.Empty;
+
 				foreach (ReferenceNode refr in otherReferences)
 				{
 					ps.Write("    <Reference");
 					ps.Write(" Include=\"");
 					ps.Write(refr.Name);
-					ps.WriteLine("\">");
+					ps.WriteLine("\" >");
 					ps.Write("        <Name>");
 					ps.Write(refr.Name);
 					ps.WriteLine("</Name>");
 
+                    string hintPath;
+
+                    if (refr.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        hintPath = Helper.NormalizePath(Path.Combine(refPath, refr.Name), '\\');
+                    }
+                    else
+                    {
+                        hintPath = refr.Name + ".dll";
+                    }
+
 					// TODO: Allow reference to *.exe files
-					if (!String.IsNullOrEmpty(refr.Path))
-						ps.WriteLine("      <HintPath>{0}</HintPath>", Helper.MakePathRelativeTo(project.FullPath, refr.Path + "\\" + refr.Name + ".dll"));
+                    ps.WriteLine("      <HintPath>{0}</HintPath>", hintPath);
+                    ps.WriteLine("      <Private>{0}</Private>", refr.LocalCopy);
 					ps.WriteLine("    </Reference>");
 				}
 				ps.WriteLine("  </ItemGroup>");
@@ -313,11 +338,15 @@ namespace Prebuild.Core.Targets
 				foreach (ProjectNode projectReference in projectReferences)
 				{
 					ToolInfo tool = (ToolInfo)tools[projectReference.Language];
-					if (tools == null)
-						throw new UnknownLanguageException();
+                    if (tools == null)
+                        throw new UnknownLanguageException();
+
+                    string path =
+                        Helper.MakePathRelativeTo(project.FullPath,
+                                                  Helper.MakeFilePath(projectReference.FullPath, projectReference.Name, tool.FileExtension));
+                    ps.WriteLine("    <ProjectReference Include=\"{0}\">", path);
 
 					// TODO: Allow reference to visual basic projects
-					ps.WriteLine("    <ProjectReference Include=\"{0}\">", Helper.MakePathRelativeTo(project.FullPath, Helper.MakeFilePath(projectReference.FullPath, projectReference.Name, tool.FileExtension)));
 					ps.WriteLine("      <Name>{0}</Name>", projectReference.Name);
 					ps.WriteLine("      <Project>{0}</Project>", projectReference.Guid.ToString("B").ToUpper());
 					ps.WriteLine("      <Package>{0}</Package>", tool.Guid.ToUpper());
@@ -520,11 +549,6 @@ namespace Prebuild.Core.Targets
 					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|AnyCPU' \"", conf.Name);
 					ps.WriteLine(" />");
 				}
-				//ps.WriteLine("      </Settings>");
-
-				//ps.WriteLine("    </Build>");
-				//ps.WriteLine("  </{0}>", toolInfo.XMLTag);
-				//ps.WriteLine("</VisualStudioProject>");
 				ps.WriteLine("</Project>");
 			}
 			#endregion
@@ -532,7 +556,7 @@ namespace Prebuild.Core.Targets
 			kernel.CurrentWorkingDirectory.Pop();
 		}
 
-		private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
+	    private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
 		{
 			kernel.Log.Write("Creating {0} solution and project files", this.VersionName);
 
@@ -566,20 +590,7 @@ namespace Prebuild.Core.Targets
 				using (ss)
 				{
 					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
-
-                    switch (this.Version)
-                    {
-                        case VSVersion.VS70:
-                        case VSVersion.VS71:
-                            ss.WriteLine("# Visual Studio 2003");
-                            break;
-                        case VSVersion.VS80:
-                            ss.WriteLine("# Visual Studio 2005");
-                            break;
-                        case VSVersion.VS90:
-                            ss.WriteLine("# Visual Studio 2008");
-                            break;
-                    }
+                    ss.WriteLine(SolutionTag);
 
 					WriteProjectDeclarations(ss, solution, solution);
 
