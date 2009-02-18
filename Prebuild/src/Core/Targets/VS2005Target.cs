@@ -65,9 +65,15 @@ namespace Prebuild.Core.Targets
 
         VSVersion version = VSVersion.VS80;
 
-        Hashtable tools;
-        Kernel kernel;
+        public override string SolutionTag
+        {
+            get { return "# Visual Studio 2005"; }
+        }
 
+        protected override string GetToolsVersionXml(FrameworkVersion frameworkVersion)
+        {
+            return string.Empty;
+        }
         /// <summary>
         /// Gets or sets the solution version.
         /// </summary>
@@ -134,6 +140,7 @@ namespace Prebuild.Core.Targets
                 return name;
             }
         }
+
         #endregion
 
         #region Constructors

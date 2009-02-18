@@ -165,6 +165,7 @@
       </xs:attribute>
       <xs:attribute name="startupObject" type="xs:string" default="" />
       <xs:attribute name="rootNamespace" type="xs:string" />
+      <xs:attribute name="debugStartParameters" type="xs:string" />
       <xs:attribute name="assemblyName" type="xs:string" />
       <xs:attribute name="generateAssemblyInfoFile" type="xs:boolean" default="false" />
     </xs:complexType>

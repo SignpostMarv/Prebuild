@@ -96,7 +96,26 @@ namespace Prebuild.Core.Targets
 				return name;
 			}
 		}
-		#endregion
+
+        protected override string GetToolsVersionXml(FrameworkVersion frameworkVersion)
+        {
+            switch (frameworkVersion)
+            {
+                case FrameworkVersion.v3_5:
+                    return "ToolsVersion=\"3.5\"";
+                case FrameworkVersion.v3_0:
+                    return "ToolsVersion=\"3.0\"";
+                default:
+                    return "ToolsVersion=\"2.0\"";
+            }
+        }
+
+        public override string SolutionTag
+        {
+            get { return "# Visual Studio 2008"; }
+        }
+
+	    #endregion
 
 		#region Constructors
 

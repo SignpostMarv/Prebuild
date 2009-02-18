@@ -103,7 +103,7 @@ namespace Prebuild.Core.Nodes
 	/// The Node object representing /Prebuild/Solution/Project elements
 	/// </summary>
 	[DataNode("Project")]
-	public class ProjectNode : DataNode
+	public class ProjectNode : DataNode, IComparable
 	{
 		#region Fields
 
@@ -123,6 +123,7 @@ namespace Prebuild.Core.Nodes
 		private string m_FilterGroups = "";
 		private string m_Version = "";
 		private Guid m_Guid;
+        private string m_DebugStartParameters;
 
 		private Hashtable m_Configurations;
 		private ArrayList m_ReferencePaths;
@@ -350,7 +351,9 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_Configurations.Values;
+                ArrayList tmp = new ArrayList(ConfigurationsTable.Values);
+                tmp.Sort();
+                return tmp;
 			}
 		}
 
@@ -374,7 +377,9 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_ReferencePaths;
+                ArrayList tmp = new ArrayList(m_ReferencePaths);
+                tmp.Sort();
+                return tmp;
 			}
 		}
 
@@ -386,7 +391,9 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return m_References;
+                ArrayList tmp = new ArrayList(m_References);
+                tmp.Sort();
+                return tmp;
 			}
 		}
 		
@@ -450,7 +457,15 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-		#endregion
+	    public string DebugStartParameters
+	    {
+            get
+            {
+                return m_DebugStartParameters;
+            }
+	    }
+
+	    #endregion
 
 		#region Private Methods
 
@@ -500,10 +515,13 @@ namespace Prebuild.Core.Nodes
 			m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 			m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
 			
-			string guid = Helper.AttributeValue(node, "guid", Guid.NewGuid().ToString());
+            int hash = m_Name.GetHashCode();
+ 			Guid guidByHash = new Guid(hash, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+			string guid = Helper.AttributeValue(node, "guid", guidByHash.ToString());
 			m_Guid = new Guid(guid);
 
             m_GenerateAssemblyInfoFile = Helper.ParseBoolean(node, "generateAssemblyInfoFile", false);
+		    m_DebugStartParameters = Helper.AttributeValue(node, "debugStartParameters", string.Empty);
             
 			if(m_AssemblyName == null || m_AssemblyName.Length < 1)
 			{
@@ -566,6 +584,15 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		#endregion
+
+        #region IComparable Members
+
+        public int CompareTo(object obj)
+        {
+            ProjectNode that = (ProjectNode)obj;
+            return this.m_Name.CompareTo(that.m_Name);
+        }
 
 		#endregion
 	}
