@@ -389,6 +389,7 @@ namespace Prebuild.Core.Targets
                         ss.WriteLine("                <include name=\"*.dll\"/>");
                         ss.WriteLine("                <include name=\"*.exe\"/>");
                         ss.WriteLine("                <include name=\"*.mdb\" if='${build.debug}'/>");
+                        ss.WriteLine("                <include name=\"*.pdb\" if='${build.debug}'/>");
                         ss.WriteLine("            </fileset>");
                         ss.WriteLine("        </copy>");
                         break;
