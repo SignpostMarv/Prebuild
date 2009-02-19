@@ -36,15 +36,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 #endregion
 
-#region CVS Information
-/*
- * $Source$
- * $Author$
- * $Date$
- * $Revision$
- */
-#endregion
-
 using System;
 using System.Diagnostics;
 using System.Collections;

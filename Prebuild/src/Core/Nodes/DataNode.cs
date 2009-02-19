@@ -23,15 +23,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
-#region CVS Information
-/*
- * $Source$
- * $Author$
- * $Date$
- * $Revision$
- */
-#endregion
-
 using System;
 using System.Xml;
 
@@ -44,7 +35,7 @@ namespace Prebuild.Core.Nodes
 	/// <summary>
 	/// 
 	/// </summary>
-	public class DataNode : IDataNode
+	public abstract class DataNode : IDataNode
 	{
 		#region Fields
 
