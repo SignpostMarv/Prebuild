@@ -25,6 +25,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -116,26 +117,11 @@ namespace Prebuild.Core.Nodes
 		private Guid m_Guid;
         private string m_DebugStartParameters;
 
-		private Hashtable m_Configurations;
-		private ArrayList m_ReferencePaths;
-		private ArrayList m_References;
-		private ArrayList m_Authors;
+        private Hashtable m_Configurations = new Hashtable();
+        private readonly List<ReferencePathNode> m_ReferencePaths = new List<ReferencePathNode>();
+		private readonly List<ReferenceNode> m_References = new List<ReferenceNode>();
+        private readonly List<AuthorNode> m_Authors = new List<AuthorNode>();
 		private FilesNode m_Files;
-
-		#endregion
-
-		#region Constructors
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ProjectNode"/> class.
-		/// </summary>
-		public ProjectNode()
-		{
-			m_Configurations = new Hashtable();
-			m_ReferencePaths = new ArrayList();
-			m_References = new ArrayList();
-			m_Authors = new ArrayList();
-		}
 
 		#endregion
 
@@ -364,11 +350,11 @@ namespace Prebuild.Core.Nodes
 		/// Gets the reference paths.
 		/// </summary>
 		/// <value>The reference paths.</value>
-		public ArrayList ReferencePaths
+		public List<ReferencePathNode> ReferencePaths
 		{
 			get
 			{
-                ArrayList tmp = new ArrayList(m_ReferencePaths);
+                List<ReferencePathNode> tmp = new List<ReferencePathNode>(m_ReferencePaths);
                 tmp.Sort();
                 return tmp;
 			}
@@ -378,11 +364,11 @@ namespace Prebuild.Core.Nodes
 		/// Gets the references.
 		/// </summary>
 		/// <value>The references.</value>
-		public ArrayList References
+        public List<ReferenceNode> References
 		{
 			get
 			{
-                ArrayList tmp = new ArrayList(m_References);
+                List<ReferenceNode> tmp = new List<ReferenceNode>(m_References);
                 tmp.Sort();
                 return tmp;
 			}
@@ -392,7 +378,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the Authors list.
 		/// </summary>
 		/// <value>The list of the project's authors.</value>
-		public ArrayList Authors
+		public List<AuthorNode> Authors
 		{
 			get
 			{
@@ -553,15 +539,15 @@ namespace Prebuild.Core.Nodes
 					}
 					else if(dataNode is ReferencePathNode)
 					{
-						m_ReferencePaths.Add(dataNode);
+                        m_ReferencePaths.Add((ReferencePathNode)dataNode);
 					}
 					else if(dataNode is ReferenceNode)
 					{
-						m_References.Add(dataNode);
+                        m_References.Add((ReferenceNode)dataNode);
 					}
 					else if(dataNode is AuthorNode)
 					{
-						m_Authors.Add(dataNode);
+                        m_Authors.Add((AuthorNode)dataNode);
 					}
 					else if(dataNode is FilesNode)
 					{

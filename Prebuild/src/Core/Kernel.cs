@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Specialized;
@@ -71,17 +72,17 @@ namespace Prebuild.Core
 
 		#region Fields
 
-		private static Kernel m_Instance = new Kernel();
+		private static readonly Kernel m_Instance = new Kernel();
 
 		/// <summary>
 		/// This must match the version of the schema that is embeeded
 		/// </summary>
-		private static string m_SchemaVersion = "1.7";
-		private static string m_Schema = "prebuild-" + m_SchemaVersion + ".xsd";
-		private static string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
+		private const string m_SchemaVersion = "1.7";
+		private const string m_Schema = "prebuild-" + m_SchemaVersion + ".xsd";
+		private const string m_SchemaURI = "http://dnpb.sourceforge.net/schemas/" + m_Schema;
 		bool disposed;
 		private Version m_Version;
-		private string m_Revision = "";
+		private const string m_Revision = "";
 		private CommandLineCollection m_CommandLine;
 		private Log m_Log;
 		private CurrentDirectory m_CurrentWorkingDirectory;
@@ -89,19 +90,16 @@ namespace Prebuild.Core
         
 		private Hashtable m_Targets;
 		private Hashtable m_Nodes;
-        
-		ArrayList m_Solutions;        
+
+	    readonly List<SolutionNode> m_Solutions = new List<SolutionNode>();        
 		string m_Target;
 		string m_Clean;
 		string[] m_RemoveDirectories;
-		string m_CurrentFile;
-		XmlDocument m_CurrentDoc;
+	    XmlDocument m_CurrentDoc;
 		bool m_PauseAfterFinish;
 		string[] m_ProjectGroups;
-		StringCollection m_Refs;
 
-		
-		#endregion
+	    #endregion
 
 		#region Constructors
 
@@ -201,7 +199,7 @@ namespace Prebuild.Core
 		/// Gets the solutions.
 		/// </summary>
 		/// <value>The solutions.</value>
-		public ArrayList Solutions
+		public List<SolutionNode> Solutions
 		{
 			get
 			{
@@ -226,7 +224,7 @@ namespace Prebuild.Core
 
 		#region Private Methods
 
-		private void RemoveDirectories(string rootDir, string[] dirNames) 
+		private static void RemoveDirectories(string rootDir, string[] dirNames) 
 		{
 			foreach(string dir in Directory.GetDirectories(rootDir)) 
 			{
@@ -344,7 +342,7 @@ namespace Prebuild.Core
         {
             if (node.IsValid)
             {
-                ArrayList list = new ArrayList();
+                List<SolutionNode> list = new List<SolutionNode>();
                 ProcessFile(node.Path, list);
 
                 foreach (SolutionNode solution in list)
@@ -356,8 +354,9 @@ namespace Prebuild.Core
         /// 
         /// </summary>
         /// <param name="file"></param>
+        /// <param name="solutions"></param>
         /// <returns></returns>
-		public void ProcessFile(string file, IList solutions)
+		public void ProcessFile(string file, IList<SolutionNode> solutions)
 		{
 			m_CurrentWorkingDirectory.Push();
             
@@ -375,8 +374,7 @@ namespace Prebuild.Core
 					return;
 				}
 
-				m_CurrentFile = path;
-				Helper.SetCurrentDir(Path.GetDirectoryName(path));
+			    Helper.SetCurrentDir(Path.GetDirectoryName(path));
 				
 				XmlTextReader reader = new XmlTextReader(path);
 
@@ -484,7 +482,7 @@ namespace Prebuild.Core
 					}
 					else if(dataNode is SolutionNode)
 					{
-						solutions.Add(dataNode);
+						solutions.Add((SolutionNode)dataNode);
 					}
 				}
 			}
@@ -568,7 +566,7 @@ namespace Prebuild.Core
 		/// <returns></returns>
 		public IDataNode ParseNode(XmlNode node, IDataNode parent, IDataNode preNode)
 		{
-			IDataNode dataNode = null;
+			IDataNode dataNode;
 
 			try
 			{
@@ -670,9 +668,6 @@ namespace Prebuild.Core
 			m_PauseAfterFinish = m_CommandLine.WasPassed("pause");
 
 			LoadSchema();
-
-			m_Solutions = new ArrayList();
-			m_Refs = new StringCollection();
 		}
 
 		/// <summary>
@@ -705,17 +700,18 @@ namespace Prebuild.Core
 				m_Log.Write(LogType.Error, "The options /target and /clean cannot be passed together");
 				return;
 			}
-			else if(m_Target == null && m_Clean == null)
-			{
-				if(perfomedOtherTask) //finished
-				{
-					return;
-				}
-				m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a Prebuild file");
-				return;
-			}
+		    
+            if(m_Target == null && m_Clean == null)
+		    {
+		        if(perfomedOtherTask) //finished
+		        {
+		            return;
+		        }
+		        m_Log.Write(LogType.Error, "Must pass either /target or /clean to process a Prebuild file");
+		        return;
+		    }
 
-			string file = "./prebuild.xml";
+		    string file = "./prebuild.xml";
 			if(m_CommandLine.WasPassed("file"))
 			{
 				file = m_CommandLine["file"];
