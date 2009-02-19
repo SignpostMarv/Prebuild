@@ -23,15 +23,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
-#region CVS Information
-/*
- * $Source$
- * $Author: (local) $
- * $Date: 2008-04-16 16:32:42 -0600 (Wed, 16 Apr 2008) $
- * $Revision: 177M $
- */
-#endregion
-
 namespace Prebuild.Core.Targets
 {
 	/// <summary>

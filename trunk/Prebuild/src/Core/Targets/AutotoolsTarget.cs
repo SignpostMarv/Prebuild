@@ -65,16 +65,6 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 
 #endregion
-
-#region CVS Information
-/*
- * $Source$
- * $Author: jendave $
- * $Date: 2006-07-28 22:43:24 -0700 (Fri, 28 Jul 2006) $
- * $Revision: 136 $
- */
-#endregion
-
 using System;
 using System.Collections;
 using System.Collections.Specialized;
