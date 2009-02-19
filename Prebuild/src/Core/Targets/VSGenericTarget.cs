@@ -44,92 +44,55 @@ namespace Prebuild.Core.Targets
 	public abstract class VSGenericTarget : ITarget
 	{
 		#region Fields
-		Hashtable tools;
+
+	    readonly Hashtable tools = new Hashtable();
 		Kernel kernel;
 		#endregion
 
-		#region Properties
-		/// <summary>
-		/// Gets or sets the solution version.
-		/// </summary>
-		/// <value>The solution version.</value>
-		public virtual string SolutionVersion
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the SolutionVersion property");
-			}
-		}
-		/// <summary>
-		/// Gets or sets the product version.
-		/// </summary>
-		/// <value>The product version.</value>
-		public virtual string ProductVersion
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the ProductVersion property");
-			}
-		}
-		/// <summary>
-		/// Gets or sets the schema version.
-		/// </summary>
-		/// <value>The schema version.</value>
-		public virtual string SchemaVersion
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the SchemaVersion property");
-			}
-		}
-		/// <summary>
-		/// Gets or sets the name of the version.
-		/// </summary>
-		/// <value>The name of the version.</value>
-		public virtual string VersionName
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the VersionName property");
-			}
-		}
-		/// <summary>
-		/// Gets or sets the version.
-		/// </summary>
-		/// <value>The version.</value>
-		public virtual VSVersion Version
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the VersionName property");
-			}
-		}
-		/// <summary>
-		/// Gets the name.
-		/// </summary>
-		/// <value>The name.</value>
-		public virtual string Name
-		{
-			get
-			{
-				throw new NotImplementedException("You need to override the Name property");
-			}
-		}
+        #region Properties
+        /// <summary>
+        /// Gets or sets the solution version.
+        /// </summary>
+        /// <value>The solution version.</value>
+        public abstract string SolutionVersion { get; }
+        /// <summary>
+        /// Gets or sets the product version.
+        /// </summary>
+        /// <value>The product version.</value>
+        public abstract string ProductVersion { get; }
+        /// <summary>
+        /// Gets or sets the schema version.
+        /// </summary>
+        /// <value>The schema version.</value>
+        public abstract string SchemaVersion { get; }
+        /// <summary>
+        /// Gets or sets the name of the version.
+        /// </summary>
+        /// <value>The name of the version.</value>
+        public abstract string VersionName { get; }
+        /// <summary>
+        /// Gets or sets the version.
+        /// </summary>
+        /// <value>The version.</value>
+        public abstract VSVersion Version { get; }
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public abstract string Name { get; }
 
         protected abstract string GetToolsVersionXml(FrameworkVersion version);
         public abstract string SolutionTag { get; }
 
-		#endregion
+        #endregion
 
 		#region Constructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VS2008Target"/> class.
+        /// Initializes a new instance of the <see cref="VSGenericTarget"/> class.
 		/// </summary>
-		public VSGenericTarget()
+		protected VSGenericTarget()
 		{
-			this.tools = new Hashtable();
-
 			this.tools["C#"] = new ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP", "$(MSBuildBinPath)\\Microsoft.CSHARP.Targets");
 			this.tools["Database"] = new ToolInfo("Database", "{4F174C21-8C12-11D0-8340-0000F80270F8}", "dbp", "UNKNOWN");
 			this.tools["Boo"] = new ToolInfo("Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets");
