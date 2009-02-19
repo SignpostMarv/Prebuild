@@ -24,6 +24,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -44,7 +45,7 @@ namespace Prebuild.Core.Nodes
 	{
 		#region Fields
 
-		private StringCollection m_Files;
+        private readonly StringCollection m_Files = new StringCollection();
 		private Regex m_Regex;
 		private BuildAction? m_BuildAction;
 		private SubType? m_SubType;
@@ -53,20 +54,7 @@ namespace Prebuild.Core.Nodes
 		private bool m_Link;
 		private string m_LinkPath;
         private bool m_PreservePath;
-        private ArrayList m_Exclusions;
-
-		#endregion
-
-		#region Constructors
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public MatchNode()
-		{
-			m_Files = new StringCollection();
-            m_Exclusions = new ArrayList();
-		}
+        private readonly List<ExcludeNode> m_Exclusions = new List<ExcludeNode>();
 
 		#endregion
 
@@ -158,7 +146,7 @@ namespace Prebuild.Core.Nodes
 		/// <param name="pattern">The pattern.</param>
 		/// <param name="recurse">if set to <c>true</c> [recurse].</param>
 		/// <param name="useRegex">if set to <c>true</c> [use regex].</param>
-		private void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex, ArrayList exclusions)
+		private void RecurseDirectories(string path, string pattern, bool recurse, bool useRegex, List<ExcludeNode> exclusions)
 		{
 			Match match;
             Boolean excludeFile;
@@ -324,7 +312,7 @@ namespace Prebuild.Core.Nodes
 				if(dataNode is ExcludeNode)
 				{
 					ExcludeNode excludeNode = (ExcludeNode)dataNode;
-                    m_Exclusions.Add( dataNode );
+                    m_Exclusions.Add( excludeNode );
 				}
 			}
 

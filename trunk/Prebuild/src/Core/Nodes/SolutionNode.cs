@@ -25,6 +25,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -54,27 +55,11 @@ namespace Prebuild.Core.Nodes
         
 		private OptionsNode m_Options;
 		private FilesNode m_Files;
-		private Hashtable m_Configurations;
-		private Hashtable m_Projects;
-        private Hashtable m_DatabaseProjects;
-		private ArrayList m_ProjectsOrder;
-        private Hashtable m_Solutions;
-
-		#endregion
-
-		#region Constructors
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SolutionNode"/> class.
-		/// </summary>
-		public SolutionNode()
-		{
-			m_Configurations = new Hashtable();
-			m_Projects = new Hashtable();
-			m_ProjectsOrder = new ArrayList();
-            m_DatabaseProjects = new Hashtable();
-            m_Solutions = new Hashtable();
-		}
+        private readonly Hashtable m_Configurations = new Hashtable();
+        private readonly Hashtable m_Projects = new Hashtable();
+        private readonly Hashtable m_DatabaseProjects = new Hashtable();
+        private readonly List<ProjectNode> m_ProjectsOrder = new List<ProjectNode>();
+        private readonly Hashtable m_Solutions = new Hashtable();
 
 		#endregion
 
@@ -284,7 +269,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the projects table.
 		/// </summary>
 		/// <value>The projects table.</value>
-		public ArrayList ProjectsTableOrder
+		public List<ProjectNode> ProjectsTableOrder
 		{
 			get
 			{
@@ -345,7 +330,7 @@ namespace Prebuild.Core.Nodes
 					else if(dataNode is ProjectNode)
 					{
 						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
-						m_ProjectsOrder.Add(dataNode);
+						m_ProjectsOrder.Add((ProjectNode)dataNode);
 					}
                     else if(dataNode is SolutionNode)
                     {

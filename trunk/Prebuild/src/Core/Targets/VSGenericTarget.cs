@@ -25,6 +25,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
@@ -248,8 +249,8 @@ namespace Prebuild.Core.Targets
 
 				//ps.WriteLine("      </Settings>");
 
-				ArrayList projectReferences = new ArrayList(),
-					otherReferences = new ArrayList();
+			    List<ProjectNode> projectReferences = new List<ProjectNode>();
+				List<ReferenceNode> otherReferences = new List<ReferenceNode>();
 
 				foreach (ReferenceNode refr in project.References)
 				{
@@ -303,10 +304,9 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("  <ItemGroup>");
 
 				//                ps.WriteLine("      <Include>");
-				ArrayList list = new ArrayList();
-				ArrayList filesToRemove = new ArrayList();
+				List<string> list = new List<string>();
 
-				foreach (string path in project.Files)
+			    foreach (string path in project.Files)
 				{
 					string lower = path.ToLower();
 					if (lower.EndsWith(".resx"))
