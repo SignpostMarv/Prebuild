@@ -347,7 +347,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations.
 		/// </summary>
 		/// <value>The configurations.</value>
-		public ICollection Configurations
+		public IList Configurations
 		{
 			get
 			{
