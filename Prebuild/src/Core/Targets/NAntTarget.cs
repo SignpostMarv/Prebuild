@@ -358,7 +358,6 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("			  <references basedir=\"${project::get-base-directory()}\">");
 				ss.WriteLine("				  <lib>");
 				ss.WriteLine("					  <include name=\"${project::get-base-directory()}\" />");
-				ss.WriteLine("					  <include name=\"${project::get-base-directory()}/${build.dir}\" />");
                 foreach(ReferencePathNode refPath in project.ReferencePaths)
                 {
                     ss.WriteLine("					  <include name=\"${project::get-base-directory()}/" + refPath.Path.TrimEnd('/', '\\') + "\" />");
