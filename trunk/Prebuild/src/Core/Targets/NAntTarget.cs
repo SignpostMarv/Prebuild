@@ -91,52 +91,40 @@ namespace Prebuild.Core.Targets
 
         private static string BuildReference(SolutionNode solution, ProjectNode currentProject, ReferenceNode refr)
         {
-            string ret = "";
-            string referencePath = ((ReferencePathNode)currentProject.ReferencePaths[0]).Path;
 
-            if (String.IsNullOrEmpty(refr.Path))
-            {
-                if (solution.ProjectsTable.ContainsKey(refr.Name))
-                {
-                    ProjectNode project = (ProjectNode)solution.ProjectsTable[refr.Name];
-                    string finalPath =
-                        Helper.NormalizePath(referencePath + refr.Name + GetProjectExtension(project), '/');
-                    return finalPath;
-                }
-                else
-                {
-                    ProjectNode project = (ProjectNode)refr.Parent;
-
-                    // Do we have an explicit file reference?
-                    string fileRef = FindFileReference(refr.Name, project);
-                    if (fileRef != null)
-                    {
-                        return fileRef;
-                    }
-
-                    // Is there an explicit path in the project ref?
-                    if (refr.Path != null)
-                    {
-                        return Helper.NormalizePath(refr.Path + "/" + refr.Name + GetProjectExtension(project), '/');
-                    }
-
-                    // Is it a specified extension (dll or exe?)
-                    if (ExtensionSpecified(refr.Name))
-                    {
-                        return Helper.NormalizePath(referencePath + GetRefFileName(refr.Name), '/');
-                    }
-
-                    // No, it's an extensionless GAC ref, but nant needs the .dll extension anyway
-                    return refr.Name + ".dll";
-                }
-            }
-            else
+            if (!String.IsNullOrEmpty(refr.Path))
             {
                 return refr.Path;
             }
+            
+            if (solution.ProjectsTable.ContainsKey(refr.Name))
+            {
+                ProjectNode projectRef = (ProjectNode) solution.ProjectsTable[refr.Name];
+                string finalPath =
+                    Helper.NormalizePath(refr.Name + GetProjectExtension(projectRef), '/');
+                return finalPath;
+            }
+
+            ProjectNode project = (ProjectNode) refr.Parent;
+
+            // Do we have an explicit file reference?
+            string fileRef = FindFileReference(refr.Name, project);
+            if (fileRef != null)
+            {
+                return fileRef;
+            }
+
+            // Is there an explicit path in the project ref?
+            if (refr.Path != null)
+            {
+                return Helper.NormalizePath(refr.Path + "/" + refr.Name + GetProjectExtension(project), '/');
+            }
+
+            // No, it's an extensionless GAC ref, but nant needs the .dll extension anyway
+            return refr.Name + ".dll";
         }
 
-        public static string GetRefFileName(string refName)
+	    public static string GetRefFileName(string refName)
         {
             if (ExtensionSpecified(refName))
             {
@@ -156,7 +144,7 @@ namespace Prebuild.Core.Targets
         private static string GetProjectExtension(ProjectNode project)
         {
             string extension = ".dll";
-            if (project.Type == ProjectType.Exe)
+            if (project.Type == ProjectType.Exe || project.Type == ProjectType.WinExe)
             {
                 extension = ".exe";
             }
@@ -167,7 +155,14 @@ namespace Prebuild.Core.Targets
 		{
 			foreach (ReferencePathNode refPath in project.ReferencePaths)
 			{
-				string fullPath = Helper.MakeFilePath(refPath.Path, refName, "dll");
+			    string fullPath = Helper.MakeFilePath(refPath.Path, refName);
+
+                if (File.Exists(fullPath))
+                {
+                    return fullPath;
+                }
+
+                fullPath = Helper.MakeFilePath(refPath.Path, refName, "dll");
 
 				if (File.Exists(fullPath))
 				{
@@ -364,6 +359,10 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("				  <lib>");
 				ss.WriteLine("					  <include name=\"${project::get-base-directory()}\" />");
 				ss.WriteLine("					  <include name=\"${project::get-base-directory()}/${build.dir}\" />");
+                foreach(ReferencePathNode refPath in project.ReferencePaths)
+                {
+                    ss.WriteLine("					  <include name=\"${project::get-base-directory()}/" + refPath.Path.TrimEnd('/', '\\') + "\" />");
+                }
 				ss.WriteLine("				  </lib>");
 				foreach (ReferenceNode refr in project.References)
 				{

@@ -262,11 +262,6 @@ namespace Prebuild.Core.Targets
 				}
 				// Assembly References
 				ps.WriteLine("  <ItemGroup>");
-			    string refPath;
-                if (project.ReferencePaths.Count > 0)
-                    refPath = ((ReferencePathNode)project.ReferencePaths[0]).Path;
-                else
-                    refPath = string.Empty;
 
 				foreach (ReferenceNode refr in otherReferences)
 				{
@@ -277,27 +272,7 @@ namespace Prebuild.Core.Targets
 					ps.Write("        <Name>");
 					ps.Write(refr.Name);
 					ps.WriteLine("</Name>");
-
-                    string hintPath;
-
-                    if (String.IsNullOrEmpty(refr.Path))
-                    {
-                        if (ExtensionSpecified(refr.Name))
-                        {
-                            hintPath = Helper.NormalizePath(Path.Combine(refPath, refr.Name), '\\');
-                        }
-                        else
-                        {
-                            hintPath = refr.Name + ".dll";
-                        }
-                    }
-                    else
-                    {
-                        hintPath = refr.Path;
-                    }
-
 					// TODO: Allow reference to *.exe files
-                    ps.WriteLine("      <HintPath>{0}</HintPath>", hintPath);
                     ps.WriteLine("      <Private>{0}</Private>", refr.LocalCopy);
 					ps.WriteLine("    </Reference>");
 				}
