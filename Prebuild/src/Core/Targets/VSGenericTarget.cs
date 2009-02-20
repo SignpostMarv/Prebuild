@@ -26,11 +26,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Text;
-
-using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
 using Prebuild.Core.Nodes;
 using Prebuild.Core.Utilities;
@@ -46,7 +42,7 @@ namespace Prebuild.Core.Targets
 	{
 		#region Fields
 
-	    readonly Hashtable tools = new Hashtable();
+	    readonly Dictionary<string, ToolInfo> tools = new Dictionary<string, ToolInfo>();
 		Kernel kernel;
 		#endregion
 
@@ -94,11 +90,11 @@ namespace Prebuild.Core.Targets
 		/// </summary>
 		protected VSGenericTarget()
 		{
-			this.tools["C#"] = new ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP", "$(MSBuildBinPath)\\Microsoft.CSHARP.Targets");
-			this.tools["Database"] = new ToolInfo("Database", "{4F174C21-8C12-11D0-8340-0000F80270F8}", "dbp", "UNKNOWN");
-			this.tools["Boo"] = new ToolInfo("Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets");
-			this.tools["VisualBasic"] = new ToolInfo("VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets");
-			this.tools["Folder"] = new ToolInfo("Folder", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", null, null);
+			tools["C#"] = new ToolInfo("C#", "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "csproj", "CSHARP", "$(MSBuildBinPath)\\Microsoft.CSHARP.Targets");
+			tools["Database"] = new ToolInfo("Database", "{4F174C21-8C12-11D0-8340-0000F80270F8}", "dbp", "UNKNOWN");
+			tools["Boo"] = new ToolInfo("Boo", "{45CEA7DC-C2ED-48A6-ACE0-E16144C02365}", "booproj", "Boo", "$(BooBinPath)\\Boo.Microsoft.Build.targets");
+			tools["VisualBasic"] = new ToolInfo("VisualBasic", "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "vbproj", "VisualBasic", "$(MSBuildBinPath)\\Microsoft.VisualBasic.Targets");
+			tools["Folder"] = new ToolInfo("Folder", "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", null, null);
 		}
 
 		#endregion
@@ -124,7 +120,7 @@ namespace Prebuild.Core.Targets
 				}
 				catch (ArgumentException)
 				{
-					this.kernel.Log.Write(LogType.Warning, "Could not resolve reference path: {0}", node.Path);
+					kernel.Log.Write(LogType.Warning, "Could not resolve reference path: {0}", node.Path);
 				}
 			}
 
@@ -144,7 +140,7 @@ namespace Prebuild.Core.Targets
 		private static ProjectNode FindProjectInSolutionRecursively(string name, SolutionNode solution)
 		{
 			if (solution.ProjectsTable.ContainsKey(name))
-				return (ProjectNode)solution.ProjectsTable[name];
+				return solution.ProjectsTable[name];
 
 			foreach (SolutionNode child in solution.Solutions)
 			{
@@ -163,7 +159,7 @@ namespace Prebuild.Core.Targets
 				throw new UnknownLanguageException("Unknown .NET language: " + project.Language);
 			}
 
-			ToolInfo toolInfo = (ToolInfo)tools[project.Language];
+			ToolInfo toolInfo = tools[project.Language];
 			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
 			StreamWriter ps = new StreamWriter(projectFile);
 
@@ -176,8 +172,8 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" {0}>", GetToolsVersionXml(project.FrameworkVersion));
 				ps.WriteLine("  <PropertyGroup>");
 				ps.WriteLine("    <ProjectType>Local</ProjectType>");
-				ps.WriteLine("    <ProductVersion>{0}</ProductVersion>", this.ProductVersion);
-				ps.WriteLine("    <SchemaVersion>{0}</SchemaVersion>", this.SchemaVersion);
+				ps.WriteLine("    <ProductVersion>{0}</ProductVersion>", ProductVersion);
+				ps.WriteLine("    <SchemaVersion>{0}</SchemaVersion>", SchemaVersion);
 				ps.WriteLine("    <ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper());
 
 				// Visual Studio has a hard coded guid for the project type
@@ -283,7 +279,7 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("  <ItemGroup>");
 				foreach (ProjectNode projectReference in projectReferences)
 				{
-					ToolInfo tool = (ToolInfo)tools[projectReference.Language];
+					ToolInfo tool = tools[projectReference.Language];
                     if (tools == null)
                         throw new UnknownLanguageException();
 
@@ -492,7 +488,7 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
 				ps.WriteLine("    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>");
 				ps.WriteLine("    <ReferencePath>{0}</ReferencePath>", MakeRefPath(project));
-				ps.WriteLine("    <LastOpenVersion>{0}</LastOpenVersion>", this.ProductVersion);
+				ps.WriteLine("    <LastOpenVersion>{0}</LastOpenVersion>", ProductVersion);
 				ps.WriteLine("    <ProjectView>ProjectFiles</ProjectView>");
 				ps.WriteLine("    <ProjectTrust>0</ProjectTrust>");
 				ps.WriteLine("  </PropertyGroup>");
@@ -511,7 +507,7 @@ namespace Prebuild.Core.Targets
 
 	    private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
 		{
-			kernel.Log.Write("Creating {0} solution and project files", this.VersionName);
+			kernel.Log.Write("Creating {0} solution and project files", VersionName);
 
 			foreach (SolutionNode child in solution.Solutions)
 			{
@@ -541,7 +537,7 @@ namespace Prebuild.Core.Targets
                     kernel.CurrentWorkingDirectory.Push();
                     Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
 
-					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", this.SolutionVersion);
+					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", SolutionVersion);
                     ss.WriteLine(SolutionTag);
 
 					WriteProjectDeclarations(ss, solution, solution);
@@ -576,7 +572,7 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
-		private void WriteProjectDeclarations(StreamWriter writer, SolutionNode actualSolution, SolutionNode embeddedSolution)
+		private void WriteProjectDeclarations(TextWriter writer, SolutionNode actualSolution, SolutionNode embeddedSolution)
 		{
 			foreach (SolutionNode childSolution in embeddedSolution.Solutions)
 			{
@@ -600,7 +596,7 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
-		private static void WriteNestedProjectMap(StreamWriter writer, SolutionNode embeddedSolution)
+		private static void WriteNestedProjectMap(TextWriter writer, SolutionNode embeddedSolution)
 		{
 			foreach (ProjectNode project in embeddedSolution.Projects)
 			{
@@ -619,19 +615,19 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
-		private static void WriteNestedProject(StreamWriter writer, SolutionNode solution, Guid projectGuid)
+		private static void WriteNestedProject(TextWriter writer, SolutionNode solution, Guid projectGuid)
 		{
 			WriteNestedFolder(writer, solution.Guid, projectGuid);
 		}
 
-		private static void WriteNestedFolder(StreamWriter writer, Guid parentGuid, Guid childGuid)
+		private static void WriteNestedFolder(TextWriter writer, Guid parentGuid, Guid childGuid)
 		{
 			writer.WriteLine("\t\t{0} = {1}",
 				childGuid.ToString("B").ToUpper(),
 				parentGuid.ToString("B").ToUpper());
 		}
 
-		private static void WriteConfigurationLines(ICollection configurations, SolutionNode solution, StreamWriter ss)
+		private static void WriteConfigurationLines(ICollection configurations, SolutionNode solution, TextWriter ss)
 		{
 			foreach (ProjectNode project in solution.Projects)
 			{
@@ -653,51 +649,36 @@ namespace Prebuild.Core.Targets
 			}
 		}
 
-		private void WriteSolutionFiles(SolutionNode solution, StreamWriter ss)
+		private void WriteSolutionFiles(SolutionNode solution, TextWriter ss)
 		{
 			WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);
 		}
 
-		private void WriteEmbeddedSolution(StreamWriter writer, SolutionNode embeddedSolution)
+		private void WriteEmbeddedSolution(TextWriter writer, SolutionNode embeddedSolution)
 		{
 			WriteProject(writer, "Folder", embeddedSolution.Guid, embeddedSolution.Name, embeddedSolution.Name, embeddedSolution.Files);
 		}
 
-		private void WriteProject(SolutionNode solution, StreamWriter ss, ProjectNode project)
+		private void WriteProject(SolutionNode solution, TextWriter ss, ProjectNode project)
 		{
 			WriteProject(ss, solution, project.Language, project.Guid, project.Name, project.FullPath);
 		}
 
-		private void WriteProject(SolutionNode solution, StreamWriter ss, DatabaseProjectNode dbProject)
+		private void WriteProject(SolutionNode solution, TextWriter ss, DatabaseProjectNode dbProject)
 		{
 			if (solution.Files != null && solution.Files.Count > 0)
 				WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
 		}
 
-        private static bool ExtensionSpecified(string refName)
-        {
-            return refName.EndsWith(".dll") || refName.EndsWith(".exe");
-        }
-
-        private static string GetProjectExtension(ProjectNode project)
-        {
-            string extension = ".dll";
-            if (project.Type == ProjectType.Exe)
-            {
-                extension = ".exe";
-            }
-            return extension;
-        }
-
-		const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
+	    const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
 		const string ProjectDeclarationEndFormat = "EndProject";
 
-		private void WriteProject(StreamWriter ss, SolutionNode solution, string language, Guid guid, string name, string projectFullPath)
+		private void WriteProject(TextWriter ss, SolutionNode solution, string language, Guid guid, string name, string projectFullPath)
 		{
 			if (!tools.ContainsKey(language))
 				throw new UnknownLanguageException("Unknown .NET language: " + language);
 
-			ToolInfo toolInfo = (ToolInfo)tools[language];
+			ToolInfo toolInfo = tools[language];
 
 			string path = Helper.MakePathRelativeTo(solution.FullPath, projectFullPath);
 
@@ -706,17 +687,17 @@ namespace Prebuild.Core.Targets
 			WriteProject(ss, language, guid, name, path);
 		}
 
-		private void WriteProject(StreamWriter writer, string language, Guid projectGuid, string name, string location)
+		private void WriteProject(TextWriter writer, string language, Guid projectGuid, string name, string location)
 		{
 			WriteProject(writer, language, projectGuid, name, location, null);
 		}
 
-		private void WriteProject(StreamWriter writer, string language, Guid projectGuid, string name, string location, FilesNode files)
+		private void WriteProject(TextWriter writer, string language, Guid projectGuid, string name, string location, FilesNode files)
 		{
 			if (!tools.ContainsKey(language))
 				throw new UnknownLanguageException("Unknown .NET language: " + language);
 
-			ToolInfo toolInfo = (ToolInfo)tools[language];
+			ToolInfo toolInfo = tools[language];
 
 			writer.WriteLine(ProjectDeclarationBeginFormat,
 				toolInfo.Guid,
@@ -779,12 +760,10 @@ namespace Prebuild.Core.Targets
 			kernel.CurrentWorkingDirectory.Pop();
 		}
 
-		private bool ContainsSqlFiles(string folder)
+		private static bool ContainsSqlFiles(string folder)
 		{
-			foreach (string file in Directory.GetFiles(folder, "*.sql"))
-			{
+            if(Directory.GetFiles(folder, "*.sql").Length > 0)
 				return true; // if the folder contains 1 .sql file, that's good enough
-			}
 
 			foreach (string child in Directory.GetDirectories(folder))
 			{
@@ -795,7 +774,7 @@ namespace Prebuild.Core.Targets
 			return false;
 		}
 
-		private void WriteDatabaseFoldersAndFiles(IndentedTextWriter writer, string folder)
+		private static void WriteDatabaseFoldersAndFiles(IndentedTextWriter writer, string folder)
 		{
 			foreach (string child in Directory.GetDirectories(folder))
 			{
@@ -818,7 +797,7 @@ namespace Prebuild.Core.Targets
 		{
 			kernel.Log.Write("...Cleaning project: {0}", project.Name);
 
-			ToolInfo toolInfo = (ToolInfo)tools[project.Language];
+			ToolInfo toolInfo = tools[project.Language];
 			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, toolInfo.FileExtension);
 			string userFile = projectFile + ".user";
 
@@ -828,7 +807,7 @@ namespace Prebuild.Core.Targets
 
 		private void CleanSolution(SolutionNode solution)
 		{
-			kernel.Log.Write("Cleaning {0} solution and project files", this.VersionName, solution.Name);
+			kernel.Log.Write("Cleaning {0} solution and project files", VersionName, solution.Name);
 
 			string slnFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
 			string suoFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "suo");
