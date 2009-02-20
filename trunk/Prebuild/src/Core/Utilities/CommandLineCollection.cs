@@ -23,10 +23,8 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 */
 #endregion
 
-using System;
 using System.Collections;
-using System.Collections.Specialized;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Prebuild.Core.Utilities
 {    
@@ -39,10 +37,10 @@ namespace Prebuild.Core.Utilities
 		#region Fields
 
 		// The raw OS arguments
-		private string[] m_RawArgs;
+		private readonly string[] m_RawArgs;
 
 		// Command-line argument storage
-		private Hashtable m_Arguments;
+		private readonly Dictionary<string, string> m_Arguments = new Dictionary<string, string>();
         
 		#endregion
         
@@ -54,8 +52,7 @@ namespace Prebuild.Core.Utilities
 		public CommandLineCollection(string[] args) 
 		{
 			m_RawArgs = args;
-			m_Arguments = new Hashtable();
-            
+			
 			Parse();
 		}
 
@@ -69,11 +66,11 @@ namespace Prebuild.Core.Utilities
 				return;
 
 			int idx = 0;
-			string arg = null, lastArg = null;
+            string lastArg = null;
 
 			while(idx <m_RawArgs.Length) 
 			{
-				arg = m_RawArgs[idx];
+			    string arg = m_RawArgs[idx];
 
 				if(arg.Length > 2 && arg[0] == '/') 
 				{
@@ -119,16 +116,13 @@ namespace Prebuild.Core.Utilities
 		/// null string if no parameter was specified, and the value if a parameter was specified</remarks>
 		public string this[string index] 
 		{
-			get 
+			get
 			{
-				if(m_Arguments.ContainsKey(index))
+			    if(m_Arguments.ContainsKey(index))
 				{
-					return (string)(m_Arguments[index]);
+					return (m_Arguments[index]);
 				}
-				else
-				{
-					return null;
-				}
+			    return null;
 			}
 		}
 

@@ -27,7 +27,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Xml;
 
 using Prebuild.Core.Attributes;
@@ -55,11 +54,11 @@ namespace Prebuild.Core.Nodes
         
 		private OptionsNode m_Options;
 		private FilesNode m_Files;
-        private readonly Hashtable m_Configurations = new Hashtable();
-        private readonly Hashtable m_Projects = new Hashtable();
-        private readonly Hashtable m_DatabaseProjects = new Hashtable();
+        private readonly Dictionary<string, ConfigurationNode> m_Configurations = new Dictionary<string, ConfigurationNode>();
+        private readonly Dictionary<string, ProjectNode> m_Projects = new Dictionary<string, ProjectNode>();
+        private readonly Dictionary<string, DatabaseProjectNode> m_DatabaseProjects = new Dictionary<string, DatabaseProjectNode>();
         private readonly List<ProjectNode> m_ProjectsOrder = new List<ProjectNode>();
-        private readonly Hashtable m_Solutions = new Hashtable();
+        private readonly Dictionary<string, SolutionNode> m_Solutions = new Dictionary<string, SolutionNode>();
 
 		#endregion
 
@@ -77,7 +76,7 @@ namespace Prebuild.Core.Nodes
                     SolutionNode solution = (SolutionNode)value;
                     foreach (ConfigurationNode conf in solution.Configurations)
                     {
-                        m_Configurations[conf.Name] = conf.Clone();
+                        m_Configurations[conf.Name] = (ConfigurationNode) conf.Clone();
                     }
                 }
 
@@ -202,7 +201,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations table.
 		/// </summary>
 		/// <value>The configurations table.</value>
-		public Hashtable ConfigurationsTable
+		public Dictionary<string, ConfigurationNode> ConfigurationsTable
 		{
 			get
 			{
@@ -232,11 +231,11 @@ namespace Prebuild.Core.Nodes
         /// <summary>
         /// Gets the nested solutions hash table.
         /// </summary>
-        public Hashtable SolutionsTable
+        public Dictionary<string, SolutionNode> SolutionsTable
         {
             get
             {
-                return this.m_Solutions;
+                return m_Solutions;
             }
         }
 		/// <summary>
@@ -257,7 +256,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the projects table.
 		/// </summary>
 		/// <value>The projects table.</value>
-		public Hashtable ProjectsTable
+		public Dictionary<string, ProjectNode> ProjectsTable
 		{
 			get
 			{
@@ -325,16 +324,16 @@ namespace Prebuild.Core.Nodes
 					}
 					else if(dataNode is ConfigurationNode)
 					{
-						m_Configurations[((ConfigurationNode)dataNode).Name] = dataNode;
+						m_Configurations[((ConfigurationNode)dataNode).Name] = (ConfigurationNode) dataNode;
 					}
 					else if(dataNode is ProjectNode)
 					{
-						m_Projects[((ProjectNode)dataNode).Name] = dataNode;
+						m_Projects[((ProjectNode)dataNode).Name] = (ProjectNode) dataNode;
 						m_ProjectsOrder.Add((ProjectNode)dataNode);
 					}
                     else if(dataNode is SolutionNode)
                     {
-                        m_Solutions[((SolutionNode)dataNode).Name] = dataNode;
+                        m_Solutions[((SolutionNode)dataNode).Name] = (SolutionNode) dataNode;
                     }
                     else if (dataNode is ProcessNode)
                     {
@@ -343,7 +342,7 @@ namespace Prebuild.Core.Nodes
                     }
                     else if (dataNode is DatabaseProjectNode)
                     {
-                        m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = dataNode;
+                        m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = (DatabaseProjectNode) dataNode;
                     }
 				}
 			}

@@ -25,6 +25,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -83,9 +84,9 @@ namespace Prebuild.Core.Parse
 
 		#region Fields
 
-		XmlDocument m_OutDoc;
-		Stack m_IfStack;
-		Hashtable m_Variables;
+	    readonly XmlDocument m_OutDoc = new XmlDocument();
+	    readonly Stack<IfContext> m_IfStack = new Stack<IfContext>();
+	    readonly Dictionary<string, object> m_Variables = new Dictionary<string, object>();
 
 		#endregion
 
@@ -96,10 +97,6 @@ namespace Prebuild.Core.Parse
 		/// </summary>
 		public Preprocessor()
 		{
-			m_OutDoc = new XmlDocument();
-			m_IfStack = new Stack();
-			m_Variables = new Hashtable();
-
 			RegisterVariable("OS", GetOS());
 			RegisterVariable("RuntimeVersion", Environment.Version.Major);
 			RegisterVariable("RuntimeMajor", Environment.Version.Major);
@@ -237,11 +234,10 @@ namespace Prebuild.Core.Parse
 			string str = "";
 			OperatorSymbol oper = OperatorSymbol.None;
 			bool inStr = false;
-			char c;
-			
-			for(int i = 0; i < exp.Length; i++)
+
+		    for(int i = 0; i < exp.Length; i++)
 			{
-				c = exp[i];
+				char c = exp[i];
 				if(Char.IsWhiteSpace(c))
 				{
 					continue;
@@ -326,16 +322,16 @@ namespace Prebuild.Core.Parse
 			{
 				throw new WarningException("Expected operator in expression");
 			}
-			else if(id.Length < 1)
-			{
-				throw new WarningException("Expected identifier in expression");
-			}
-			else if(str.Length < 1)
-			{
-				throw new WarningException("Expected value in expression");
-			}
+		    if(id.Length < 1)
+		    {
+		        throw new WarningException("Expected identifier in expression");
+		    }
+		    if(str.Length < 1)
+		    {
+		        throw new WarningException("Expected value in expression");
+		    }
 
-			bool ret = false;
+		    bool ret;
 			try
 			{
 				object val = m_Variables[id.ToLower()];
@@ -344,19 +340,17 @@ namespace Prebuild.Core.Parse
 					throw new WarningException("Unknown identifier '{0}'", id);
 				}
 
-				int numVal, numVal2;
-				string strVal, strVal2;
-				Type t = val.GetType();
+			    Type t = val.GetType();
 				if(t.IsAssignableFrom(typeof(int)))
 				{
-					numVal = (int)val;
-					numVal2 = Int32.Parse(str);
+					int numVal = (int)val;
+					int numVal2 = Int32.Parse(str);
 					ret = CompareNum(oper, numVal, numVal2);
 				}
 				else
 				{
-					strVal = val.ToString();
-					strVal2 = str;
+					string strVal = val.ToString();
+					string strVal2 = str;
 					ret = CompareStr(oper, strVal, strVal2);
 				}
 			}
@@ -392,7 +386,7 @@ namespace Prebuild.Core.Parse
 		/// Performs validation on the xml source as well as evaluates conditional and flow expresions
 		/// </summary>
 		/// <exception cref="ArgumentException">For invalid use of conditional expressions or for invalid XML syntax.  If a XmlValidatingReader is passed, then will also throw exceptions for non-schema-conforming xml</exception>
-		/// <param name="reader"></param>
+        /// <param name="initialReader"></param>
 		/// <returns>the output xml </returns>
 		public string Process(XmlReader initialReader)
 		{
@@ -478,12 +472,12 @@ namespace Prebuild.Core.Parse
 								{
 									throw new WarningException("Unexpected 'elseif' outside of 'if'");
 								}
-								else if(context.State != IfState.If && context.State != IfState.ElseIf)
-								{
-									throw new WarningException("Unexpected 'elseif' outside of 'if'");
-								}
+						        if(context.State != IfState.If && context.State != IfState.ElseIf)
+						        {
+						            throw new WarningException("Unexpected 'elseif' outside of 'if'");
+						        }
 
-								context.State = IfState.ElseIf;
+						        context.State = IfState.ElseIf;
 								if(!context.EverKept)
 								{
 									context.Keep = ParseExpression(reader.Value);
@@ -501,12 +495,12 @@ namespace Prebuild.Core.Parse
 								{
 									throw new WarningException("Unexpected 'else' outside of 'if'");
 								}
-								else if(context.State != IfState.If && context.State != IfState.ElseIf)
-								{
-									throw new WarningException("Unexpected 'else' outside of 'if'");
-								}
+						        if(context.State != IfState.If && context.State != IfState.ElseIf)
+						        {
+						            throw new WarningException("Unexpected 'else' outside of 'if'");
+						        }
 
-								context.State = IfState.Else;
+						        context.State = IfState.Else;
 								context.Keep = !context.EverKept;
 								ignore = true;
 								break;
@@ -517,7 +511,7 @@ namespace Prebuild.Core.Parse
 									throw new WarningException("Unexpected 'endif' outside of 'if'");
 								}
 
-								context = (IfContext)m_IfStack.Pop();
+								context = m_IfStack.Pop();
 								ignore = true;
 								break;
 						}
