@@ -59,8 +59,9 @@ namespace Prebuild.Core.Nodes
         private readonly Dictionary<string, DatabaseProjectNode> m_DatabaseProjects = new Dictionary<string, DatabaseProjectNode>();
         private readonly List<ProjectNode> m_ProjectsOrder = new List<ProjectNode>();
         private readonly Dictionary<string, SolutionNode> m_Solutions = new Dictionary<string, SolutionNode>();
+	    private CleanupNode m_Cleanup;
 
-		#endregion
+	    #endregion
 
 		#region Properties
         public override IDataNode Parent
@@ -83,6 +84,18 @@ namespace Prebuild.Core.Nodes
                 base.Parent = value;
             }
         }
+
+	    public CleanupNode Cleanup
+	    {
+	        get
+	        {
+	            return m_Cleanup;
+	        }
+            set
+            {
+                m_Cleanup = value;
+            }
+	    }
 
         public Guid Guid
         {
@@ -343,6 +356,12 @@ namespace Prebuild.Core.Nodes
                     else if (dataNode is DatabaseProjectNode)
                     {
                         m_DatabaseProjects[((DatabaseProjectNode)dataNode).Name] = (DatabaseProjectNode) dataNode;
+                    }
+                    else if(dataNode is CleanupNode)
+                    {
+                        if(m_Cleanup != null)
+                            throw new WarningException("There can only be one Cleanup node.");
+                        m_Cleanup = (CleanupNode)dataNode;
                     }
 				}
 			}

@@ -559,19 +559,19 @@ namespace Prebuild.Core.Targets
                         if (item is DirectoryInfo) { }
                         else if (item is FileInfo)
                         {
-                            if (re.Match(((FileInfo)item).FullName) !=
+                            if (re.Match(item.FullName) !=
                                 System.Text.RegularExpressions.Match.Empty)
                             {
-                                Console.WriteLine("Including file: " + ((FileInfo)item).FullName);
+                                Console.WriteLine("Including file: " + item.FullName);
 
-                                using (FileStream fs = new FileStream(((FileInfo)item).FullName,
+                                using (FileStream fs = new FileStream(item.FullName,
                                                                       FileMode.Open,
                                                                       FileAccess.Read,
                                                                       FileShare.None))
                                 {
                                     using (StreamReader sr = new StreamReader(fs))
                                     {
-                                        ss.WriteLine("<!-- included from {0} -->", ((FileInfo)item).FullName);
+                                        ss.WriteLine("<!-- included from {0} -->", (item).FullName);
                                         while (sr.Peek() != -1)
                                         {
                                             ss.WriteLine(sr.ReadLine());
@@ -601,17 +601,19 @@ namespace Prebuild.Core.Targets
                 ss.WriteLine("    <target name=\"clean\" description=\"\">");
                 ss.WriteLine("        <echo message=\"Deleting all builds from all configurations\" />");
                 //ss.WriteLine("        <delete dir=\"${dist.dir}\" failonerror=\"false\" />");
-                ss.WriteLine("        <delete failonerror=\"false\">");
-                ss.WriteLine("        <fileset basedir=\"${bin.dir}\">");
-                ss.WriteLine("            <include name=\"OpenSim*.dll\"/>");
-                ss.WriteLine("            <include name=\"OpenSim*.exe\"/>");
-                ss.WriteLine("            <include name=\"ScriptEngines/*\"/>");
-                ss.WriteLine("            <include name=\"Physics/*\"/>");
-                ss.WriteLine("            <exclude name=\"OpenSim.32BitLaunch.exe\"/>");
-                ss.WriteLine("            <exclude name=\"ScriptEngines/Default.lsl\"/>");
-                ss.WriteLine("        </fileset>");
-                ss.WriteLine("        </delete>");
-                ss.WriteLine("        <delete dir=\"${obj.dir}\" failonerror=\"false\" />");
+                if (solution.Cleanup != null && solution.Cleanup.CleanFiles.Count > 0)
+                {
+                    foreach (CleanFilesNode cleanFile in solution.Cleanup.CleanFiles)
+                    {
+                        ss.WriteLine("        <delete failonerror=\"false\">");
+                        ss.WriteLine("            <fileset basedir=\"${project::get-base-directory()}\">");
+                        ss.WriteLine("                <include name=\"{0}/*\"/>", cleanFile.Pattern);
+                        ss.WriteLine("                <include name=\"{0}\"/>", cleanFile.Pattern);
+                        ss.WriteLine("            </fileset>");
+                        ss.WriteLine("        </delete>");
+                    }
+                }
+			    ss.WriteLine("        <delete dir=\"${obj.dir}\" failonerror=\"false\" />");
                 foreach (ProjectNode project in solution.Projects)
                 {
                     string path = Helper.MakePathRelativeTo(solution.FullPath, project.FullPath);
