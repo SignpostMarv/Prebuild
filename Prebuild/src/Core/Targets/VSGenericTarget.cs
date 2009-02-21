@@ -651,7 +651,8 @@ namespace Prebuild.Core.Targets
 
 		private void WriteSolutionFiles(SolutionNode solution, TextWriter ss)
 		{
-			WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);
+            if(solution.Files != null && solution.Files.Count > 0)
+			    WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);
 		}
 
 		private void WriteEmbeddedSolution(TextWriter writer, SolutionNode embeddedSolution)
