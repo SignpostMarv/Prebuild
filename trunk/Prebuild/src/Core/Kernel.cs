@@ -573,7 +573,7 @@ namespace Prebuild.Core
 				{
 					if(!m_Nodes.ContainsKey(node.Name))
 					{
-						//throw new XmlException("Unknown XML node: " + node.Name);
+						Console.WriteLine("WARNING: Unknown XML node: " + node.Name);
 						return null;
 					}
 
