@@ -255,7 +255,7 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("			  {0}", "</fileset>");
 				ss.WriteLine("		  {0}", "</copy>");
 
-				ss.Write("		  <csc");
+				ss.Write("		  <csc ");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
 				foreach (ConfigurationNode conf in project.Configurations)
@@ -311,7 +311,12 @@ namespace Prebuild.Core.Targets
 				{
 					ss.Write(" win32icon=\"{0}\"", Helper.NormalizePath(project.AppIcon, '/'));
 				}
-				ss.WriteLine(">");
+                // This disables a very different behavior between VS and NAnt.  With Nant,
+                //    If you have using System.Xml;  it will ensure System.Xml.dll is referenced,
+                //    but not in VS.  This will force the behaviors to match, so when it works
+                //    in nant, it will work in VS.
+                ss.Write(" noconfig=\"true\"");
+                ss.WriteLine(">");
 				ss.WriteLine("			  <resources prefix=\"{0}\" dynamicprefix=\"true\" >", project.RootNamespace);
 				foreach (string file in project.Files)
 				{
