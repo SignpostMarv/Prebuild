@@ -42,8 +42,7 @@ namespace Prebuild.Core.Utilities
 	{
 		#region Fields
 
-		private static Stack dirStack;
-		private static Regex varRegex;
+        private static Stack dirStack = new Stack();
 		static bool checkForOSVariables;
 
 		/// <summary>
@@ -63,19 +62,6 @@ namespace Prebuild.Core.Utilities
 
 		#endregion
 
-		#region Constructors
-
-		/// <summary>
-		/// Initializes the <see cref="Helper"/> class.
-		/// </summary>
-		static Helper()
-		{
-			dirStack = new Stack();
-			//m_VarRegex = new Regex(@"\${(?<var>[\w|_]+)}");
-		}
-
-		#endregion
-
 		#region Properties
 
 		/// <summary>
@@ -89,33 +75,13 @@ namespace Prebuild.Core.Utilities
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public static Regex VarRegex
-		{
-			get
-			{
-				return varRegex;
-			}
-			set
-			{
-				varRegex = value;
-			}
-		}
-
 		#endregion
         
 		#region Public Methods
 
 		#region String Parsing
-		#region Inner Classes and Delegates
-		/// <summary>
-		/// 
-		/// </summary>
+
 		public delegate string StringLookup(string key);
-		
-		#endregion
 
 		/// <summary>
 		/// Gets a collection of StringLocationPair objects that represent the matches
@@ -544,35 +510,6 @@ namespace Prebuild.Core.Utilities
 
 			return attrs[0];
 		}
-
-		/* A bit of overhead for simple group parsing, there are problems with Regex in Mono
-		public static string ParseValue(string val)
-		{
-			if(val == null || val.Length < 1 || !CheckForOSVariables)
-				return val;
-
-			string tmp = val;
-			Match m = m_VarRegex.Match(val);
-			while(m.Success)
-			{
-				if(m.Groups["var"] == null)
-					continue;
-
-				Capture c = m.Groups["var"].Captures[0];
-				if(c == null)
-					continue;
-
-				string var = c.Value;
-				string envVal = Environment.GetEnvironmentVariable(var);
-				if(envVal == null)
-					envVal = "";
-
-				tmp = tmp.Replace("${" + var + "}", envVal);
-				m = m.NextMatch();
-			}
-
-			return tmp;
-		}*/
 
 		/// <summary>
 		/// Attributes the value.
