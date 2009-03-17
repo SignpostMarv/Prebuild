@@ -245,7 +245,7 @@ namespace Prebuild.Core.Targets
 
 				//ps.WriteLine("      </Settings>");
 
-			    List<ProjectNode> projectReferences = new List<ProjectNode>();
+			    Dictionary<ReferenceNode, ProjectNode> projectReferences = new Dictionary<ReferenceNode, ProjectNode>();
 				List<ReferenceNode> otherReferences = new List<ReferenceNode>();
 
 				foreach (ReferenceNode refr in project.References)
@@ -255,7 +255,7 @@ namespace Prebuild.Core.Targets
 					if (projectNode == null)
 						otherReferences.Add(refr);
 					else
-						projectReferences.Add(projectNode);
+                        projectReferences.Add(refr, projectNode);
 				}
 				// Assembly References
 				ps.WriteLine("  <ItemGroup>");
@@ -277,21 +277,25 @@ namespace Prebuild.Core.Targets
 
 				//Project References
 				ps.WriteLine("  <ItemGroup>");
-				foreach (ProjectNode projectReference in projectReferences)
+				foreach (KeyValuePair<ReferenceNode, ProjectNode> pair in projectReferences)
 				{
-					ToolInfo tool = tools[projectReference.Language];
+					ToolInfo tool = tools[pair.Value.Language];
                     if (tools == null)
                         throw new UnknownLanguageException();
 
                     string path =
                         Helper.MakePathRelativeTo(project.FullPath,
-                                                  Helper.MakeFilePath(projectReference.FullPath, projectReference.Name, tool.FileExtension));
+                                                  Helper.MakeFilePath(pair.Value.FullPath, pair.Value.Name, tool.FileExtension));
                     ps.WriteLine("    <ProjectReference Include=\"{0}\">", path);
 
 					// TODO: Allow reference to visual basic projects
-					ps.WriteLine("      <Name>{0}</Name>", projectReference.Name);
-					ps.WriteLine("      <Project>{0}</Project>", projectReference.Guid.ToString("B").ToUpper());
+                    ps.WriteLine("      <Name>{0}</Name>", pair.Value.Name);
+                    ps.WriteLine("      <Project>{0}</Project>", pair.Value.Guid.ToString("B").ToUpper());
 					ps.WriteLine("      <Package>{0}</Package>", tool.Guid.ToUpper());
+
+                    //This is the Copy Local flag in VS
+                    ps.WriteLine("      <Private>{0}</Private>", pair.Key.LocalCopy);
+
 					ps.WriteLine("    </ProjectReference>");
 				}
 				ps.WriteLine("  </ItemGroup>");
