@@ -294,6 +294,9 @@ namespace Prebuild.Core.Targets
 							break;
 					}
 
+                    if (project.Files.GetCopyToOutput(file) != CopyToOutput.Never)
+						    buildAction = "FileCopy";
+
 					// Sort of a hack, we try and resolve the path and make it relative, if we can.
 					string filePath = PrependPath(file);
 					ss.WriteLine("    <File name=\"{0}\" subtype=\"Code\" buildaction=\"{1}\" dependson=\"\" data=\"\" />", filePath, buildAction);
