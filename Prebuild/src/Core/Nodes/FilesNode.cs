@@ -96,6 +96,11 @@ namespace Prebuild.Core.Nodes
 			return m_Links[file];
 		}
 
+        public bool Contains(string file)
+        {
+            return m_Files.Contains(file);
+        }
+
 		public string GetLinkPath( string file )
 		{
 			if ( !m_LinkPaths.ContainsKey( file ) )
