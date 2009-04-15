@@ -24,7 +24,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Prebuild.Core.Interfaces;
@@ -631,7 +630,7 @@ namespace Prebuild.Core.Targets
 				parentGuid.ToString("B").ToUpper());
 		}
 
-		private static void WriteConfigurationLines(ICollection configurations, SolutionNode solution, TextWriter ss)
+		private static void WriteConfigurationLines(IEnumerable<ConfigurationNode> configurations, SolutionNode solution, TextWriter ss)
 		{
 			foreach (ProjectNode project in solution.Projects)
 			{

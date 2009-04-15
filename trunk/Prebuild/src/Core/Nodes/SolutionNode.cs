@@ -24,7 +24,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
@@ -200,11 +199,11 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations.
 		/// </summary>
 		/// <value>The configurations.</value>
-		public ICollection Configurations
+		public List<ConfigurationNode> Configurations
 		{
 			get
 			{
-                ArrayList tmp = new ArrayList(ConfigurationsTable.Values);
+                List<ConfigurationNode> tmp = new List<ConfigurationNode>(ConfigurationsTable.Values);
                 tmp.Sort();
                 return tmp;
 			}
@@ -224,7 +223,7 @@ namespace Prebuild.Core.Nodes
         /// <summary>
         /// Gets the database projects.
         /// </summary>
-        public ICollection DatabaseProjects
+        public ICollection<DatabaseProjectNode> DatabaseProjects
         {
             get
             {
@@ -234,7 +233,7 @@ namespace Prebuild.Core.Nodes
         /// <summary>
         /// Gets the nested solutions.
         /// </summary>
-        public ICollection Solutions
+        public ICollection<SolutionNode> Solutions
         {
             get
             {
@@ -255,11 +254,11 @@ namespace Prebuild.Core.Nodes
 		/// Gets the projects.
 		/// </summary>
 		/// <value>The projects.</value>
-		public ICollection Projects
+		public ICollection<ProjectNode> Projects
 		{
 			get
 			{
-                ArrayList tmp = new ArrayList(m_Projects.Values);
+                List<ProjectNode> tmp = new List<ProjectNode>(m_Projects.Values);
                 tmp.Sort();
                 return tmp;
 			}

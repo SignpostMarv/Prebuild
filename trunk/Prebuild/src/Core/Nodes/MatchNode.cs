@@ -25,7 +25,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -33,7 +32,6 @@ using System.Xml;
 using Prebuild.Core.Attributes;
 using Prebuild.Core.Interfaces;
 using Prebuild.Core.Utilities;
-using System.Collections;
 
 namespace Prebuild.Core.Nodes
 {
@@ -45,7 +43,7 @@ namespace Prebuild.Core.Nodes
 	{
 		#region Fields
 
-        private readonly StringCollection m_Files = new StringCollection();
+        private readonly List<string> m_Files = new List<string>();
 		private Regex m_Regex;
 		private BuildAction? m_BuildAction;
 		private SubType? m_SubType;
@@ -63,7 +61,7 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
-		public StringCollection Files
+		public IEnumerable<string> Files
 		{
 			get
 			{
@@ -97,7 +95,7 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return this.m_CopyToOutput;
+				return m_CopyToOutput;
 			}
 		}
 
@@ -105,7 +103,7 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return this.m_Link;
+				return m_Link;
 			}
 		}
 
@@ -113,7 +111,7 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return this.m_LinkPath;
+				return m_LinkPath;
 			}
 		}
 		/// <summary>
@@ -297,14 +295,14 @@ namespace Prebuild.Core.Nodes
 			//string subType = Helper.AttributeValue(node, "subType", string.Empty);
 			//if (subType != String.Empty)
 			//    m_SubType = (SubType)Enum.Parse(typeof(SubType), subType);
-			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName.ToString());
-			this.m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", this.m_CopyToOutput.ToString()));
-			this.m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
-			if ( this.m_Link == true )
+			m_ResourceName = Helper.AttributeValue(node, "resourceName", m_ResourceName);
+			m_CopyToOutput = (CopyToOutput) Enum.Parse(typeof(CopyToOutput), Helper.AttributeValue(node, "copyToOutput", m_CopyToOutput.ToString()));
+			m_Link = bool.Parse(Helper.AttributeValue(node, "link", bool.FalseString));
+			if ( m_Link )
 			{
-				this.m_LinkPath = Helper.AttributeValue( node, "linkPath", string.Empty );
+				m_LinkPath = Helper.AttributeValue( node, "linkPath", string.Empty );
 			}
-            this.m_PreservePath = bool.Parse( Helper.AttributeValue( node, "preservePath", bool.FalseString ) );
+            m_PreservePath = bool.Parse( Helper.AttributeValue( node, "preservePath", bool.FalseString ) );
 
 
 			if(path != null && path.Length == 0)
