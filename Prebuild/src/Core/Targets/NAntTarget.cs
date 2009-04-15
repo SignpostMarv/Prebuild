@@ -36,10 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Specialized;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 using Prebuild.Core.Attributes;

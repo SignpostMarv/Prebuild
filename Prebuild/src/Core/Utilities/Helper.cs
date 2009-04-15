@@ -24,7 +24,7 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -42,7 +42,6 @@ namespace Prebuild.Core.Utilities
 	{
 		#region Fields
 
-        private static Stack dirStack = new Stack();
 		static bool checkForOSVariables;
 
 		/// <summary>
@@ -57,21 +56,6 @@ namespace Prebuild.Core.Utilities
 			set
 			{
 				checkForOSVariables = value;
-			}
-		}
-
-		#endregion
-
-		#region Properties
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public static Stack DirStack
-		{
-			get
-			{
-				return dirStack;
 			}
 		}
 

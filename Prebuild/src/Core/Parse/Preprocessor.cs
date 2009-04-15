@@ -24,7 +24,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -405,13 +404,13 @@ namespace Prebuild.Core.Parse
 			// readers which lets the <?include?> operation add more
 			// readers to generate a multi-file parser and not require
 			// XML fragments that a recursive version would use.
-			Stack readerStack = new Stack();
+			Stack<XmlReader> readerStack = new Stack<XmlReader>();
 			readerStack.Push(initialReader);
 			
 			while(readerStack.Count > 0)
 			{
 				// Pop off the next reader.
-				XmlReader reader = (XmlReader) readerStack.Pop();
+				XmlReader reader = readerStack.Pop();
 
 				// Process through this XML reader until it is
 				// completed (or it is replaced by the include

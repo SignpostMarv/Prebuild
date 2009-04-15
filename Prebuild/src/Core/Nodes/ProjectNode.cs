@@ -24,7 +24,6 @@ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY O
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -324,11 +323,11 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations.
 		/// </summary>
 		/// <value>The configurations.</value>
-		public IList Configurations
+        public List<ConfigurationNode> Configurations
 		{
 			get
 			{
-                ArrayList tmp = new ArrayList(ConfigurationsTable.Values);
+			    List<ConfigurationNode> tmp = new List<ConfigurationNode>(ConfigurationsTable.Values);
                 tmp.Sort();
                 return tmp;
 			}

@@ -38,7 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -376,12 +375,12 @@ namespace Prebuild.Core
                 Core.Parse.Preprocessor pre = new Core.Parse.Preprocessor();
 
                 //register command line arguments as XML variables
-                IDictionaryEnumerator dict = m_CommandLine.GetEnumerator();
+			    IEnumerator<KeyValuePair<string, string>> dict = m_CommandLine.GetEnumerator();
                 while (dict.MoveNext())
                 {
-                    string name = dict.Key.ToString().Trim();
+                    string name = dict.Current.Key.Trim();
                     if (name.Length > 0)
-                        pre.RegisterVariable(name, dict.Value.ToString());
+                        pre.RegisterVariable(name, dict.Current.Value);
                 }
 
 				string xml = pre.Process(reader);//remove script and evaulate pre-proccessing to get schema-conforming XML

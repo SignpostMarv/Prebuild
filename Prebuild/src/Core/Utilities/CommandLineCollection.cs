@@ -32,7 +32,7 @@ namespace Prebuild.Core.Utilities
 	/// The CommandLine class parses and interprets the command-line arguments passed to
 	/// prebuild.
 	/// </summary>
-	public class CommandLineCollection
+	public class CommandLineCollection : IEnumerable<KeyValuePair<string, string>>
 	{
 		#region Fields
 
@@ -137,11 +137,16 @@ namespace Prebuild.Core.Utilities
 		/// An <see cref="T:System.Collections.IDictionaryEnumerator"/>
 		/// that can be used to iterate through the collection.
 		/// </returns>
-		public IDictionaryEnumerator GetEnumerator() 
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
 		{
-			return m_Arguments.GetEnumerator();
+		    return m_Arguments.GetEnumerator();
 		}
 
-		#endregion
+	    IEnumerator IEnumerable.GetEnumerator()
+	    {
+	        return GetEnumerator();
+	    }
+
+	    #endregion
 	}
 }
