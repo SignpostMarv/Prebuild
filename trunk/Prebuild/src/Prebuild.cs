@@ -86,17 +86,17 @@ namespace Prebuild
 				{
 					kernel.Process();
 				}
-			}
-			catch(Exception	ex)	
-			{
-				Console.WriteLine("Unhandled error:	{0}", ex.Message);
-				//#if DEBUG
-				Console.WriteLine("{0}", ex.StackTrace);
-				//#endif
-			}
-			finally
-			{
-				if(kernel.PauseAfterFinish)	
+            }
+#if !DEBUG
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unhandled error:	{0}", ex.Message);
+                Console.WriteLine("{0}", ex.StackTrace);
+            }
+#endif
+            finally
+            {
+				if(kernel != null && kernel.PauseAfterFinish)	
 				{
 					Console.WriteLine("\nPress enter to continue...");
 					Console.ReadLine();
