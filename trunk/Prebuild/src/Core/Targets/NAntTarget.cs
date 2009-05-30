@@ -255,6 +255,9 @@ namespace Prebuild.Core.Targets
 				ss.Write("		  <csc ");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
+                if(project.Platform != "AnyCPU")
+                    ss.Write(" platform=\"{0}\"", project.Platform);
+
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					if (conf.Options.KeyFile != "")

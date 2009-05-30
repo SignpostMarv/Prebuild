@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<Prebuild xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.7.xsd" version="1.7">
+<Prebuild xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.8.xsd" version="1.8">
     <Solution name="Prebuild" version="2.0.4">
 	<Configuration name="Debug">
 	    <Options>
@@ -64,7 +64,7 @@
 	    <Reference name="System" />
 	    <Files>
 		<Match pattern="App.ico" buildAction="EmbeddedResource"/>
-		<Match path="data" pattern="prebuild-1.7.xsd" buildAction="EmbeddedResource"/>
+		<Match path="data" pattern="prebuild-1.8.xsd" buildAction="EmbeddedResource"/>
 		<Match path="data" pattern="autotools.xml" buildAction="EmbeddedResource"/>
 		<Match pattern="*.cs" recurse="true"/>			
 	    </Files>

@@ -41,51 +41,51 @@ namespace Prebuild.Core.Targets
 	{
 		#region Fields
 
-	    readonly Dictionary<string, ToolInfo> tools = new Dictionary<string, ToolInfo>();
+		readonly Dictionary<string, ToolInfo> tools = new Dictionary<string, ToolInfo>();
 		Kernel kernel;
 		#endregion
 
-        #region Properties
-        /// <summary>
-        /// Gets or sets the solution version.
-        /// </summary>
-        /// <value>The solution version.</value>
-        public abstract string SolutionVersion { get; }
-        /// <summary>
-        /// Gets or sets the product version.
-        /// </summary>
-        /// <value>The product version.</value>
-        public abstract string ProductVersion { get; }
-        /// <summary>
-        /// Gets or sets the schema version.
-        /// </summary>
-        /// <value>The schema version.</value>
-        public abstract string SchemaVersion { get; }
-        /// <summary>
-        /// Gets or sets the name of the version.
-        /// </summary>
-        /// <value>The name of the version.</value>
-        public abstract string VersionName { get; }
-        /// <summary>
-        /// Gets or sets the version.
-        /// </summary>
-        /// <value>The version.</value>
-        public abstract VSVersion Version { get; }
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        /// <value>The name.</value>
-        public abstract string Name { get; }
+		#region Properties
+		/// <summary>
+		/// Gets or sets the solution version.
+		/// </summary>
+		/// <value>The solution version.</value>
+		public abstract string SolutionVersion { get; }
+		/// <summary>
+		/// Gets or sets the product version.
+		/// </summary>
+		/// <value>The product version.</value>
+		public abstract string ProductVersion { get; }
+		/// <summary>
+		/// Gets or sets the schema version.
+		/// </summary>
+		/// <value>The schema version.</value>
+		public abstract string SchemaVersion { get; }
+		/// <summary>
+		/// Gets or sets the name of the version.
+		/// </summary>
+		/// <value>The name of the version.</value>
+		public abstract string VersionName { get; }
+		/// <summary>
+		/// Gets or sets the version.
+		/// </summary>
+		/// <value>The version.</value>
+		public abstract VSVersion Version { get; }
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
+		/// <value>The name.</value>
+		public abstract string Name { get; }
 
-        protected abstract string GetToolsVersionXml(FrameworkVersion version);
-        public abstract string SolutionTag { get; }
+		protected abstract string GetToolsVersionXml(FrameworkVersion version);
+		public abstract string SolutionTag { get; }
 
-        #endregion
+		#endregion
 
 		#region Constructors
 
 		/// <summary>
-        /// Initializes a new instance of the <see cref="VSGenericTarget"/> class.
+		/// Initializes a new instance of the <see cref="VSGenericTarget"/> class.
 		/// </summary>
 		protected VSGenericTarget()
 		{
@@ -169,82 +169,83 @@ namespace Prebuild.Core.Targets
 			using (ps)
 			{
 				ps.WriteLine("<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\" {0}>", GetToolsVersionXml(project.FrameworkVersion));
-				ps.WriteLine("  <PropertyGroup>");
-				ps.WriteLine("    <ProjectType>Local</ProjectType>");
-				ps.WriteLine("    <ProductVersion>{0}</ProductVersion>", ProductVersion);
-				ps.WriteLine("    <SchemaVersion>{0}</SchemaVersion>", SchemaVersion);
-				ps.WriteLine("    <ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper());
+				ps.WriteLine("	<PropertyGroup>");
+				ps.WriteLine("	  <ProjectType>Local</ProjectType>");
+				ps.WriteLine("	  <ProductVersion>{0}</ProductVersion>", ProductVersion);
+				ps.WriteLine("	  <SchemaVersion>{0}</SchemaVersion>", SchemaVersion);
+				ps.WriteLine("	  <ProjectGuid>{{{0}}}</ProjectGuid>", project.Guid.ToString().ToUpper());
 
 				// Visual Studio has a hard coded guid for the project type
 				if (project.Type == ProjectType.Web)
-					ps.WriteLine("    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>");
-				ps.WriteLine("    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
-				ps.WriteLine("    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>");
-				ps.WriteLine("    <ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon);
-				ps.WriteLine("    <AssemblyKeyContainerName>");
-				ps.WriteLine("    </AssemblyKeyContainerName>");
-				ps.WriteLine("    <AssemblyName>{0}</AssemblyName>", project.AssemblyName);
+					ps.WriteLine("	  <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>");
+				ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
+				ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">Platform</Platform>", project.Platform);
+				ps.WriteLine("	  <ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon);
+				ps.WriteLine("	  <AssemblyKeyContainerName>");
+				ps.WriteLine("	  </AssemblyKeyContainerName>");
+				ps.WriteLine("	  <AssemblyName>{0}</AssemblyName>", project.AssemblyName);
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					if (conf.Options.KeyFile != "")
 					{
-						ps.WriteLine("    <AssemblyOriginatorKeyFile>{0}</AssemblyOriginatorKeyFile>", conf.Options.KeyFile);
-						ps.WriteLine("    <SignAssembly>true</SignAssembly>");
+						ps.WriteLine("	  <AssemblyOriginatorKeyFile>{0}</AssemblyOriginatorKeyFile>", conf.Options.KeyFile);
+						ps.WriteLine("	  <SignAssembly>true</SignAssembly>");
 						break;
 					}
 				}
-				ps.WriteLine("    <DefaultClientScript>JScript</DefaultClientScript>");
-				ps.WriteLine("    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>");
-				ps.WriteLine("    <DefaultTargetSchema>IE50</DefaultTargetSchema>");
-				ps.WriteLine("    <DelaySign>false</DelaySign>");
-				ps.WriteLine("    <TargetFrameworkVersion>{0}</TargetFrameworkVersion>", project.FrameworkVersion.ToString().Replace("_", "."));
+				ps.WriteLine("	  <DefaultClientScript>JScript</DefaultClientScript>");
+				ps.WriteLine("	  <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>");
+				ps.WriteLine("	  <DefaultTargetSchema>IE50</DefaultTargetSchema>");
+				ps.WriteLine("	  <DelaySign>false</DelaySign>");
+				ps.WriteLine("	  <TargetFrameworkVersion>{0}</TargetFrameworkVersion>", project.FrameworkVersion.ToString().Replace("_", "."));
 
-				ps.WriteLine("    <OutputType>{0}</OutputType>", project.Type == ProjectType.Web ? ProjectType.Library.ToString() : project.Type.ToString());
-				ps.WriteLine("    <AppDesignerFolder>{0}</AppDesignerFolder>", project.DesignerFolder);
-				ps.WriteLine("    <RootNamespace>{0}</RootNamespace>", project.RootNamespace);
-				ps.WriteLine("    <StartupObject>{0}</StartupObject>", project.StartupObject);
-                if (string.IsNullOrEmpty(project.DebugStartParameters))
-                {
-                    ps.WriteLine("    <StartArguments>{0}</StartArguments>", project.DebugStartParameters);
-                }
-				ps.WriteLine("    <FileUpgradeFlags>");
-				ps.WriteLine("    </FileUpgradeFlags>");
+				ps.WriteLine("	  <OutputType>{0}</OutputType>", project.Type == ProjectType.Web ? ProjectType.Library.ToString() : project.Type.ToString());
+				ps.WriteLine("	  <AppDesignerFolder>{0}</AppDesignerFolder>", project.DesignerFolder);
+				ps.WriteLine("	  <RootNamespace>{0}</RootNamespace>", project.RootNamespace);
+				ps.WriteLine("	  <StartupObject>{0}</StartupObject>", project.StartupObject);
+				if (string.IsNullOrEmpty(project.DebugStartParameters))
+				{
+					ps.WriteLine("	  <StartArguments>{0}</StartArguments>", project.DebugStartParameters);
+				}
+				ps.WriteLine("	  <FileUpgradeFlags>");
+				ps.WriteLine("	  </FileUpgradeFlags>");
 
-				ps.WriteLine("  </PropertyGroup>");
+				ps.WriteLine("	</PropertyGroup>");
 
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
-					ps.Write("  <PropertyGroup ");
-					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|AnyCPU' \">", conf.Name);
-					ps.WriteLine("    <AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options["AllowUnsafe"]);
-					ps.WriteLine("    <BaseAddress>{0}</BaseAddress>", conf.Options["BaseAddress"]);
-					ps.WriteLine("    <CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options["CheckUnderflowOverflow"]);
-					ps.WriteLine("    <ConfigurationOverrideFile>");
-					ps.WriteLine("    </ConfigurationOverrideFile>");
-					ps.WriteLine("    <DefineConstants>{0}</DefineConstants>", conf.Options["CompilerDefines"]);
-					ps.WriteLine("    <DocumentationFile>{0}</DocumentationFile>", Helper.NormalizePath(conf.Options["XmlDocFile"].ToString()));
-					ps.WriteLine("    <DebugSymbols>{0}</DebugSymbols>", conf.Options["DebugInformation"]);
-					ps.WriteLine("    <FileAlignment>{0}</FileAlignment>", conf.Options["FileAlignment"]);
-					ps.WriteLine("    <Optimize>{0}</Optimize>", conf.Options["OptimizeCode"]);
+					ps.Write("	<PropertyGroup ");
+					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|Platform' \">", conf.Name, project.Platform);
+					ps.WriteLine("	  <AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options["AllowUnsafe"]);
+					ps.WriteLine("	  <BaseAddress>{0}</BaseAddress>", conf.Options["BaseAddress"]);
+					ps.WriteLine("	  <CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options["CheckUnderflowOverflow"]);
+					ps.WriteLine("	  <ConfigurationOverrideFile>");
+					ps.WriteLine("	  </ConfigurationOverrideFile>");
+					ps.WriteLine("	  <DefineConstants>{0}</DefineConstants>", conf.Options["CompilerDefines"]);
+					ps.WriteLine("	  <DocumentationFile>{0}</DocumentationFile>", Helper.NormalizePath(conf.Options["XmlDocFile"].ToString()));
+					ps.WriteLine("	  <DebugSymbols>{0}</DebugSymbols>", conf.Options["DebugInformation"]);
+					ps.WriteLine("	  <FileAlignment>{0}</FileAlignment>", conf.Options["FileAlignment"]);
+					ps.WriteLine("	  <Optimize>{0}</Optimize>", conf.Options["OptimizeCode"]);
 					if (project.Type != ProjectType.Web)
-						ps.WriteLine("    <OutputPath>{0}</OutputPath>",
+						ps.WriteLine("	  <OutputPath>{0}</OutputPath>",
 							Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
 					else
-						ps.WriteLine("    <OutputPath>{0}</OutputPath>",
+						ps.WriteLine("	  <OutputPath>{0}</OutputPath>",
 							Helper.EndPath(Helper.NormalizePath("bin\\")));
 
-					ps.WriteLine("    <RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options["RegisterComInterop"]);
-					ps.WriteLine("    <RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options["RemoveIntegerChecks"]);
-					ps.WriteLine("    <TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options["WarningsAsErrors"]);
-					ps.WriteLine("    <WarningLevel>{0}</WarningLevel>", conf.Options["WarningLevel"]);
-					ps.WriteLine("    <NoStdLib>{0}</NoStdLib>", conf.Options["NoStdLib"]);
-					ps.WriteLine("    <NoWarn>{0}</NoWarn>", conf.Options["SuppressWarnings"]);
-					ps.WriteLine("  </PropertyGroup>");
+					ps.WriteLine("	  <RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options["RegisterComInterop"]);
+					ps.WriteLine("	  <RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options["RemoveIntegerChecks"]);
+					ps.WriteLine("	  <TreatWarningsAsErrors>{0}</TreatWarningsAsErrors>", conf.Options["WarningsAsErrors"]);
+					ps.WriteLine("	  <WarningLevel>{0}</WarningLevel>", conf.Options["WarningLevel"]);
+					ps.WriteLine("	  <NoStdLib>{0}</NoStdLib>", conf.Options["NoStdLib"]);
+					ps.WriteLine("	  <NoWarn>{0}</NoWarn>", conf.Options["SuppressWarnings"]);
+					ps.WriteLine("	  <PlatformTarget>{0}</PlatformTarget>", project.Platform);
+					ps.WriteLine("	</PropertyGroup>");
 				}
 
-				//ps.WriteLine("      </Settings>");
+				//ps.WriteLine("	  </Settings>");
 
-			    Dictionary<ReferenceNode, ProjectNode> projectReferences = new Dictionary<ReferenceNode, ProjectNode>();
+				Dictionary<ReferenceNode, ProjectNode> projectReferences = new Dictionary<ReferenceNode, ProjectNode>();
 				List<ReferenceNode> otherReferences = new List<ReferenceNode>();
 
 				foreach (ReferenceNode refr in project.References)
@@ -254,58 +255,58 @@ namespace Prebuild.Core.Targets
 					if (projectNode == null)
 						otherReferences.Add(refr);
 					else
-                        projectReferences.Add(refr, projectNode);
+						projectReferences.Add(refr, projectNode);
 				}
 				// Assembly References
-				ps.WriteLine("  <ItemGroup>");
+				ps.WriteLine("	<ItemGroup>");
 
 				foreach (ReferenceNode refr in otherReferences)
 				{
-					ps.Write("    <Reference");
+					ps.Write("	  <Reference");
 					ps.Write(" Include=\"");
 					ps.Write(refr.Name);
 					ps.WriteLine("\" >");
-					ps.Write("        <Name>");
+					ps.Write("		  <Name>");
 					ps.Write(refr.Name);
 					ps.WriteLine("</Name>");
 					// TODO: Allow reference to *.exe files
-                    ps.WriteLine("      <Private>{0}</Private>", refr.LocalCopy);
-					ps.WriteLine("    </Reference>");
+					ps.WriteLine("		<Private>{0}</Private>", refr.LocalCopy);
+					ps.WriteLine("	  </Reference>");
 				}
-				ps.WriteLine("  </ItemGroup>");
+				ps.WriteLine("	</ItemGroup>");
 
 				//Project References
-				ps.WriteLine("  <ItemGroup>");
+				ps.WriteLine("	<ItemGroup>");
 				foreach (KeyValuePair<ReferenceNode, ProjectNode> pair in projectReferences)
 				{
 					ToolInfo tool = tools[pair.Value.Language];
-                    if (tools == null)
-                        throw new UnknownLanguageException();
+					if (tools == null)
+						throw new UnknownLanguageException();
 
-                    string path =
-                        Helper.MakePathRelativeTo(project.FullPath,
-                                                  Helper.MakeFilePath(pair.Value.FullPath, pair.Value.Name, tool.FileExtension));
-                    ps.WriteLine("    <ProjectReference Include=\"{0}\">", path);
+					string path =
+						Helper.MakePathRelativeTo(project.FullPath,
+												  Helper.MakeFilePath(pair.Value.FullPath, pair.Value.Name, tool.FileExtension));
+					ps.WriteLine("	  <ProjectReference Include=\"{0}\">", path);
 
 					// TODO: Allow reference to visual basic projects
-                    ps.WriteLine("      <Name>{0}</Name>", pair.Value.Name);
-                    ps.WriteLine("      <Project>{0}</Project>", pair.Value.Guid.ToString("B").ToUpper());
-					ps.WriteLine("      <Package>{0}</Package>", tool.Guid.ToUpper());
+					ps.WriteLine("		<Name>{0}</Name>", pair.Value.Name);
+					ps.WriteLine("		<Project>{0}</Project>", pair.Value.Guid.ToString("B").ToUpper());
+					ps.WriteLine("		<Package>{0}</Package>", tool.Guid.ToUpper());
 
-                    //This is the Copy Local flag in VS
-                    ps.WriteLine("      <Private>{0}</Private>", pair.Key.LocalCopy);
+					//This is the Copy Local flag in VS
+					ps.WriteLine("		<Private>{0}</Private>", pair.Key.LocalCopy);
 
-					ps.WriteLine("    </ProjectReference>");
+					ps.WriteLine("	  </ProjectReference>");
 				}
-				ps.WriteLine("  </ItemGroup>");
+				ps.WriteLine("	</ItemGroup>");
 
-				//                ps.WriteLine("    </Build>");
-				ps.WriteLine("  <ItemGroup>");
+				//				  ps.WriteLine("	</Build>");
+				ps.WriteLine("	<ItemGroup>");
 
-				//                ps.WriteLine("      <Include>");
+				//				  ps.WriteLine("	  <Include>");
 				List<string> list = new List<string>();
 
-			    foreach (string path in project.Files)
+				foreach (string path in project.Files)
 				{
 					string lower = path.ToLower();
 					if (lower.EndsWith(".resx"))
@@ -313,7 +314,7 @@ namespace Prebuild.Core.Targets
 						string codebehind = String.Format("{0}.Designer{1}", path.Substring(0, path.LastIndexOf('.')), toolInfo.LanguageExtension);
 						if (!list.Contains(codebehind))
 							list.Add(codebehind);
-                    }
+					}
 
 				}
 				
@@ -334,83 +335,83 @@ namespace Prebuild.Core.Targets
 					if (subType != SubType.Code && subType != SubType.Settings && subType != SubType.Designer
 						&& subType != SubType.CodeBehind)
 					{
-						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
-						ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
-						ps.WriteLine("      <SubType>Designer</SubType>");
-						ps.WriteLine("    </EmbeddedResource>");
+						ps.WriteLine("	  <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
+						ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
+						ps.WriteLine("		<SubType>Designer</SubType>");
+						ps.WriteLine("	  </EmbeddedResource>");
 						//
 					}
 
 					if (subType == SubType.Designer)
 					{
-						ps.WriteLine("    <EmbeddedResource Include=\"{0}\">", file);
+						ps.WriteLine("	  <EmbeddedResource Include=\"{0}\">", file);
 						
 						string autogen_name = file.Substring(0, file.LastIndexOf('.')) + ".Designer.cs";
-                        string dependent_name = filePath.Substring(0, file.LastIndexOf('.')) + ".cs";
+						string dependent_name = filePath.Substring(0, file.LastIndexOf('.')) + ".cs";
 
-                        // Check for a parent .cs file with the same name as this designer file
-                        if (File.Exists(Helper.NormalizePath(dependent_name)))
-                        {
-                            ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
-                        }
-                        else
-                        {
-                            ps.WriteLine("      <Generator>ResXFileCodeGenerator</Generator>");
-                            ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", Path.GetFileName(autogen_name));
-                            ps.WriteLine("      <SubType>" + subType + "</SubType>");
-                        }
+						// Check for a parent .cs file with the same name as this designer file
+						if (File.Exists(Helper.NormalizePath(dependent_name)))
+						{
+							ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
+						}
+						else
+						{
+							ps.WriteLine("		<Generator>ResXFileCodeGenerator</Generator>");
+							ps.WriteLine("		<LastGenOutput>{0}</LastGenOutput>", Path.GetFileName(autogen_name));
+							ps.WriteLine("		<SubType>" + subType + "</SubType>");
+						}
 						
-                        ps.WriteLine("    </EmbeddedResource>");
+						ps.WriteLine("	  </EmbeddedResource>");
 						if (File.Exists(Helper.NormalizePath(autogen_name)))
 						{
-							ps.WriteLine("    <Compile Include=\"{0}\">", autogen_name);
-							//ps.WriteLine("      <DesignTime>True</DesignTime>");
+							ps.WriteLine("	  <Compile Include=\"{0}\">", autogen_name);
+							//ps.WriteLine("	  <DesignTime>True</DesignTime>");
 
-                            // If a parent .cs file exists, link this autogen file to it. Otherwise link
-                            // to the designer file
-                            if (File.Exists(dependent_name))
-                            {
-                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
-                            }
-                            else
-                            {
-                                ps.WriteLine("      <AutoGen>True</AutoGen>");
-                                ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(filePath));
-                            }
+							// If a parent .cs file exists, link this autogen file to it. Otherwise link
+							// to the designer file
+							if (File.Exists(dependent_name))
+							{
+								ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(dependent_name));
+							}
+							else
+							{
+								ps.WriteLine("		<AutoGen>True</AutoGen>");
+								ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(filePath));
+							}
 	
-                            ps.WriteLine("    </Compile>");
+							ps.WriteLine("	  </Compile>");
 						}
 						list.Add(autogen_name);
 					}
 					if (subType == SubType.Settings)
 					{
-						ps.Write("    <{0} ", project.Files.GetBuildAction(filePath));
+						ps.Write("	  <{0} ", project.Files.GetBuildAction(filePath));
 						ps.WriteLine("Include=\"{0}\">", file);
 						string fileName = Path.GetFileName(filePath);
 						if (project.Files.GetBuildAction(filePath) == BuildAction.None)
 						{
-							ps.WriteLine("      <Generator>SettingsSingleFileGenerator</Generator>");
-							ps.WriteLine("      <LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
+							ps.WriteLine("		<Generator>SettingsSingleFileGenerator</Generator>");
+							ps.WriteLine("		<LastGenOutput>{0}</LastGenOutput>", fileName.Substring(0, fileName.LastIndexOf('.')) + ".Designer.cs");
 						}
 						else
 						{
-							ps.WriteLine("      <SubType>Code</SubType>");
-							ps.WriteLine("      <AutoGen>True</AutoGen>");
-							ps.WriteLine("      <DesignTimeSharedInput>True</DesignTimeSharedInput>");
+							ps.WriteLine("		<SubType>Code</SubType>");
+							ps.WriteLine("		<AutoGen>True</AutoGen>");
+							ps.WriteLine("		<DesignTimeSharedInput>True</DesignTimeSharedInput>");
 							string fileNameShort = fileName.Substring(0, fileName.LastIndexOf('.'));
 							string fileNameShorter = fileNameShort.Substring(0, fileNameShort.LastIndexOf('.'));
-							ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(fileNameShorter + ".settings"));
+							ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(fileNameShorter + ".settings"));
 						}
-						ps.WriteLine("    </{0}>", project.Files.GetBuildAction(filePath));
+						ps.WriteLine("	  </{0}>", project.Files.GetBuildAction(filePath));
 					}
 					else if (subType != SubType.Designer)
 					{
 						string path = Helper.NormalizePath(file);
-                        string path_lower = path.ToLower();
+						string path_lower = path.ToLower();
 
 						if (!list.Contains(filePath))
 						{
-							ps.Write("    <{0} ", project.Files.GetBuildAction(filePath));
+							ps.Write("	  <{0} ", project.Files.GetBuildAction(filePath));
 
 							int startPos = 0;
 							if (project.Files.GetPreservePath(filePath))
@@ -424,75 +425,75 @@ namespace Prebuild.Core.Targets
 								startPos = file.LastIndexOf(Path.GetFileName(path));
 							}
 							
-                            // be sure to write out the path with backslashes so VS recognizes
-                            // the file properly.
+							// be sure to write out the path with backslashes so VS recognizes
+							// the file properly.
 							ps.WriteLine("Include=\"{0}\">", file);
 
 							int last_period_index = file.LastIndexOf('.');
 							string short_file_name = file.Substring(0, last_period_index);
 							string extension = Path.GetExtension(path);
-                            // make this upper case, so that when File.Exists tests for the 
-                            // existence of a designer file on a case-sensitive platform, 
-                            // it is correctly identified.
+							// make this upper case, so that when File.Exists tests for the 
+							// existence of a designer file on a case-sensitive platform, 
+							// it is correctly identified.
 							string designer_format = string.Format(".Designer{0}", extension);
 
-                            if (path_lower.EndsWith(designer_format.ToLowerInvariant()))
+							if (path_lower.EndsWith(designer_format.ToLowerInvariant()))
 							{
 								int designer_index = path.IndexOf(designer_format);
-                                string file_name = path.Substring(0, designer_index);
+								string file_name = path.Substring(0, designer_index);
 
 								// There are two corrections to the next lines:
-                                // 1. Fix the connection between a designer file and a form 
-                                //    or usercontrol that don't have an associated resx file.
-                                // 2. Connect settings files to associated designer files.
-                                if (File.Exists(file_name + extension))
-                                    ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + extension));
-                                else if (File.Exists(file_name + ".resx"))
-                                    ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + ".resx"));
-                                else if (File.Exists(file_name + ".settings"))
-                                {
-                                    ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + ".settings"));
-                                    ps.WriteLine("      <AutoGen>True</AutoGen>");
-                                    ps.WriteLine("      <DesignTimeSharedInput>True</DesignTimeSharedInput>");
-                                }
+								// 1. Fix the connection between a designer file and a form 
+								//	  or usercontrol that don't have an associated resx file.
+								// 2. Connect settings files to associated designer files.
+								if (File.Exists(file_name + extension))
+									ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + extension));
+								else if (File.Exists(file_name + ".resx"))
+									ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + ".resx"));
+								else if (File.Exists(file_name + ".settings"))
+								{
+									ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(file_name + ".settings"));
+									ps.WriteLine("		<AutoGen>True</AutoGen>");
+									ps.WriteLine("		<DesignTimeSharedInput>True</DesignTimeSharedInput>");
+								}
 							}
 							else if (subType == SubType.CodeBehind)
 							{
-								ps.WriteLine("      <DependentUpon>{0}</DependentUpon>", Path.GetFileName(short_file_name));
+								ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(short_file_name));
 							}
 							if (project.Files.GetIsLink(filePath))
 							{
 								string alias = project.Files.GetLinkPath(filePath);
 								alias += file.Substring(startPos);
 								alias = Helper.NormalizePath(alias);
-								ps.WriteLine("      <Link>{0}</Link>", alias);
+								ps.WriteLine("		<Link>{0}</Link>", alias);
 							}
 							else if (project.Files.GetBuildAction(filePath) != BuildAction.None)
 							{
 								if (project.Files.GetBuildAction(filePath) != BuildAction.EmbeddedResource)
 								{
-									ps.WriteLine("      <SubType>{0}</SubType>", subType);
+									ps.WriteLine("		<SubType>{0}</SubType>", subType);
 								}
 							}
 
 							if (project.Files.GetCopyToOutput(filePath) != CopyToOutput.Never)
 							{
-								ps.WriteLine("      <CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(filePath));
+								ps.WriteLine("		<CopyToOutputDirectory>{0}</CopyToOutputDirectory>", project.Files.GetCopyToOutput(filePath));
 							}
 
-							ps.WriteLine("    </{0}>", project.Files.GetBuildAction(filePath));
+							ps.WriteLine("	  </{0}>", project.Files.GetBuildAction(filePath));
 						}
 					}
 				}
 
-				ps.WriteLine("  </ItemGroup>");
-				ps.WriteLine("  <Import Project=\"" + toolInfo.ImportProject + "\" />");
-				ps.WriteLine("  <PropertyGroup>");
-				ps.WriteLine("    <PreBuildEvent>");
-				ps.WriteLine("    </PreBuildEvent>");
-				ps.WriteLine("    <PostBuildEvent>");
-				ps.WriteLine("    </PostBuildEvent>");
-				ps.WriteLine("  </PropertyGroup>");
+				ps.WriteLine("	</ItemGroup>");
+				ps.WriteLine("	<Import Project=\"" + toolInfo.ImportProject + "\" />");
+				ps.WriteLine("	<PropertyGroup>");
+				ps.WriteLine("	  <PreBuildEvent>");
+				ps.WriteLine("	  </PreBuildEvent>");
+				ps.WriteLine("	  <PostBuildEvent>");
+				ps.WriteLine("	  </PostBuildEvent>");
+				ps.WriteLine("	</PropertyGroup>");
 				ps.WriteLine("</Project>");
 			}
 			#endregion
@@ -505,20 +506,20 @@ namespace Prebuild.Core.Targets
 				ps.WriteLine("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
 				//ps.WriteLine( "<VisualStudioProject>" );
 				//ps.WriteLine("  <{0}>", toolInfo.XMLTag);
-				//ps.WriteLine("    <Build>");
-				ps.WriteLine("  <PropertyGroup>");
-				//ps.WriteLine("      <Settings ReferencePath=\"{0}\">", MakeRefPath(project));
-				ps.WriteLine("    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
-				ps.WriteLine("    <Platform Condition=\" '$(Platform)' == '' \">AnyCPU</Platform>");
-				ps.WriteLine("    <ReferencePath>{0}</ReferencePath>", MakeRefPath(project));
-				ps.WriteLine("    <LastOpenVersion>{0}</LastOpenVersion>", ProductVersion);
-				ps.WriteLine("    <ProjectView>ProjectFiles</ProjectView>");
-				ps.WriteLine("    <ProjectTrust>0</ProjectTrust>");
-				ps.WriteLine("  </PropertyGroup>");
+				//ps.WriteLine("	<Build>");
+				ps.WriteLine("	<PropertyGroup>");
+				//ps.WriteLine("	  <Settings ReferencePath=\"{0}\">", MakeRefPath(project));
+				ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
+				ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">Platform</Platform>", project.Platform);
+				ps.WriteLine("	  <ReferencePath>{0}</ReferencePath>", MakeRefPath(project));
+				ps.WriteLine("	  <LastOpenVersion>{0}</LastOpenVersion>", ProductVersion);
+				ps.WriteLine("	  <ProjectView>ProjectFiles</ProjectView>");
+				ps.WriteLine("	  <ProjectTrust>0</ProjectTrust>");
+				ps.WriteLine("	</PropertyGroup>");
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
-					ps.Write("  <PropertyGroup");
-					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|AnyCPU' \"", conf.Name);
+					ps.Write("	<PropertyGroup");
+					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|Platform' \"", conf.Name);
 					ps.WriteLine(" />");
 				}
 				ps.WriteLine("</Project>");
@@ -528,7 +529,7 @@ namespace Prebuild.Core.Targets
 			kernel.CurrentWorkingDirectory.Pop();
 		}
 
-	    private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
+		private void WriteSolution(SolutionNode solution, bool writeSolutionToDisk)
 		{
 			kernel.Log.Write("Creating {0} solution and project files", VersionName);
 
@@ -555,13 +556,13 @@ namespace Prebuild.Core.Targets
 				kernel.Log.Write("");
 				string solutionFile = Helper.MakeFilePath(solution.FullPath, solution.Name, "sln");
 				
-                using (StreamWriter ss = new StreamWriter(solutionFile))
-                {
-                    kernel.CurrentWorkingDirectory.Push();
-                    Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
+				using (StreamWriter ss = new StreamWriter(solutionFile))
+				{
+					kernel.CurrentWorkingDirectory.Push();
+					Helper.SetCurrentDir(Path.GetDirectoryName(solutionFile));
 
 					ss.WriteLine("Microsoft Visual Studio Solution File, Format Version {0}", SolutionVersion);
-                    ss.WriteLine(SolutionTag);
+					ss.WriteLine(SolutionTag);
 
 					WriteProjectDeclarations(ss, solution, solution);
 
@@ -570,7 +571,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
 					foreach (ConfigurationNode conf in solution.Configurations)
 					{
-						ss.WriteLine("\t\t{0}|Any CPU = {0}|Any CPU", conf.Name);
+						ss.WriteLine("\t\t{0}|Platform = {0}|Platform", conf.Name);
 					}
 					ss.WriteLine("\tEndGlobalSection");
 
@@ -656,11 +657,11 @@ namespace Prebuild.Core.Targets
 			{
 				foreach (ConfigurationNode conf in configurations)
 				{
-					ss.WriteLine("\t\t{0}.{1}|Any CPU.ActiveCfg = {1}|Any CPU",
+					ss.WriteLine("\t\t{0}.{1}|Platform.ActiveCfg = {1}|Platform",
 						project.Guid.ToString("B").ToUpper(),
 						conf.Name);
 
-					ss.WriteLine("\t\t{0}.{1}|Any CPU.Build.0 = {1}|Any CPU",
+					ss.WriteLine("\t\t{0}.{1}|Platform.Build.0 = {1}|Platform",
 						project.Guid.ToString("B").ToUpper(),
 						conf.Name);
 				}
@@ -674,8 +675,8 @@ namespace Prebuild.Core.Targets
 
 		private void WriteSolutionFiles(SolutionNode solution, TextWriter ss)
 		{
-            if(solution.Files != null && solution.Files.Count > 0)
-			    WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);
+			if(solution.Files != null && solution.Files.Count > 0)
+				WriteProject(ss, "Folder", solution.Guid, "Solution Files", "Solution Files", solution.Files);
 		}
 
 		private void WriteEmbeddedSolution(TextWriter writer, SolutionNode embeddedSolution)
@@ -694,7 +695,7 @@ namespace Prebuild.Core.Targets
 				WriteProject(ss, solution, "Database", dbProject.Guid, dbProject.Name, dbProject.FullPath);
 		}
 
-	    const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
+		const string ProjectDeclarationBeginFormat = "Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"";
 		const string ProjectDeclarationEndFormat = "EndProject";
 
 		private void WriteProject(TextWriter ss, SolutionNode solution, string language, Guid guid, string name, string projectFullPath)
@@ -745,7 +746,7 @@ namespace Prebuild.Core.Targets
 		private void WriteDatabaseProject(SolutionNode solution, DatabaseProjectNode project)
 		{
 			string projectFile = Helper.MakeFilePath(project.FullPath, project.Name, "dbp");
-			IndentedTextWriter ps = new IndentedTextWriter(new StreamWriter(projectFile), "   ");
+			IndentedTextWriter ps = new IndentedTextWriter(new StreamWriter(projectFile), "	  ");
 
 			kernel.CurrentWorkingDirectory.Push();
 
@@ -786,7 +787,7 @@ namespace Prebuild.Core.Targets
 
 		private static bool ContainsSqlFiles(string folder)
 		{
-            if(Directory.GetFiles(folder, "*.sql").Length > 0)
+			if(Directory.GetFiles(folder, "*.sql").Length > 0)
 				return true; // if the folder contains 1 .sql file, that's good enough
 
 			foreach (string child in Directory.GetDirectories(folder))
