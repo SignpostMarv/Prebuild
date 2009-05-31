@@ -179,7 +179,6 @@ namespace Prebuild.Core.Targets
 				if (project.Type == ProjectType.Web)
 					ps.WriteLine("	  <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>");
 				ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
-				ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">Platform</Platform>", project.Platform);
 				ps.WriteLine("	  <ApplicationIcon>{0}</ApplicationIcon>", project.AppIcon);
 				ps.WriteLine("	  <AssemblyKeyContainerName>");
 				ps.WriteLine("	  </AssemblyKeyContainerName>");
@@ -215,7 +214,7 @@ namespace Prebuild.Core.Targets
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					ps.Write("	<PropertyGroup ");
-					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|Platform' \">", conf.Name, project.Platform);
+					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|{1}' \">", conf.Name, conf.Options["Platform"]);
 					ps.WriteLine("	  <AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options["AllowUnsafe"]);
 					ps.WriteLine("	  <BaseAddress>{0}</BaseAddress>", conf.Options["BaseAddress"]);
 					ps.WriteLine("	  <CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options["CheckUnderflowOverflow"]);
@@ -239,7 +238,7 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("	  <WarningLevel>{0}</WarningLevel>", conf.Options["WarningLevel"]);
 					ps.WriteLine("	  <NoStdLib>{0}</NoStdLib>", conf.Options["NoStdLib"]);
 					ps.WriteLine("	  <NoWarn>{0}</NoWarn>", conf.Options["SuppressWarnings"]);
-					ps.WriteLine("	  <PlatformTarget>{0}</PlatformTarget>", project.Platform);
+					ps.WriteLine("	  <PlatformTarget>{0}</PlatformTarget>", conf.Options["Platform"]);
 					ps.WriteLine("	</PropertyGroup>");
 				}
 
@@ -503,14 +502,27 @@ namespace Prebuild.Core.Targets
 			ps = new StreamWriter(projectFile + ".user");
 			using (ps)
 			{
+				// Get the first configuration from the project.
+				ConfigurationNode firstConfiguration = null;
+
+				if (project.Configurations.Count > 0)
+				{
+					firstConfiguration = project.Configurations[0];
+				}
+
 				ps.WriteLine("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
 				//ps.WriteLine( "<VisualStudioProject>" );
 				//ps.WriteLine("  <{0}>", toolInfo.XMLTag);
 				//ps.WriteLine("	<Build>");
 				ps.WriteLine("	<PropertyGroup>");
 				//ps.WriteLine("	  <Settings ReferencePath=\"{0}\">", MakeRefPath(project));
-				ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
-				ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">Platform</Platform>", project.Platform);
+
+				if (firstConfiguration != null)
+				{
+					ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">{0}</Configuration>", firstConfiguration.Name);
+					ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">{0}</Platform>", firstConfiguration.Options["Platform"]);
+				}
+
 				ps.WriteLine("	  <ReferencePath>{0}</ReferencePath>", MakeRefPath(project));
 				ps.WriteLine("	  <LastOpenVersion>{0}</LastOpenVersion>", ProductVersion);
 				ps.WriteLine("	  <ProjectView>ProjectFiles</ProjectView>");
@@ -519,7 +531,7 @@ namespace Prebuild.Core.Targets
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					ps.Write("	<PropertyGroup");
-					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|Platform' \"", conf.Name);
+					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|{1}' \"", conf.Name, conf.Options["Platform"]);
 					ps.WriteLine(" />");
 				}
 				ps.WriteLine("</Project>");
