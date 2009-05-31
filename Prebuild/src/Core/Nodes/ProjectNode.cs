@@ -113,7 +113,6 @@ namespace Prebuild.Core.Nodes
 		private string m_RootNamespace;
 		private string m_FilterGroups = "";
 		private string m_Version = "";
-		private string m_Platform = "AnyCPU";
 		private Guid m_Guid;
         private string m_DebugStartParameters;
 
@@ -467,21 +466,6 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
-		/// <summary>
-		/// The platform, such as x86, x64, or AnyCPU
-		/// </summary>
-		public string Platform
-		{
-			get
-			{
-				return m_Platform;
-			}
-			set
-			{
-				m_Platform = value;
-			}
-		}
-
 		#endregion
 
 		#region Public Methods
@@ -506,7 +490,6 @@ namespace Prebuild.Core.Nodes
             m_Framework = (FrameworkVersion)Helper.EnumAttributeValue(node, "frameworkVersion", typeof(FrameworkVersion), m_Framework);
 			m_StartupObject = Helper.AttributeValue(node, "startupObject", m_StartupObject);
 			m_RootNamespace = Helper.AttributeValue(node, "rootNamespace", m_RootNamespace);
-			m_Platform = Helper.AttributeValue(node, "platform", m_Platform);
 			
             int hash = m_Name.GetHashCode();
  			Guid guidByHash = new Guid(hash, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

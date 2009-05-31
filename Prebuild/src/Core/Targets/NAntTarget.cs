@@ -255,8 +255,8 @@ namespace Prebuild.Core.Targets
 				ss.Write("		  <csc ");
 				ss.Write(" target=\"{0}\"", project.Type.ToString().ToLower());
 				ss.Write(" debug=\"{0}\"", "${build.debug}");
-                if(project.Platform != "AnyCPU")
-                    ss.Write(" platform=\"{0}\"", project.Platform);
+				ss.Write(" platform=\"${build.platform}\"");
+
 
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
@@ -504,6 +504,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("	  <target name=\"{0}\" description=\"\">", conf.Name);
 					ss.WriteLine("		  <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("		  <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
+					ss.WriteLine("\t\t  <property name=\"build.platform\" value=\"{0}\" />", conf.Options["Platform"]);
 					ss.WriteLine("	  </target>");
 					ss.WriteLine();
 				}

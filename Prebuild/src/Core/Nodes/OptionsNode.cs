@@ -494,6 +494,24 @@ namespace Prebuild.Core.Nodes
 			}
 		}
 
+		[OptionNode("Platform")]
+		private string m_Platform = "AnyCPU";
+
+		/// <summary>
+		/// Identifies the platform for this specific configuration.
+		/// </summary>
+		public string Platform
+		{
+			get
+			{
+				return m_Platform;
+			}
+			set
+			{
+				m_Platform = value;
+			}
+		}
+
 		private readonly List<string> m_FieldsDefined = new List<string>();
 
 		#endregion
