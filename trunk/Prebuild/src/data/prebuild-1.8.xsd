@@ -176,6 +176,7 @@
         <xs:element ref="Options" minOccurs="0" />
       </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="platform" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   <xs:element name="Options">
@@ -220,7 +221,6 @@
         <xs:element name="FileAlignment" type="xs:integer" minOccurs="0" />
         <xs:element name="NoStdLib" type="xs:boolean" minOccurs="0" />
         <xs:element name="KeyFile" type="xs:string" minOccurs="0" />
-        <xs:element name="Platform" type="xs:string" default="AnyCPU" minOccurs="0" />
       </xs:all>
     </xs:complexType>
   </xs:element>
