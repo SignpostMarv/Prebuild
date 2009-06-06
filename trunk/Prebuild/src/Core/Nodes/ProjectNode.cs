@@ -415,7 +415,7 @@ namespace Prebuild.Core.Nodes
 					SolutionNode parent = (SolutionNode)base.Parent;
 					foreach(ConfigurationNode conf in parent.Configurations)
 					{
-						m_Configurations[conf.Name] = (ConfigurationNode) conf.Clone();
+						m_Configurations[conf.NameAndPlatform] = (ConfigurationNode) conf.Clone();
 					}
 				}
 			}
@@ -462,7 +462,7 @@ namespace Prebuild.Core.Nodes
 			} 
 			else
 			{
-				m_Configurations[conf.Name] = conf;
+				m_Configurations[conf.NameAndPlatform] = conf;
 			}
 		}
 

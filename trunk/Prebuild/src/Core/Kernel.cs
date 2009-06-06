@@ -36,6 +36,8 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 #endregion
 
+#define NO_VALIDATE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -416,6 +418,10 @@ namespace Prebuild.Core
 				m_CurrentDoc = new XmlDocument();
 				try
 				{
+#if NO_VALIDATE
+					XmlReader validator = XmlReader.Create(new StringReader(xml));
+					m_CurrentDoc.Load(validator);
+#else
 					XmlValidatingReader validator = new XmlValidatingReader(new XmlTextReader(new StringReader(xml)));
 
 					//validate while reading from string into XmlDocument DOM structure in memory
@@ -424,6 +430,7 @@ namespace Prebuild.Core
 						validator.Schemas.Add(schema);
 					}
 					m_CurrentDoc.Load(validator);
+#endif
 				} 
 				catch(XmlException e) 
 				{

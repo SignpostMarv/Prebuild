@@ -214,7 +214,7 @@ namespace Prebuild.Core.Targets
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					ps.Write("	<PropertyGroup ");
-					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|{1}' \">", conf.Name, conf.Options["Platform"]);
+					ps.WriteLine("Condition=\" '$(Configuration)|$(Platform)' == '{0}|{1}' \">", conf.Name, conf.Platform);
 					ps.WriteLine("	  <AllowUnsafeBlocks>{0}</AllowUnsafeBlocks>", conf.Options["AllowUnsafe"]);
 					ps.WriteLine("	  <BaseAddress>{0}</BaseAddress>", conf.Options["BaseAddress"]);
 					ps.WriteLine("	  <CheckForOverflowUnderflow>{0}</CheckForOverflowUnderflow>", conf.Options["CheckUnderflowOverflow"]);
@@ -238,7 +238,7 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("	  <WarningLevel>{0}</WarningLevel>", conf.Options["WarningLevel"]);
 					ps.WriteLine("	  <NoStdLib>{0}</NoStdLib>", conf.Options["NoStdLib"]);
 					ps.WriteLine("	  <NoWarn>{0}</NoWarn>", conf.Options["SuppressWarnings"]);
-					ps.WriteLine("	  <PlatformTarget>{0}</PlatformTarget>", conf.Options["Platform"]);
+					ps.WriteLine("	  <PlatformTarget>{0}</PlatformTarget>", conf.Platform);
 					ps.WriteLine("	</PropertyGroup>");
 				}
 
@@ -520,7 +520,7 @@ namespace Prebuild.Core.Targets
 				if (firstConfiguration != null)
 				{
 					ps.WriteLine("	  <Configuration Condition=\" '$(Configuration)' == '' \">{0}</Configuration>", firstConfiguration.Name);
-					ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">{0}</Platform>", firstConfiguration.Options["Platform"]);
+					ps.WriteLine("	  <Platform Condition=\" '$(Platform)' == '' \">{0}</Platform>", firstConfiguration.Platform);
 				}
 
 				ps.WriteLine("	  <ReferencePath>{0}</ReferencePath>", MakeRefPath(project));
@@ -531,7 +531,7 @@ namespace Prebuild.Core.Targets
 				foreach (ConfigurationNode conf in project.Configurations)
 				{
 					ps.Write("	<PropertyGroup");
-					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|{1}' \"", conf.Name, conf.Options["Platform"]);
+					ps.Write(" Condition = \" '$(Configuration)|$(Platform)' == '{0}|{1}' \"", conf.Name, conf.Platform);
 					ps.WriteLine(" />");
 				}
 				ps.WriteLine("</Project>");
@@ -583,7 +583,7 @@ namespace Prebuild.Core.Targets
 					ss.WriteLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
 					foreach (ConfigurationNode conf in solution.Configurations)
 					{
-						ss.WriteLine("\t\t{0}|Platform = {0}|Platform", conf.Name);
+						ss.WriteLine("\t\t{0} = {0}", conf.NameAndPlatform);
 					}
 					ss.WriteLine("\tEndGlobalSection");
 
@@ -669,13 +669,13 @@ namespace Prebuild.Core.Targets
 			{
 				foreach (ConfigurationNode conf in configurations)
 				{
-					ss.WriteLine("\t\t{0}.{1}|Platform.ActiveCfg = {1}|Platform",
+					ss.WriteLine("\t\t{0}.{1}.ActiveCfg = {1}",
 						project.Guid.ToString("B").ToUpper(),
-						conf.Name);
+						conf.NameAndPlatform);
 
-					ss.WriteLine("\t\t{0}.{1}|Platform.Build.0 = {1}|Platform",
+					ss.WriteLine("\t\t{0}.{1}.Build.0 = {1}",
 						project.Guid.ToString("B").ToUpper(),
-						conf.Name);
+						conf.NameAndPlatform);
 				}
 			}
 
