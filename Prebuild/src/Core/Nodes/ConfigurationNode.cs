@@ -41,6 +41,7 @@ namespace Prebuild.Core.Nodes
 		#region Fields
 
 		private string m_Name = "unknown";
+		private string m_Platform = "AnyCPU";
 		private OptionsNode m_Options;
 
 		#endregion
@@ -84,6 +85,33 @@ namespace Prebuild.Core.Nodes
 		}
 
 		/// <summary>
+		/// Identifies the platform for this specific configuration.
+		/// </summary>
+		public string Platform
+		{
+			get
+			{
+				return m_Platform;
+			}
+			set
+			{
+				switch ((value + "").ToLower())
+				{
+				case "x86":
+				case "x64":
+					m_Platform = value;
+					break;
+				case "itanium":
+					m_Platform = "Itanium";
+					break;
+				default:
+					m_Platform = "AnyCPU";
+					break;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets the name.
 		/// </summary>
 		/// <value>The name.</value>
@@ -92,6 +120,18 @@ namespace Prebuild.Core.Nodes
 			get
 			{
 				return m_Name;
+			}
+		}
+
+		/// <summary>
+		/// Gets the name and platform for the configuration.
+		/// </summary>
+		/// <value>The name and platform.</value>
+		public string NameAndPlatform
+		{
+			get
+			{
+				return String.Format("{0}|{1}", m_Name, m_Platform);
 			}
 		}
 
@@ -122,7 +162,9 @@ namespace Prebuild.Core.Nodes
 		public override void Parse(XmlNode node)
 		{
 			m_Name = Helper.AttributeValue(node, "name", m_Name);
-			if( node == null )
+			Platform = Helper.AttributeValue(node, "platform", m_Platform);
+
+			if (node == null)
 			{
 				throw new ArgumentNullException("node");
 			}
@@ -159,6 +201,7 @@ namespace Prebuild.Core.Nodes
 		{
 			ConfigurationNode ret = new ConfigurationNode();
 			ret.m_Name = m_Name;
+			ret.m_Platform = m_Platform;
 			m_Options.CopyTo(ret.m_Options);
 			return ret;
 		}

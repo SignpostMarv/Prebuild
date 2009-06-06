@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -495,16 +496,32 @@ namespace Prebuild.Core.Targets
 				ss.WriteLine("	  <property name=\"doc.dir\" value=\"doc\" />");
 				ss.WriteLine("	  <property name=\"project.main.dir\" value=\"${project::get-base-directory()}\" />");
 
-                // actually use active config out of prebuild.xml
-                ss.WriteLine("    <property name=\"project.config\" value=\"{0}\" />", solution.ActiveConfig);
+				// Use the active configuration, which is the first configuration name in the prebuild file.
+				Dictionary<string,string> emittedConfigurations = new Dictionary<string, string>();
+
+				ss.WriteLine("	  <property name=\"project.config\" value=\"{0}\" />", solution.ActiveConfig);
+				ss.WriteLine();
 
 				foreach (ConfigurationNode conf in solution.Configurations)
 				{
-					ss.WriteLine();
-					ss.WriteLine("	  <target name=\"{0}\" description=\"\">", conf.Name);
+					// If the name isn't in the emitted configurations, we give a high level target to the 
+					// platform specific on. This lets "Debug" point to "Debug-AnyCPU".
+					if (!emittedConfigurations.ContainsKey(conf.Name))
+					{
+						// Add it to the dictionary so we only emit one.
+						emittedConfigurations.Add(conf.Name, conf.Platform);
+
+						// Write out the target block.
+						ss.WriteLine("	  <target name=\"{0}\" description=\"{0}|{1}\" depends=\"{0}-{1}\">", conf.Name, conf.Platform);
+						ss.WriteLine("	  </target>");
+						ss.WriteLine();
+					}
+
+					// Write out the target for the configuration.
+					ss.WriteLine("	  <target name=\"{0}-{1}\" description=\"{0}|{1}\">", conf.Name, conf.Platform);
 					ss.WriteLine("		  <property name=\"project.config\" value=\"{0}\" />", conf.Name);
 					ss.WriteLine("		  <property name=\"build.debug\" value=\"{0}\" />", conf.Options["DebugInformation"].ToString().ToLower());
-					ss.WriteLine("\t\t  <property name=\"build.platform\" value=\"{0}\" />", conf.Options["Platform"]);
+					ss.WriteLine("\t\t  <property name=\"build.platform\" value=\"{0}\" />", conf.Platform);
 					ss.WriteLine("	  </target>");
 					ss.WriteLine();
 				}

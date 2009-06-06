@@ -48,12 +48,12 @@ namespace Prebuild.Core.Nodes
 		private string m_Name = "unknown";
 		private string m_Path = "";
 		private string m_FullPath = "";
-		private string m_ActiveConfig = "Debug";
+		private string m_ActiveConfig;
         private string m_Version = "1.0.0";
         
 		private OptionsNode m_Options;
 		private FilesNode m_Files;
-        private readonly Dictionary<string, ConfigurationNode> m_Configurations = new Dictionary<string, ConfigurationNode>();
+        private readonly ConfigurationNodeCollection m_Configurations = new ConfigurationNodeCollection();
         private readonly Dictionary<string, ProjectNode> m_Projects = new Dictionary<string, ProjectNode>();
         private readonly Dictionary<string, DatabaseProjectNode> m_DatabaseProjects = new Dictionary<string, DatabaseProjectNode>();
         private readonly List<ProjectNode> m_ProjectsOrder = new List<ProjectNode>();
@@ -199,13 +199,13 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations.
 		/// </summary>
 		/// <value>The configurations.</value>
-		public List<ConfigurationNode> Configurations
+		public ConfigurationNodeCollection Configurations
 		{
 			get
 			{
-                List<ConfigurationNode> tmp = new List<ConfigurationNode>(ConfigurationsTable.Values);
-                tmp.Sort();
-                return tmp;
+				ConfigurationNodeCollection tmp = new ConfigurationNodeCollection();
+				tmp.AddRange(ConfigurationsTable);
+				return tmp;
 			}
 		}
 
@@ -213,7 +213,7 @@ namespace Prebuild.Core.Nodes
 		/// Gets the configurations table.
 		/// </summary>
 		/// <value>The configurations table.</value>
-		public Dictionary<string, ConfigurationNode> ConfigurationsTable
+		public ConfigurationNodeCollection ConfigurationsTable
 		{
 			get
 			{
@@ -336,7 +336,14 @@ namespace Prebuild.Core.Nodes
 					}
 					else if(dataNode is ConfigurationNode)
 					{
-						m_Configurations[((ConfigurationNode)dataNode).Name] = (ConfigurationNode) dataNode;
+						ConfigurationNode configurationNode = (ConfigurationNode) dataNode;
+						m_Configurations[configurationNode.NameAndPlatform] = configurationNode;
+
+						// If the active configuration is null, then we populate it.
+						if (ActiveConfig == null)
+						{
+							ActiveConfig = configurationNode.Name;
+						}
 					}
 					else if(dataNode is ProjectNode)
 					{
