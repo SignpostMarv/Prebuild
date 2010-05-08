@@ -54,7 +54,15 @@ namespace Prebuild.Core.Nodes
 		/// <summary>
 		/// 
 		/// </summary>
-		EmbeddedResource
+		EmbeddedResource,
+		/// <summary>
+		/// 
+		/// </summary>
+		ApplicationDefinition,
+		/// <summary>
+		/// 
+		/// </summary>
+		Page
 	}
 
 	/// <summary>
