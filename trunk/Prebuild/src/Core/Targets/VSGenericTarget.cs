@@ -5,22 +5,22 @@ Copyright (c) 2008 Matthew Holmes (matthew@wildfiregames.com), John Anderson (so
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice, this list of conditions 
-  and the following disclaimer. 
-* Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
-  and the following disclaimer in the documentation and/or other materials provided with the 
-  distribution. 
-* The name of the author may not be used to endorse or promote products derived from this software 
-  without specific prior written permission. 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions
+  and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+  and the following disclaimer in the documentation and/or other materials provided with the
+  distribution.
+ * The name of the author may not be used to endorse or promote products derived from this software
+  without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
 EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
 OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
 OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 #endregion
 
 using System;
@@ -227,10 +227,10 @@ namespace Prebuild.Core.Targets
 					ps.WriteLine("	  <Optimize>{0}</Optimize>", conf.Options["OptimizeCode"]);
 					if (project.Type != ProjectType.Web)
 						ps.WriteLine("	  <OutputPath>{0}</OutputPath>",
-							Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
+						             Helper.EndPath(Helper.NormalizePath(conf.Options["OutputPath"].ToString())));
 					else
 						ps.WriteLine("	  <OutputPath>{0}</OutputPath>",
-							Helper.EndPath(Helper.NormalizePath("bin\\")));
+						             Helper.EndPath(Helper.NormalizePath("bin\\")));
 
 					ps.WriteLine("	  <RegisterForComInterop>{0}</RegisterForComInterop>", conf.Options["RegisterComInterop"]);
 					ps.WriteLine("	  <RemoveIntegerChecks>{0}</RemoveIntegerChecks>", conf.Options["RemoveIntegerChecks"]);
@@ -268,7 +268,24 @@ namespace Prebuild.Core.Targets
 					ps.Write("		  <Name>");
 					ps.Write(refr.Name);
 					ps.WriteLine("</Name>");
-					// TODO: Allow reference to *.exe files
+										
+					if(!String.IsNullOrEmpty(refr.Path))
+					{
+						// Use absolute path to assembly (for determining assembly type)
+						string absolutePath = Path.Combine(project.FullPath, refr.Path);
+						if(File.Exists(Helper.MakeFilePath(absolutePath, refr.Name, "exe"))) {
+							// Assembly is an executable (exe)
+							ps.WriteLine("		<HintPath>{0}</HintPath>", Helper.MakeFilePath(refr.Path, refr.Name, "exe"));
+						} else if(File.Exists(Helper.MakeFilePath(absolutePath, refr.Name, "dll"))) {
+							// Assembly is an library (dll)							
+							ps.WriteLine("		<HintPath>{0}</HintPath>", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
+						} else {
+							string referencePath = Helper.MakeFilePath(refr.Path, refr.Name, "dll");
+							kernel.Log.Write(LogType.Warning, "Reference \"{0}\": The specified file doesn't exist.", referencePath);
+							ps.WriteLine("		<HintPath>{0}</HintPath>", Helper.MakeFilePath(refr.Path, refr.Name, "dll"));
+						}
+					}
+					
 					ps.WriteLine("		<Private>{0}</Private>", refr.LocalCopy);
 					ps.WriteLine("	  </Reference>");
 				}
@@ -284,7 +301,7 @@ namespace Prebuild.Core.Targets
 
 					string path =
 						Helper.MakePathRelativeTo(project.FullPath,
-												  Helper.MakeFilePath(pair.Value.FullPath, pair.Value.Name, tool.FileExtension));
+						                          Helper.MakeFilePath(pair.Value.FullPath, pair.Value.Name, tool.FileExtension));
 					ps.WriteLine("	  <ProjectReference Include=\"{0}\">", path);
 
 					// TODO: Allow reference to visual basic projects
@@ -332,7 +349,7 @@ namespace Prebuild.Core.Targets
 					string file = filePath.Replace(@"/", @"\");
 
 					if (subType != SubType.Code && subType != SubType.Settings && subType != SubType.Designer
-						&& subType != SubType.CodeBehind)
+					    && subType != SubType.CodeBehind)
 					{
 						ps.WriteLine("	  <EmbeddedResource Include=\"{0}\">", file.Substring(0, file.LastIndexOf('.')) + ".resx");
 						ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(file));
@@ -377,7 +394,7 @@ namespace Prebuild.Core.Targets
 								ps.WriteLine("		<AutoGen>True</AutoGen>");
 								ps.WriteLine("		<DependentUpon>{0}</DependentUpon>", Path.GetFileName(filePath));
 							}
-	
+							
 							ps.WriteLine("	  </Compile>");
 						}
 						list.Add(autogen_name);
@@ -431,8 +448,8 @@ namespace Prebuild.Core.Targets
 							int last_period_index = file.LastIndexOf('.');
 							string short_file_name = file.Substring(0, last_period_index);
 							string extension = Path.GetExtension(path);
-							// make this upper case, so that when File.Exists tests for the 
-							// existence of a designer file on a case-sensitive platform, 
+							// make this upper case, so that when File.Exists tests for the
+							// existence of a designer file on a case-sensitive platform,
 							// it is correctly identified.
 							string designer_format = string.Format(".Designer{0}", extension);
 
@@ -442,7 +459,7 @@ namespace Prebuild.Core.Targets
 								string file_name = path.Substring(0, designer_index);
 
 								// There are two corrections to the next lines:
-								// 1. Fix the connection between a designer file and a form 
+								// 1. Fix the connection between a designer file and a form
 								//	  or usercontrol that don't have an associated resx file.
 								// 2. Connect settings files to associated designer files.
 								if (File.Exists(file_name + extension))
@@ -659,8 +676,8 @@ namespace Prebuild.Core.Targets
 		private static void WriteNestedFolder(TextWriter writer, Guid parentGuid, Guid childGuid)
 		{
 			writer.WriteLine("\t\t{0} = {1}",
-				childGuid.ToString("B").ToUpper(),
-				parentGuid.ToString("B").ToUpper());
+			                 childGuid.ToString("B").ToUpper(),
+			                 parentGuid.ToString("B").ToUpper());
 		}
 
 		private static void WriteConfigurationLines(IEnumerable<ConfigurationNode> configurations, SolutionNode solution, TextWriter ss)
@@ -670,12 +687,12 @@ namespace Prebuild.Core.Targets
 				foreach (ConfigurationNode conf in configurations)
 				{
 					ss.WriteLine("\t\t{0}.{1}.ActiveCfg = {1}",
-						project.Guid.ToString("B").ToUpper(),
-						conf.NameAndPlatform);
+					             project.Guid.ToString("B").ToUpper(),
+					             conf.NameAndPlatform);
 
 					ss.WriteLine("\t\t{0}.{1}.Build.0 = {1}",
-						project.Guid.ToString("B").ToUpper(),
-						conf.NameAndPlatform);
+					             project.Guid.ToString("B").ToUpper(),
+					             conf.NameAndPlatform);
 				}
 			}
 
@@ -737,10 +754,10 @@ namespace Prebuild.Core.Targets
 			ToolInfo toolInfo = tools[language];
 
 			writer.WriteLine(ProjectDeclarationBeginFormat,
-				toolInfo.Guid,
-				name,
-				location,
-				projectGuid.ToString("B").ToUpper());
+			                 toolInfo.Guid,
+			                 name,
+			                 location,
+			                 projectGuid.ToString("B").ToUpper());
 
 			if (files != null)
 			{

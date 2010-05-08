@@ -131,7 +131,11 @@ namespace Prebuild.Core.Nodes
 		{
 			get
 			{
-				return String.Format("{0}|{1}", m_Name, m_Platform);
+                string platform = m_Platform;
+                if (platform == "AnyCPU")
+                    platform = "Any CPU";
+
+				return String.Format("{0}|{1}", m_Name, platform);
 			}
 		}
 
