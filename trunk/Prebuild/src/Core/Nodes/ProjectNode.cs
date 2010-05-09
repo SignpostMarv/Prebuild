@@ -459,9 +459,9 @@ namespace Prebuild.Core.Nodes
 					conf.CopyTo(confNode);//update the config templates defines at the project level with the overrides
 				}
 			}
-			if(m_Configurations.ContainsKey(conf.Name))
+			if(m_Configurations.ContainsKey(conf.NameAndPlatform))
 			{
-				ConfigurationNode parentConf = m_Configurations[conf.Name];
+				ConfigurationNode parentConf = m_Configurations[conf.NameAndPlatform];
 				conf.CopyTo(parentConf);//update the config templates defines at the project level with the overrides
 			} 
 			else
