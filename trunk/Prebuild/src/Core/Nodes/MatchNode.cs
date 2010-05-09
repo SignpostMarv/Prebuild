@@ -251,7 +251,7 @@ namespace Prebuild.Core.Nodes
                         {
                             // hack to skip subversion folders.  Not having this can cause
                             // a significant performance hit when running on a network drive.
-                            if (str == ".svn")
+                            if (str.EndsWith(".svn"))
                                 continue;
 
                             RecurseDirectories(Helper.NormalizePath(str), pattern, recurse, useRegex, exclusions);
