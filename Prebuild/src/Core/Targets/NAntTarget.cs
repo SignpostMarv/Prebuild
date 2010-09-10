@@ -363,7 +363,20 @@ namespace Prebuild.Core.Targets
 				foreach (ReferenceNode refr in project.References)
 				{
 					string path = Helper.NormalizePath(Helper.MakePathRelativeTo(project.FullPath, BuildReference(solution, project, refr)), '/');
-                    ss.WriteLine("                <include name=\"" + path + "\" />");
+                    if (refr.Path != null) {
+                        if (ExtensionSpecified(refr.Name))
+                        {
+                            ss.WriteLine ("                <include name=\"" + path + refr.Name + "\"/>");
+                        }
+                        else
+                        {
+                            ss.WriteLine ("                <include name=\"" + path + refr.Name + ".dll\"/>");
+                        }
+                    }
+                    else
+                    {
+                        ss.WriteLine ("                <include name=\"" + path + "\" />");
+                    }
 				}
 				ss.WriteLine("			  </references>");
 

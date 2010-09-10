@@ -315,16 +315,17 @@ namespace Prebuild.Core
 
 		private void LogBanner()
 		{
-                  m_Log.Write("Prebuild v" + Version);
-                  m_Log.Write("Copyright (c) 2004-2008");
-                  m_Log.Write("Matthew Holmes (matthew@wildfiregames.com),");
-                  m_Log.Write("Dan Moorehead (dan05a@gmail.com),");
-                  m_Log.Write("David Hudson (jendave@yahoo.com),");
-                  m_Log.Write("Rob Loach (http://www.robloach.net),");
-                  m_Log.Write("C.J. Adams-Collier (cjac@colliertech.org),");
+            m_Log.Write("Prebuild v" + Version);
+            m_Log.Write("Copyright (c) 2004-2010");
+            m_Log.Write("Matthew Holmes (matthew@wildfiregames.com),");
+            m_Log.Write("Dan Moorehead (dan05a@gmail.com),");
+            m_Log.Write("David Hudson (jendave@yahoo.com),");
+            m_Log.Write("Rob Loach (http://www.robloach.net),");
+            m_Log.Write("C.J. Adams-Collier (cjac@colliertech.org),");
+            m_Log.Write("John Hurliman (john.hurliman@intel.com),");
 
-                  m_Log.Write("See 'prebuild /usage' for help");
-                  m_Log.Write();
+            m_Log.Write("See 'prebuild /usage' for help");
+            m_Log.Write();
 		}
 
 
