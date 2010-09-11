@@ -446,7 +446,9 @@ namespace Prebuild.Core.Targets
 							ps.WriteLine("Include=\"{0}\">", file);
 
 							int last_period_index = file.LastIndexOf('.');
-							string short_file_name = file.Substring(0, last_period_index);
+                            string short_file_name = (last_period_index >= 0)
+                                ? file.Substring(0, last_period_index)
+                                : file;
 							string extension = Path.GetExtension(path);
 							// make this upper case, so that when File.Exists tests for the
 							// existence of a designer file on a case-sensitive platform,
